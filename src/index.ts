@@ -9,10 +9,12 @@ const copilot: CopilotFacade = {
         Copilot.getInstance().reset();
     },
     perform: async (steps: string | string[]) => {
+        const copilotInstance = Copilot.getInstance();
+
         const intents = Array.isArray(steps) ? steps : [steps];
         const results = new Array<any>();
         for (const intent of intents) {
-            results.push(await Copilot.getInstance().performStep(intent));
+            results.push(await copilotInstance.performStep(intent));
         }
 
         return results.length === 1 ? results[0] : results;

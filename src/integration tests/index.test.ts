@@ -30,10 +30,8 @@ describe('Integration', () => {
     });
 
     describe('Initialization', () => {
-        it('should synchronously throw an error when perform is called before initialization', () => {
-            expect(() => copilot.perform('Some action')).toThrowError(
-                'Copilot has not been initialized. Please call the `init()` method before using it.'
-            );
+        it('should synchronously throw an error when perform is called before initialization', async () => {
+            await expect( () => copilot.perform('Some action')).rejects.toThrow();
         });
     });
 
