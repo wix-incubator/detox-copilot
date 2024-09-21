@@ -24,7 +24,9 @@
   },
   "scripts": {
     "build": "tsc && tsc-alias",
-    "test": "jest"
+    "test": "jest",
+    "bump-version": "npm version patch && git push && git push --tags",
+    "release": "npm test && npm bump-version && npm build && npm publish"
   },
   "bugs": {
     "url": "https://github.com/wix-incubator/DetoxCopilot/issues"
