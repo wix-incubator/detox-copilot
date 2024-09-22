@@ -70,23 +70,29 @@ describe('PromptCreator', () => {
         const previousSteps: PreviousStep[] = [
             {
                 step: 'navigate to login screen',
-                code: 'await element(by.id("login")).tap();'
+                code: 'await element(by.id("login")).tap();',
+                result: undefined
             },
             {
                 step: 'enter username',
-                code: 'await element(by.id("username")).typeText("john_doe");'
+                code: 'await element(by.id("username")).typeText("john_doe");',
+                result: undefined
             }
         ];
 
         const viewHierarchy = '<View><Button testID="submit" title="Submit" /></View>';
+
         const prompt = promptCreator.createPrompt(intent, viewHierarchy, false, previousSteps);
+
         expect(prompt).toMatchSnapshot();
     });
 
     it('should handle when no snapshot image is attached', () => {
         const intent = 'expect button to be visible';
         const viewHierarchy = '<View><Button testID="submit" title="Submit" /></View>';
+
         const prompt = promptCreator.createPrompt(intent, viewHierarchy, false, []);
+
         expect(prompt).toMatchSnapshot();
     });
 });
