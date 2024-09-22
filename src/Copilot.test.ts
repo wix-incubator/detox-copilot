@@ -24,6 +24,8 @@ describe('Copilot', () => {
             }
         };
         jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        (StepPerformer.prototype.perform as jest.Mock).mockResolvedValue({code: 'code', result: true});
     });
 
     afterEach(() => {
@@ -73,6 +75,7 @@ describe('Copilot', () => {
 
     describe('perform', () => {
         it('should call StepPerformer.perform with the given intent', async () => {
+
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
             const intent = 'tap button';
@@ -83,7 +86,6 @@ describe('Copilot', () => {
         });
 
         it('should return the result from StepPerformer.perform', async () => {
-            (StepPerformer.prototype.perform as jest.Mock).mockResolvedValue(true);
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
             const intent = 'tap button';
@@ -102,7 +104,11 @@ describe('Copilot', () => {
             await instance.performStep(intent1);
             await instance.performStep(intent2);
 
-            expect(StepPerformer.prototype.perform).toHaveBeenLastCalledWith(intent2, [intent1]);
+            expect(StepPerformer.prototype.perform).toHaveBeenLastCalledWith(intent2, [{
+                step: intent1,
+                code: 'code',
+                result: true
+            }]);
         });
     });
 

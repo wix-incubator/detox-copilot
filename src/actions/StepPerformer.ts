@@ -1,7 +1,7 @@
 import { PromptCreator } from '@/utils/PromptCreator';
 import { CodeEvaluator } from '@/utils/CodeEvaluator';
 import { SnapshotManager } from '@/utils/SnapshotManager';
-import { PromptHandler } from '@/types';
+import {CodeEvaluationResult, PreviousStep, PromptHandler} from '@/types';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -20,7 +20,7 @@ export class StepPerformer {
         this.cacheFilePath = path.resolve(process.cwd(), 'copilot-cache', cacheFileName);
     }
 
-    private getCacheKey(step: string, previous: string[]): string {
+    private getCacheKey(step: string, previous: PreviousStep[]): string {
         return JSON.stringify({ step, previous });
     }
 
@@ -48,7 +48,7 @@ export class StepPerformer {
         }
     }
 
-    async perform(step: string, previous: string[] = []): Promise<any> {
+    async perform(step: string, previous: PreviousStep[] = []): Promise<CodeEvaluationResult> {
         // todo: replace with the user's logger
         console.log("\x1b[90m%s\x1b[0m%s", "Copilot performing: ", `"${step}"`);
 
@@ -87,10 +87,14 @@ export class StepPerformer {
         } catch (error) {
             // Extend 'previous' array with the failure message
             const failedAttemptMessage = promptResult
-                ? `Failed to perform "${step}", tried with "${promptResult}". Should we try a different approach? If can't, throw an error.`
-                : `Failed to perform "${step}", could not generate prompt result. Should we try a different approach? If can't, throw an error.`;
+                ? `Failed to evaluate "${step}", tried with generated code: "${promptResult}". Should we try a different approach? If can't, return a code that throws a descriptive error.`
+                : `Failed to perform "${step}", could not generate prompt result. Should we try a different approach? If can't, return a code that throws a descriptive error.`;
 
-            const newPrevious = [...previous, failedAttemptMessage];
+            const newPrevious = [...previous, {
+                step,
+                code: failedAttemptMessage,
+                result: undefined,
+            }];
 
             const retryCacheKey = this.getCacheKey(step, newPrevious);
 
@@ -112,6 +116,7 @@ export class StepPerformer {
                     retryPromptResult,
                     this.context,
                 );
+
                 // Cache the result under the original cache key
                 this.cache.set(cacheKey, retryPromptResult);
                 this.saveCacheToFile();

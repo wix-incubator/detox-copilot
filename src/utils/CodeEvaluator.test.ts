@@ -25,7 +25,11 @@ describe('CodeEvaluator', () => {
     it('should evaluate valid code with context successfully', async () => {
         const contextVariable = 43;
         const validCode = 'return contextVariable - 1;';
-        await expect(codeEvaluator.evaluate(validCode, { contextVariable })).resolves.toBe(42);
+
+        await expect(codeEvaluator.evaluate(validCode, { contextVariable })).resolves.toStrictEqual({
+            code: 'return contextVariable - 1;',
+            result: 42
+        });
     });
 
     it('should throw CodeEvaluationError for invalid code', async () => {
@@ -35,7 +39,11 @@ describe('CodeEvaluator', () => {
 
     it('should handle asynchronous code', async () => {
         const asyncCode = 'await new Promise(resolve => setTimeout(resolve, 100)); return "done";';
-        await expect(codeEvaluator.evaluate(asyncCode, {})).resolves.toBe('done');
+
+        await expect(codeEvaluator.evaluate(asyncCode, {})).resolves.toStrictEqual({
+            code: 'await new Promise(resolve => setTimeout(resolve, 100)); return "done";',
+            result: 'done'
+        });
     });
 
     it('should throw CodeEvaluationError with original error message', async () => {
