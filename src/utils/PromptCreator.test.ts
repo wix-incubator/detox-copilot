@@ -1,5 +1,10 @@
 import { PromptCreator } from './PromptCreator';
-import { TestingFrameworkAPICatalog, TestingFrameworkAPICatalogCategory, TestingFrameworkAPICatalogItem } from "@/types";
+import {
+    PreviousStep,
+    TestingFrameworkAPICatalog,
+    TestingFrameworkAPICatalogCategory,
+    TestingFrameworkAPICatalogItem
+} from "@/types";
 
 const mockAPI: TestingFrameworkAPICatalog = {
     context: {},
@@ -62,16 +67,32 @@ describe('PromptCreator', () => {
 
     it('should include previous intents in the context', () => {
         const intent = 'tap button';
-        const previousIntents = ['navigate to login screen', 'enter username'];
+        const previousSteps: PreviousStep[] = [
+            {
+                step: 'navigate to login screen',
+                code: 'await element(by.id("login")).tap();',
+                result: undefined
+            },
+            {
+                step: 'enter username',
+                code: 'await element(by.id("username")).typeText("john_doe");',
+                result: undefined
+            }
+        ];
+
         const viewHierarchy = '<View><Button testID="submit" title="Submit" /></View>';
-        const prompt = promptCreator.createPrompt(intent, viewHierarchy, false, previousIntents);
+
+        const prompt = promptCreator.createPrompt(intent, viewHierarchy, false, previousSteps);
+
         expect(prompt).toMatchSnapshot();
     });
 
     it('should handle when no snapshot image is attached', () => {
         const intent = 'expect button to be visible';
         const viewHierarchy = '<View><Button testID="submit" title="Submit" /></View>';
+
         const prompt = promptCreator.createPrompt(intent, viewHierarchy, false, []);
+
         expect(prompt).toMatchSnapshot();
     });
 });

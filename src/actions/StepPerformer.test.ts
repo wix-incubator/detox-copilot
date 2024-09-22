@@ -160,7 +160,12 @@ describe('StepPerformer', () => {
 
     it('should perform an intent successfully with previous intents', async () => {
         const intent = 'current intent';
-        const previousIntents = ['previous intent'];
+        const previousIntents = [{
+            step: 'previous intent',
+            code: 'previous code',
+            result: 'previous result',
+        }];
+
         setupMocks();
 
         const result = await stepPerformer.perform(intent, previousIntents);

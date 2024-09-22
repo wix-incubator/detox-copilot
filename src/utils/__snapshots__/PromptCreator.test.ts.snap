@@ -227,8 +227,20 @@ Generate the minimal executable code to perform the following intent: "tap butto
 
 ### Previous intents
 
-1. navigate to login screen
-2. enter username
+#### Step 1
+- Intent: "navigate to login screen"
+- Generated code:
+\`\`\`
+await element(by.id("login")).tap();
+\`\`\`
+
+#### Step 2
+- Intent: "enter username"
+- Generated code:
+\`\`\`
+await element(by.id("username")).typeText("john_doe");
+\`\`\`
+
 
 ## Available Testing Framework API
 

@@ -129,3 +129,26 @@ export interface Config {
      */
     promptHandler: PromptHandler;
 }
+
+/**
+ * Represents a previous step that was performed in the test flow.
+ * @note This is used to keep track of the context and history of the test flow.
+ * @property step The description of the step.
+ * @property code The generated test code for the step.
+ * @property result The result of the step.
+ */
+export type PreviousStep = {
+    step: string;
+    code: string;
+    result: any;
+}
+
+/**
+ * Represents the result of a code evaluation operation.
+ * @property code The generated test code for the operation.
+ * @property result The result of the operation.
+ */
+export type CodeEvaluationResult = {
+    code: string;
+    result: any;
+}

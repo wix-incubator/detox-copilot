@@ -3,7 +3,7 @@ import {PromptCreator} from "@/utils/PromptCreator";
 import {CodeEvaluator} from "@/utils/CodeEvaluator";
 import {SnapshotManager} from "@/utils/SnapshotManager";
 import {StepPerformer} from "@/actions/StepPerformer";
-import {Config} from "@/types";
+import {Config, PreviousStep} from "@/types";
 
 /**
  * The main Copilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
@@ -16,7 +16,7 @@ export class Copilot {
     private readonly promptCreator: PromptCreator;
     private readonly codeEvaluator: CodeEvaluator;
     private readonly snapshotManager: SnapshotManager;
-    private previousSteps: string[] = [];
+    private previousSteps: PreviousStep[] = [];
     private stepPerformer: StepPerformer;
 
     private constructor(config: Config) {
@@ -57,8 +57,8 @@ export class Copilot {
      * @param step The step describing the operation to perform.
      */
     async performStep(step: string): Promise<any> {
-        const result = await this.stepPerformer.perform(step, this.previousSteps);
-        this.didPerformStep(step);
+        const {code, result} = await this.stepPerformer.perform(step, this.previousSteps);
+        this.didPerformStep(step, code, result);
 
         return result;
     }
@@ -71,8 +71,11 @@ export class Copilot {
         this.previousSteps = [];
     }
 
-    // todo: cache the previous steps' generated test code
-    private didPerformStep(step: string): void {
-        this.previousSteps = [...this.previousSteps, step];
+    private didPerformStep(step: string, code: string, result: any): void {
+        this.previousSteps = [...this.previousSteps, {
+            step,
+            code,
+            result
+        }];
     }
 }

@@ -1,4 +1,9 @@
-import { TestingFrameworkAPICatalog, TestingFrameworkAPICatalogCategory, TestingFrameworkAPICatalogItem } from "@/types";
+import {
+    PreviousStep,
+    TestingFrameworkAPICatalog,
+    TestingFrameworkAPICatalogCategory,
+    TestingFrameworkAPICatalogItem
+} from "@/types";
 
 export class PromptCreator {
     constructor(private apiCatalog: TestingFrameworkAPICatalog) {}
@@ -7,11 +12,11 @@ export class PromptCreator {
         intent: string,
         viewHierarchy: string,
         isSnapshotImageAttached: boolean,
-        previousIntents: string[]
+        previousSteps: PreviousStep[]
     ): string {
         return [
             this.createBasePrompt(),
-            this.createContext(intent, viewHierarchy, isSnapshotImageAttached, previousIntents),
+            this.createContext(intent, viewHierarchy, isSnapshotImageAttached, previousSteps),
             this.createAPIInfo(),
             this.createInstructions(intent, isSnapshotImageAttached)
         ]
@@ -33,7 +38,7 @@ export class PromptCreator {
         intent: string,
         viewHierarchy: string,
         isSnapshotImageAttached: boolean,
-        previousIntents: string[]
+        previousSteps: PreviousStep[]
     ): string[] {
         let context = [
             "## Context",
@@ -59,11 +64,19 @@ export class PromptCreator {
             );
         }
 
-        if (previousIntents.length > 0) {
+        if (previousSteps.length > 0) {
             context.push(
                 "### Previous intents",
                 "",
-                ...previousIntents.map((prevIntent, index) => `${index + 1}. ${prevIntent}`),
+                ...previousSteps.map((previousStep, index) => [
+                    `#### Step ${index + 1}`,
+                    `- Intent: "${previousStep.step}"`,
+                    `- Generated code:`,
+                    "```",
+                    previousStep.code,
+                    "```",
+                    ""
+                ]).flat(),
                 ""
             );
         }
@@ -117,7 +130,7 @@ export class PromptCreator {
     }
 
     private createInstructions(intent: string, isSnapshotImageAttached: boolean): string[] {
-        const instructions = [
+        return [
             "## Instructions",
             "",
             [
@@ -141,8 +154,6 @@ export class PromptCreator {
             "",
             "Please provide your response below:"
         ];
-
-        return instructions;
     }
 
     private createVisualAssertionsInstructionIfPossible(isSnapshotImageAttached: boolean): string[] {
