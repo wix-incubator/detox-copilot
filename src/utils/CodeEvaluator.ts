@@ -12,7 +12,8 @@ export class CodeEvaluator {
 
     private createAsyncFunction(code: string, context: any): Function {
         // todo: this is a temp log for debugging, we'll need to pass a logging mechanism from the framework.
-        console.log("\x1b[90m%s\x1b[0m\x1b[92m%s\x1b[0m", "Copilot evaluating code block: ", `\`${code}\`\n`);
+        console.log("\x1b[90m%s\x1b[0m\x1b[92m%s\x1b[0m", "Copilot evaluating code block:\n", `${code}\n`);
+
         try {
             const contextValues = Object.values(context);
 
