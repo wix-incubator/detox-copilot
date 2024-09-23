@@ -9,7 +9,9 @@ It provides clear APIs to perform actions and assertions within your tests while
 
 Here's an example of how Copilot runs over a Detox test case:
 
-![detox-copilot-demo.gif](detox-copilot-demo.gif)
+<center>
+<img src="copilot-demo.gif" width="800">
+</center>
 
 The test case is written in a human-readable format, and Copilot translates it into Detox actions on the fly.
 
