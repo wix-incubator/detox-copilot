@@ -2,6 +2,10 @@ import copilot from "@/index";
 import { Copilot } from "@/Copilot";
 import { PromptHandler, TestingFrameworkDriver } from "@/types";
 
+jest.mock('fs', () => ({
+    readFileSync: jest.fn().mockReturnValue('{}')
+}));
+
 describe('Integration', () => {
     let mockFrameworkDriver: jest.Mocked<TestingFrameworkDriver>;
     let mockPromptHandler: jest.Mocked<PromptHandler>;

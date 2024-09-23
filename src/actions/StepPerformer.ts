@@ -15,9 +15,9 @@ export class StepPerformer {
         private codeEvaluator: CodeEvaluator,
         private snapshotManager: SnapshotManager,
         private promptHandler: PromptHandler,
-        cacheFileName: string = 'step_performer_cache.json',
+        cacheFileName: string = 'detox_copilot_cache.json',
     ) {
-        this.cacheFilePath = path.resolve(process.cwd(), 'copilot-cache', cacheFileName);
+        this.cacheFilePath = path.resolve(process.cwd(), cacheFileName);
     }
 
     private getCacheKey(step: string, previous: PreviousStep[]): string {
