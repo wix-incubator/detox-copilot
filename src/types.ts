@@ -94,7 +94,7 @@ export type TestingFrameworkAPICatalogItem = {
     signature: string;
     description: string;
     example: string;
-    guidelines: string[];
+    guidelines?: string[];
 }
 
 /**
