@@ -23,12 +23,9 @@ export interface CopilotFacade {
      * @example Scroll down to the 7th item in the Events list
      * @example The welcome message should be visible
      * @example The welcome message text should be "Hello, world!"
-     * @example [
-     *    'Tap on the login button',
-     *    'A login form should be visible',
-     * ]
+     * @example 'Tap on the login button', 'A login form should be visible'
      */
-    perform: (steps: string | string[]) => Promise<any | any[]>;
+    perform: (...steps: string[]) => Promise<any | any[]>;
 }
 
 /**
