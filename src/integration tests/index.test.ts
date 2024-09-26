@@ -123,13 +123,12 @@ describe('Copilot Integration Tests', () => {
                 .mockResolvedValueOnce('// Enter username')
                 .mockResolvedValueOnce('// Enter password');
 
-            const results = await copilot.perform(
+            await copilot.perform(
                 'Tap on the login button',
                 'Enter username "testuser"',
                 'Enter password "password123"'
             );
 
-            expect(results).toHaveLength(3);
             expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(3);
             expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalledTimes(3);
             expect(mockFrameworkDriver.captureViewHierarchyString).toHaveBeenCalledTimes(3);

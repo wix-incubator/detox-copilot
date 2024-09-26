@@ -18,14 +18,14 @@ export interface CopilotFacade {
 
     /**
      * Performs a testing operation or series of testing operations in the app based on the given `steps`.
-     * @returns The result of the operation(s), which can be a single value or an array of values for each step.
+     * @returns The result of the last step, if any.
      * @example Tap on the login button
      * @example Scroll down to the 7th item in the Events list
      * @example The welcome message should be visible
      * @example The welcome message text should be "Hello, world!"
      * @example 'Tap on the login button', 'A login form should be visible'
      */
-    perform: (...steps: string[]) => Promise<any | any[]>;
+    perform: (...steps: string[]) => Promise<string>;
 }
 
 /**

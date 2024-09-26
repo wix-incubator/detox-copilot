@@ -11,12 +11,12 @@ const copilot: CopilotFacade = {
     perform: async (...steps: string[]) => {
         const copilotInstance = Copilot.getInstance();
 
-        const results = new Array<any>();
-        for (const intent of steps) {
-            results.push(await copilotInstance.performStep(intent));
+        let result;
+        for await (const intent of steps) {
+            result = await copilotInstance.performStep(intent);
         }
 
-        return results.length === 1 ? results[0] : results;
+        return result;
     }
 };
 
