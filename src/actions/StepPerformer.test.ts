@@ -135,7 +135,7 @@ describe('StepPerformer', () => {
             false,
             [],
         );
-        expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', 'snapshot_data');
+        expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', undefined);
         expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('generated code', mockContext);
         expect(fs.writeFileSync).toHaveBeenCalled();
     });

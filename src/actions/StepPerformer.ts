@@ -34,7 +34,7 @@ export class StepPerformer {
                 this.cache.clear(); // Ensure cache is empty if file doesn't exist
             }
         } catch (error) {
-            console.error('Error loading cache from file:', error);
+            console.warn('Error loading cache from file:', error);
             this.cache.clear(); // Clear cache on error to avoid stale data
         }
     }
@@ -55,7 +55,7 @@ export class StepPerformer {
         // Load cache before every operation
         this.loadCacheFromFile();
 
-        const snapshot = await this.snapshotManager.captureSnapshotImage();
+        const snapshot = this.promptHandler.isSnapshotImageSupported() ? await this.snapshotManager.captureSnapshotImage() : undefined;
         const viewHierarchy = await this.snapshotManager.captureViewHierarchyString();
 
         const isSnapshotImageAttached =
