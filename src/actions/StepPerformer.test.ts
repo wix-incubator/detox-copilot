@@ -4,9 +4,10 @@ import { CodeEvaluator } from '@/utils/CodeEvaluator';
 import { SnapshotManager } from '@/utils/SnapshotManager';
 import { PromptHandler, TestingFrameworkAPICatalog } from '@/types';
 import * as fs from 'fs';
+import * as crypto from 'crypto';
 
-// Mock the 'fs' module to prevent actual file system operations during tests
 jest.mock('fs');
+jest.mock('crypto');
 
 describe('StepPerformer', () => {
     let stepPerformer: StepPerformer;
@@ -91,11 +92,18 @@ describe('StepPerformer', () => {
         mockPromptHandler.runPrompt.mockResolvedValue(promptResult);
         mockCodeEvaluator.evaluate.mockResolvedValue(codeEvaluationResult);
 
+        const viewHierarchyHash = 'hash';
+        (crypto.createHash as jest.Mock).mockReturnValue({
+            update: jest.fn().mockReturnValue({
+                digest: jest.fn().mockReturnValue(viewHierarchyHash),
+            }),
+        });
+
         // Adjust fs mocks based on cacheExists
         if (cacheExists) {
             (fs.existsSync as jest.Mock).mockReturnValue(true);
             const cacheData = {};
-            const cacheKey = JSON.stringify({ step: 'tap button', previous: [] });
+            const cacheKey = JSON.stringify({ step: 'tap button', previous: [], viewHierarchyHash });
             // @ts-ignore
             cacheData[cacheKey] = promptResult;
             (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(cacheData));
