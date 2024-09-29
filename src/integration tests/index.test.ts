@@ -3,9 +3,11 @@ import { Copilot } from "@/Copilot";
 import { PromptHandler, TestingFrameworkDriver } from "@/types";
 import fs from 'fs';
 import path from 'path';
+import * as crypto from 'crypto';
 
 jest.mock('fs');
 jest.mock('path');
+jest.mock('crypto');
 
 describe('Copilot Integration Tests', () => {
     let mockFrameworkDriver: jest.Mocked<TestingFrameworkDriver>;
@@ -37,6 +39,12 @@ describe('Copilot Integration Tests', () => {
         mockFs.readFileSync.mockReturnValue('{}');
         mockFs.writeFileSync.mockImplementation(() => {});
         mockPath.resolve.mockImplementation((...paths) => paths.join('/'));
+
+        (crypto.createHash as jest.Mock).mockReturnValue({
+            update: jest.fn().mockReturnValue({
+                digest: jest.fn().mockReturnValue('hash'),
+            }),
+        });
     });
 
     afterEach(() => {
@@ -245,7 +253,7 @@ describe('Copilot Integration Tests', () => {
         it('should read from existing cache file', async () => {
             mockFs.existsSync.mockReturnValue(true);
             mockFs.readFileSync.mockReturnValue(JSON.stringify({
-                '{"step":"Cached action","previous":[]}': '// Cached action code'
+                '{"step":"Cached action","previous":[],"viewHierarchyHash":"hash"}': '// Cached action code'
             }));
 
             await copilot.perform('Cached action');

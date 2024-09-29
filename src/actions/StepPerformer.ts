@@ -1,9 +1,10 @@
 import { PromptCreator } from '@/utils/PromptCreator';
 import { CodeEvaluator } from '@/utils/CodeEvaluator';
 import { SnapshotManager } from '@/utils/SnapshotManager';
-import {CodeEvaluationResult, PreviousStep, PromptHandler} from '@/types';
+import {CodeEvaluationResult, PreviousStep, PromptHandler, TestingFrameworkDriver} from '@/types';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as crypto from 'crypto';
 
 export class StepPerformer {
     private cache: Map<string, any> = new Map();
@@ -20,8 +21,9 @@ export class StepPerformer {
         this.cacheFilePath = path.resolve(process.cwd(), cacheFileName);
     }
 
-    private getCacheKey(step: string, previous: PreviousStep[]): string {
-        return JSON.stringify({ step, previous });
+    private generateCacheKey(step: string, previous: PreviousStep[], viewHierarchy: string): string {
+        const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
+        return JSON.stringify({ step, previous, viewHierarchyHash });
     }
 
     private loadCacheFromFile(): void {
@@ -61,7 +63,7 @@ export class StepPerformer {
         const isSnapshotImageAttached =
             snapshot != null && this.promptHandler.isSnapshotImageSupported();
 
-        const cacheKey = this.getCacheKey(step, previous);
+        const cacheKey = this.generateCacheKey(step, previous, viewHierarchy);
 
         if (this.cache.has(cacheKey)) {
             const cachedPromptResult = this.cache.get(cacheKey);
@@ -96,7 +98,7 @@ export class StepPerformer {
                 result: undefined,
             }];
 
-            const retryCacheKey = this.getCacheKey(step, newPrevious);
+            const retryCacheKey = this.generateCacheKey(step, newPrevious, viewHierarchy);
 
             if (this.cache.has(retryCacheKey)) {
                 const cachedRetryPromptResult = this.cache.get(retryCacheKey);
