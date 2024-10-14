@@ -1,7 +1,7 @@
-import { PromptCreator } from '@/utils/PromptCreator';
-import { CodeEvaluator } from '@/utils/CodeEvaluator';
-import { SnapshotManager } from '@/utils/SnapshotManager';
-import {CodeEvaluationResult, PreviousStep, PromptHandler, TestingFrameworkDriver} from '@/types';
+import {PromptCreator} from '@/utils/PromptCreator';
+import {CodeEvaluator} from '@/utils/CodeEvaluator';
+import {SnapshotManager} from '@/utils/SnapshotManager';
+import {CodeEvaluationResult, PreviousStep, PromptHandler} from '@/types';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -81,11 +81,11 @@ export class StepPerformer {
 
         try {
             promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
-            const result = await this.codeEvaluator.evaluate(promptResult, this.context);
             // Cache the result
             this.cache.set(cacheKey, promptResult);
             this.saveCacheToFile();
-            return result;
+
+            return await this.codeEvaluator.evaluate(promptResult, this.context);
         } catch (error) {
             // Extend 'previous' array with the failure message
             const failedAttemptMessage = promptResult
@@ -98,13 +98,6 @@ export class StepPerformer {
                 result: undefined,
             }];
 
-            const retryCacheKey = this.generateCacheKey(step, newPrevious, viewHierarchy);
-
-            if (this.cache.has(retryCacheKey)) {
-                const cachedRetryPromptResult = this.cache.get(retryCacheKey);
-                return this.codeEvaluator.evaluate(cachedRetryPromptResult, this.context);
-            }
-
             const retryPrompt = this.promptCreator.createPrompt(
                 step,
                 viewHierarchy,
@@ -114,15 +107,15 @@ export class StepPerformer {
 
             try {
                 const retryPromptResult = await this.promptHandler.runPrompt(retryPrompt, snapshot);
-                const retryResult = await this.codeEvaluator.evaluate(
-                    retryPromptResult,
-                    this.context,
-                );
 
                 // Cache the result under the original cache key
                 this.cache.set(cacheKey, retryPromptResult);
                 this.saveCacheToFile();
-                return retryResult;
+
+                return await this.codeEvaluator.evaluate(
+                    retryPromptResult,
+                    this.context,
+                );
             } catch (retryError) {
                 // Throw the original error if retry fails
                 throw error;

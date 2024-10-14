@@ -196,7 +196,7 @@ describe('StepPerformer', () => {
         mockCodeEvaluator.evaluate.mockRejectedValue(new Error('Evaluation failed'));
 
         await expect(stepPerformer.perform(intent)).rejects.toThrow('Evaluation failed');
-        expect(fs.writeFileSync).not.toHaveBeenCalled(); // Cache should not be saved
+        expect(fs.writeFileSync).toHaveBeenCalled(); // Cache should be saved
     });
 
     it('should use cached prompt result if available', async () => {
