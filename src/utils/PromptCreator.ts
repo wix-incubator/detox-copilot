@@ -30,6 +30,7 @@ export class PromptCreator {
             "",
             "You are an AI assistant tasked with generating test code for a mobile application using the provided UI testing framework API.",
             "Please generate the minimal executable code to perform the desired intent based on the given information and context.",
+            "If generating the relevant code is not possible due to ambiguity, invalid intent, or inability to find the desired element, return code that throws an informative error explaining the problem in one sentence.",
             ""
         ];
     }
