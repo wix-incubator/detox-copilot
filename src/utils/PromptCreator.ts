@@ -28,7 +28,7 @@ export class PromptCreator {
         return [
             "# Test Code Generation",
             "",
-            "You are an AI assistant tasked with generating test code for a mobile application using the provided UI testing framework API.",
+            "You are an AI assistant tasked with generating test code for an application using the provided UI testing framework API.",
             "Please generate the minimal executable code to perform the desired intent based on the given information and context.",
             ""
         ];
