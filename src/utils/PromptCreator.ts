@@ -30,7 +30,6 @@ export class PromptCreator {
             "",
             "You are an AI assistant tasked with generating test code for a mobile application using the provided UI testing framework API.",
             "Please generate the minimal executable code to perform the desired intent based on the given information and context.",
-            "If generating the relevant code is not possible due to ambiguity, invalid intent, or inability to find the desired element, return code that throws an informative error explaining the problem in one sentence.",
             ""
         ];
     }
@@ -46,7 +45,7 @@ export class PromptCreator {
             "",
             "### Intent to perform",
             "",
-            `Generate the minimal executable code to perform the following intent: "${intent}"`,
+            `Generate the minimal executable code to perform the following intent: \"${intent}\"`,
             "",
             "### View hierarchy",
             "",
@@ -71,7 +70,7 @@ export class PromptCreator {
                 "",
                 ...previousSteps.map((previousStep, index) => [
                     `#### Step ${index + 1}`,
-                    `- Intent: "${previousStep.step}"`,
+                    `- Intent: \"${previousStep.step}\"`,
                     `- Generated code:`,
                     "```",
                     previousStep.code,
@@ -134,36 +133,55 @@ export class PromptCreator {
         return [
             "## Instructions",
             "",
-            [
-                `Generate the minimal executable code to perform the following intent: "${intent}"`,
-                "Use the provided API and follow the guidelines.",
-                "If you cannot generate the relevant code due to ambiguity, invalid intent, or inability to find the desired element, return code that throws an informative error explaining the problem in one sentence.",
-                "Wrap the generated code with backticks, without any additional formatting."
-            ]
-                .concat(this.createVisualAssertionsInstructionIfPossible(isSnapshotImageAttached))
-                .map((instruction, index) => `${index + 1}. ${instruction}`)
-                .join('\n'),
+            `Your task is to generate the minimal executable code to perform the following intent: \"${intent}\"`,
             "",
-            "### Examples of throwing an informative error:",
+            "Please follow these steps carefully:",
+            "",
+            ...this.createStepByStepInstructions(isSnapshotImageAttached).map((instruction, index) => `${index + 1}. ${instruction}`),
+            "",
+            "### Examples",
+            "",
+            "#### Example of throwing an informative error:",
             "```typescript",
-            'throw new Error("Unable to find the \'Submit\' button in the current view hierarchy.");',
+            'throw new Error("Unable to find the \'Submit\' button element in the current context.");',
             "```",
-            "",
-            "```typescript",
-            'throw new Error("The provided intent does not contain enough information to generate the code; \'button\' is too ambiguous for matching a specific element.");',
-            "```",
-            "",
+            ""
+        ].concat(
+            isSnapshotImageAttached
+                ? [
+                    "#### Example of returning a commented visual test if the visual assertion passes:",
+                    "```typescript",
+                    "// Visual assertion passed based on the snapshot image.",
+                    "```",
+                    ""
+                ]
+                : []
+        ).concat([
             "Please provide your response below:"
-        ];
+        ]);
     }
 
-    private createVisualAssertionsInstructionIfPossible(isSnapshotImageAttached: boolean): string[] {
-        if (!isSnapshotImageAttached) {
-            return [];
+    private createStepByStepInstructions(isSnapshotImageAttached: boolean): string[] {
+        const steps = [];
+
+        if (isSnapshotImageAttached) {
+            steps.push(
+                "Analyze the provided intent, the view hierarchy, and the snapshot image to understand the required action.",
+                "Determine if the intent can be fully validated visually using the snapshot image.",
+                "If the intent can be visually asserted and passes the visual check, return code that only comments on the visual test.",
+                "If the visual assertion fails, return code that throws an informative error explaining the failure."
+            );
+        } else {
+            steps.push("Analyze the provided intent and the view hierarchy to understand the required action.");
         }
 
-        return [
-            "In case the expected behavior can be tested visually based on the provided snapshot image, there's no need to generate test code for the assertion. Instead, return code that throws an error if the visual check fails, or an empty code block if the visual check passes."
-        ];
+        steps.push(
+            "If visual validation is not possible or insufficient, generate the minimal executable code required to perform the intent using the available API.",
+            "If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.",
+            "Wrap the generated code with backticks, without any additional formatting.",
+            "Do not provide any additional code beyond the minimal executable code required to perform the intent."
+        );
+
+        return steps;
     }
 }

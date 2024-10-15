@@ -5,7 +5,6 @@ exports[`PromptCreator should create a prompt for an intent correctly 1`] = `
 
 You are an AI assistant tasked with generating test code for a mobile application using the provided UI testing framework API.
 Please generate the minimal executable code to perform the desired intent based on the given information and context.
-If generating the relevant code is not possible due to ambiguity, invalid intent, or inability to find the desired element, return code that throws an informative error explaining the problem in one sentence.
 
 ## Context
 
@@ -89,19 +88,29 @@ element(by.id("uniqueId"))
 
 ## Instructions
 
-1. Generate the minimal executable code to perform the following intent: "tap button"
-2. Use the provided API and follow the guidelines.
-3. If you cannot generate the relevant code due to ambiguity, invalid intent, or inability to find the desired element, return code that throws an informative error explaining the problem in one sentence.
-4. Wrap the generated code with backticks, without any additional formatting.
-5. In case the expected behavior can be tested visually based on the provided snapshot image, there's no need to generate test code for the assertion. Instead, return code that throws an error if the visual check fails, or an empty code block if the visual check passes.
+Your task is to generate the minimal executable code to perform the following intent: "tap button"
 
-### Examples of throwing an informative error:
+Please follow these steps carefully:
+
+1. Analyze the provided intent, the view hierarchy, and the snapshot image to understand the required action.
+2. Determine if the intent can be fully validated visually using the snapshot image.
+3. If the intent can be visually asserted and passes the visual check, return code that only comments on the visual test.
+4. If the visual assertion fails, return code that throws an informative error explaining the failure.
+5. If visual validation is not possible or insufficient, generate the minimal executable code required to perform the intent using the available API.
+6. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
+7. Wrap the generated code with backticks, without any additional formatting.
+8. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+
+### Examples
+
+#### Example of throwing an informative error:
 \`\`\`typescript
-throw new Error("Unable to find the 'Submit' button in the current view hierarchy.");
+throw new Error("Unable to find the 'Submit' button element in the current context.");
 \`\`\`
 
+#### Example of returning a commented visual test if the visual assertion passes:
 \`\`\`typescript
-throw new Error("The provided intent does not contain enough information to generate the code; 'button' is too ambiguous for matching a specific element.");
+// Visual assertion passed based on the snapshot image.
 \`\`\`
 
 Please provide your response below:"
@@ -112,7 +121,6 @@ exports[`PromptCreator should handle when no snapshot image is attached 1`] = `
 
 You are an AI assistant tasked with generating test code for a mobile application using the provided UI testing framework API.
 Please generate the minimal executable code to perform the desired intent based on the given information and context.
-If generating the relevant code is not possible due to ambiguity, invalid intent, or inability to find the desired element, return code that throws an informative error explaining the problem in one sentence.
 
 ## Context
 
@@ -192,18 +200,21 @@ element(by.id("uniqueId"))
 
 ## Instructions
 
-1. Generate the minimal executable code to perform the following intent: "expect button to be visible"
-2. Use the provided API and follow the guidelines.
-3. If you cannot generate the relevant code due to ambiguity, invalid intent, or inability to find the desired element, return code that throws an informative error explaining the problem in one sentence.
+Your task is to generate the minimal executable code to perform the following intent: "expect button to be visible"
+
+Please follow these steps carefully:
+
+1. Analyze the provided intent and the view hierarchy to understand the required action.
+2. If visual validation is not possible or insufficient, generate the minimal executable code required to perform the intent using the available API.
+3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Wrap the generated code with backticks, without any additional formatting.
+5. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
-### Examples of throwing an informative error:
-\`\`\`typescript
-throw new Error("Unable to find the 'Submit' button in the current view hierarchy.");
-\`\`\`
+### Examples
 
+#### Example of throwing an informative error:
 \`\`\`typescript
-throw new Error("The provided intent does not contain enough information to generate the code; 'button' is too ambiguous for matching a specific element.");
+throw new Error("Unable to find the 'Submit' button element in the current context.");
 \`\`\`
 
 Please provide your response below:"
@@ -214,7 +225,6 @@ exports[`PromptCreator should include previous intents in the context 1`] = `
 
 You are an AI assistant tasked with generating test code for a mobile application using the provided UI testing framework API.
 Please generate the minimal executable code to perform the desired intent based on the given information and context.
-If generating the relevant code is not possible due to ambiguity, invalid intent, or inability to find the desired element, return code that throws an informative error explaining the problem in one sentence.
 
 ## Context
 
@@ -311,18 +321,21 @@ element(by.id("uniqueId"))
 
 ## Instructions
 
-1. Generate the minimal executable code to perform the following intent: "tap button"
-2. Use the provided API and follow the guidelines.
-3. If you cannot generate the relevant code due to ambiguity, invalid intent, or inability to find the desired element, return code that throws an informative error explaining the problem in one sentence.
+Your task is to generate the minimal executable code to perform the following intent: "tap button"
+
+Please follow these steps carefully:
+
+1. Analyze the provided intent and the view hierarchy to understand the required action.
+2. If visual validation is not possible or insufficient, generate the minimal executable code required to perform the intent using the available API.
+3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Wrap the generated code with backticks, without any additional formatting.
+5. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
-### Examples of throwing an informative error:
-\`\`\`typescript
-throw new Error("Unable to find the 'Submit' button in the current view hierarchy.");
-\`\`\`
+### Examples
 
+#### Example of throwing an informative error:
 \`\`\`typescript
-throw new Error("The provided intent does not contain enough information to generate the code; 'button' is too ambiguous for matching a specific element.");
+throw new Error("Unable to find the 'Submit' button element in the current context.");
 \`\`\`
 
 Please provide your response below:"
