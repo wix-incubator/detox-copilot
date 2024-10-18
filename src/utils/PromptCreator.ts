@@ -163,25 +163,25 @@ export class PromptCreator {
 
     private createStepByStepInstructions(isSnapshotImageAttached: boolean): string[] {
         const steps = [];
-
         if (isSnapshotImageAttached) {
             steps.push(
                 "Analyze the provided intent, the view hierarchy, and the snapshot image to understand the required action.",
                 "Determine if the intent can be fully validated visually using the snapshot image.",
-                "If the intent can be visually asserted and passes the visual check, return code that only comments on the visual test.",
-                "If the visual assertion fails, return code that throws an informative error explaining the failure."
+                "If the intent can be visually analyzed and passes the visual check, return only comments explaining the successful visual assertion.",
+                "If the visual assertion fails, return code that throws an informative error explaining the failure.",
+                "If visual validation is not possible, proceed to generate the minimal executable code required to perform the intent."
             );
         } else {
-            steps.push("Analyze the provided intent and the view hierarchy to understand the required action.");
+            steps.push(
+                "Analyze the provided intent and the view hierarchy to understand the required action.",
+                "Generate the minimal executable code required to perform the intent using the available API."
+            );
         }
-
         steps.push(
-            "If visual validation is not possible or insufficient, generate the minimal executable code required to perform the intent using the available API.",
             "If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.",
             "Wrap the generated code with backticks, without any additional formatting.",
             "Do not provide any additional code beyond the minimal executable code required to perform the intent."
         );
-
         return steps;
     }
 }
