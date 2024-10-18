@@ -96,9 +96,6 @@ export class StepPerformer {
 
         for (let attempt = 1; attempt <= attempts; attempt++) {
             try {
-                console.log('\x1b[90m%s\x1b[0m', `Attempt ${attempt} for step: "${step}"`);
-
-                // Capture updated snapshot and view hierarchy on each attempt
                 const { snapshot, viewHierarchy, isSnapshotImageAttached } = await this.captureSnapshotAndViewHierarchy();
 
                 const code = await this.generateCode(step, previous, snapshot, viewHierarchy, isSnapshotImageAttached);
@@ -117,7 +114,7 @@ export class StepPerformer {
                     console.log('\x1b[33m%s\x1b[0m', 'Copilot is retrying...');
 
                     const resultMessage = lastCode
-                        ? `Failed to evaluate "${step}", tried with generated code: "${lastCode}". Validate the code against the APIs and hierarchy and let's try a different approach. If can't, return a code that throws a descriptive error.`
+                        ? `Caught an error while evaluating "${step}", tried with generated code: "${lastCode}". Validate the code against the APIs and hierarchy and continue with a different approach. If can't, return a code that throws a descriptive error.`
                         : `Failed to perform "${step}", could not generate prompt result. Let's try a different approach. If can't, return a code that throws a descriptive error.`;
 
                     previous = [
