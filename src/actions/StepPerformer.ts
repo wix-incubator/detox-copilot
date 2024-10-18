@@ -66,27 +66,29 @@ export class StepPerformer {
 
         const cacheKey = this.generateCacheKey(step, previous, viewHierarchy);
 
-        if (this.cache.has(cacheKey)) {
-            const cachedCode = this.cache.get(cacheKey);
-            return this.codeEvaluator.evaluate(cachedCode, this.context);
-        }
-
-        const prompt = this.promptCreator.createPrompt(
-            step,
-            viewHierarchy,
-            isSnapshotImageAttached,
-            previous,
-        );
-
         let code: string | undefined = undefined;
 
         try {
-            const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
-            code = extractCodeBlock(promptResult);
+            if (this.cache.has(cacheKey)) {
+                code = this.cache.get(cacheKey);
+            } else {
+                const prompt = this.promptCreator.createPrompt(
+                    step,
+                    viewHierarchy,
+                    isSnapshotImageAttached,
+                    previous,
+                );
 
-            // Cache the result
-            this.cache.set(cacheKey, code);
-            this.saveCacheToFile();
+                const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
+                code = extractCodeBlock(promptResult);
+
+                this.cache.set(cacheKey, code);
+                this.saveCacheToFile();
+            }
+
+            if (!code) {
+                throw new Error('Failed to generate code from intent');
+            }
 
             return await this.codeEvaluator.evaluate(code, this.context);
         } catch (error) {
