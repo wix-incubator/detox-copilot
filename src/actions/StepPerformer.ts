@@ -5,6 +5,7 @@ import {CodeEvaluationResult, PreviousStep, PromptHandler} from '@/types';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import {extractCodeBlock} from "@/utils/extractCodeBlock";
 
 export class StepPerformer {
     private cache: Map<string, any> = new Map();
@@ -66,8 +67,8 @@ export class StepPerformer {
         const cacheKey = this.generateCacheKey(step, previous, viewHierarchy);
 
         if (this.cache.has(cacheKey)) {
-            const cachedPromptResult = this.cache.get(cacheKey);
-            return this.codeEvaluator.evaluate(cachedPromptResult, this.context);
+            const cachedCode = this.cache.get(cacheKey);
+            return this.codeEvaluator.evaluate(cachedCode, this.context);
         }
 
         const prompt = this.promptCreator.createPrompt(
@@ -77,25 +78,29 @@ export class StepPerformer {
             previous,
         );
 
-        let promptResult: string | undefined;
+        let code: string | undefined = undefined;
 
         try {
-            promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
+            const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
+            code = extractCodeBlock(promptResult);
+
             // Cache the result
-            this.cache.set(cacheKey, promptResult);
+            this.cache.set(cacheKey, code);
             this.saveCacheToFile();
 
-            return await this.codeEvaluator.evaluate(promptResult, this.context);
+            return await this.codeEvaluator.evaluate(code, this.context);
         } catch (error) {
-            // Extend 'previous' array with the failure message
-            const failedAttemptMessage = promptResult
-                ? `Failed to evaluate "${step}", tried with generated code: "${promptResult}". Should we try a different approach? If can't, return a code that throws a descriptive error.`
-                : `Failed to perform "${step}", could not generate prompt result. Should we try a different approach? If can't, return a code that throws a descriptive error.`;
+            console.log("\x1b[33m%s\x1b[0m", "Failed to evaluate the code, Copilot is retrying...");
+
+            // Extend 'previous' array with the failure message as the result
+            const result = code
+                ? `Failed to evaluate "${step}", tried with generated code: "${code}". Validate the code against the APIs and hierarchy and let's try a different approach. If can't, return a code that throws a descriptive error.`
+                : `Failed to perform "${step}", could not generate prompt result. Let's try a different approach. If can't, return a code that throws a descriptive error.`;
 
             const newPrevious = [...previous, {
                 step,
-                code: failedAttemptMessage,
-                result: undefined,
+                code: code ?? 'undefined',
+                result
             }];
 
             const retryPrompt = this.promptCreator.createPrompt(
@@ -107,16 +112,19 @@ export class StepPerformer {
 
             try {
                 const retryPromptResult = await this.promptHandler.runPrompt(retryPrompt, snapshot);
+                code = extractCodeBlock(retryPromptResult);
 
-                // Cache the result under the original cache key
-                this.cache.set(cacheKey, retryPromptResult);
+                const result =  await this.codeEvaluator.evaluate(code, this.context);
+
+                // Cache the result under the _original_ cache key
+                this.cache.set(cacheKey, code);
                 this.saveCacheToFile();
 
-                return await this.codeEvaluator.evaluate(
-                    retryPromptResult,
-                    this.context,
-                );
+                return result;
             } catch (retryError) {
+                // Log the retry error
+                console.error('Retry failed:', retryError);
+
                 // Throw the original error if retry fails
                 throw error;
             }

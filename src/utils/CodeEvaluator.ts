@@ -2,8 +2,7 @@ import { CodeEvaluationError } from '@/errors/CodeEvaluationError';
 import {CodeEvaluationResult} from "@/types";
 
 export class CodeEvaluator {
-    async evaluate(rawCode: string, context: any): Promise<CodeEvaluationResult> {
-        const code = this.extractCodeBlock(rawCode);
+    async evaluate(code: string, context: any): Promise<CodeEvaluationResult> {
         const asyncFunction = this.createAsyncFunction(code, context);
         const result = await asyncFunction();
 
@@ -27,12 +26,5 @@ export class CodeEvaluator {
                 `Failed to execute test step code, error: ${underlyingErrorMessage}:\n\`\`\`\n${code}\n\`\`\``
             );
         }
-    }
-
-    private extractCodeBlock(text: string): string {
-        const regex = /```(?:\w*\s)?([\s\S]*?)```/;
-        const match = text.match(regex);
-
-        return (match ? match[1] : text).trim();
     }
 }
