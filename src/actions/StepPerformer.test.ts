@@ -238,7 +238,7 @@ describe('StepPerformer', () => {
         mockPromptHandler.runPrompt.mockRejectedValueOnce(error);
         mockPromptHandler.runPrompt.mockRejectedValueOnce(retryError);
 
-        await expect(stepPerformer.perform(intent)).rejects.toThrow(error);
+        await expect(stepPerformer.perform(intent)).rejects.toThrow(retryError);
         expect(mockPromptCreator.createPrompt).toHaveBeenCalledTimes(2);
         expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(2);
         expect(mockCodeEvaluator.evaluate).not.toHaveBeenCalled();

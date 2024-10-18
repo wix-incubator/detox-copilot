@@ -5,7 +5,7 @@ import {CodeEvaluationResult, PreviousStep, PromptHandler} from '@/types';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
-import {extractCodeBlock} from "@/utils/extractCodeBlock";
+import {extractCodeBlock} from '@/utils/extractCodeBlock';
 
 export class StepPerformer {
     private cache: Map<string, any> = new Map();
@@ -51,85 +51,87 @@ export class StepPerformer {
         }
     }
 
-    async perform(step: string, previous: PreviousStep[] = []): Promise<CodeEvaluationResult> {
-        // todo: replace with the user's logger
-        console.log("\x1b[90m%s\x1b[0m%s", "Copilot performing: ", `"${step}"`);
-
-        // Load cache before every operation
-        this.loadCacheFromFile();
-
-        const snapshot = this.promptHandler.isSnapshotImageSupported() ? await this.snapshotManager.captureSnapshotImage() : undefined;
+    private async captureSnapshotAndViewHierarchy() {
+        const snapshot = this.promptHandler.isSnapshotImageSupported()
+            ? await this.snapshotManager.captureSnapshotImage()
+            : undefined;
         const viewHierarchy = await this.snapshotManager.captureViewHierarchyString();
 
-        const isSnapshotImageAttached =
-            snapshot != null && this.promptHandler.isSnapshotImageSupported();
+        const isSnapshotImageAttached = snapshot != null && this.promptHandler.isSnapshotImageSupported();
 
+        return { snapshot, viewHierarchy, isSnapshotImageAttached };
+    }
+
+    private async generateCode(
+        step: string,
+        previous: PreviousStep[],
+        snapshot: any,
+        viewHierarchy: string,
+        isSnapshotImageAttached: boolean,
+    ): Promise<string> {
         const cacheKey = this.generateCacheKey(step, previous, viewHierarchy);
 
-        let code: string | undefined = undefined;
+        if (this.cache.has(cacheKey)) {
+            return this.cache.get(cacheKey);
+        } else {
+            const prompt = this.promptCreator.createPrompt(step, viewHierarchy, isSnapshotImageAttached, previous);
+            const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
+            const code = extractCodeBlock(promptResult);
 
-        try {
-            if (this.cache.has(cacheKey)) {
-                code = this.cache.get(cacheKey);
-            } else {
-                const prompt = this.promptCreator.createPrompt(
-                    step,
-                    viewHierarchy,
-                    isSnapshotImageAttached,
-                    previous,
-                );
+            this.cache.set(cacheKey, code);
+            this.saveCacheToFile();
 
-                const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
-                code = extractCodeBlock(promptResult);
+            return code;
+        }
+    }
 
-                this.cache.set(cacheKey, code);
-                this.saveCacheToFile();
-            }
+    async perform(step: string, previous: PreviousStep[] = [], attempts: number = 2): Promise<CodeEvaluationResult> {
+        // TODO: replace with the user's logger
+        console.log('\x1b[90m%s\x1b[0m%s', 'Copilot performing:', `"${step}"`);
 
-            if (!code) {
-                throw new Error('Failed to generate code from intent');
-            }
+        this.loadCacheFromFile();
 
-            return await this.codeEvaluator.evaluate(code, this.context);
-        } catch (error) {
-            console.log("\x1b[33m%s\x1b[0m", "Failed to evaluate the code, Copilot is retrying...");
+        let lastError: any = null;
+        let lastCode: string | undefined;
 
-            // Extend 'previous' array with the failure message as the result
-            const result = code
-                ? `Failed to evaluate "${step}", tried with generated code: "${code}". Validate the code against the APIs and hierarchy and let's try a different approach. If can't, return a code that throws a descriptive error.`
-                : `Failed to perform "${step}", could not generate prompt result. Let's try a different approach. If can't, return a code that throws a descriptive error.`;
-
-            const newPrevious = [...previous, {
-                step,
-                code: code ?? 'undefined',
-                result
-            }];
-
-            const retryPrompt = this.promptCreator.createPrompt(
-                step,
-                viewHierarchy,
-                isSnapshotImageAttached,
-                newPrevious,
-            );
-
+        for (let attempt = 1; attempt <= attempts; attempt++) {
             try {
-                const retryPromptResult = await this.promptHandler.runPrompt(retryPrompt, snapshot);
-                code = extractCodeBlock(retryPromptResult);
+                console.log('\x1b[90m%s\x1b[0m', `Attempt ${attempt} for step: "${step}"`);
 
-                const result =  await this.codeEvaluator.evaluate(code, this.context);
+                // Capture updated snapshot and view hierarchy on each attempt
+                const { snapshot, viewHierarchy, isSnapshotImageAttached } = await this.captureSnapshotAndViewHierarchy();
 
-                // Cache the result under the _original_ cache key
-                this.cache.set(cacheKey, code);
-                this.saveCacheToFile();
+                const code = await this.generateCode(step, previous, snapshot, viewHierarchy, isSnapshotImageAttached);
+                lastCode = code;
 
-                return result;
-            } catch (retryError) {
-                // Log the retry error
-                console.error('Retry failed:', retryError);
+                if (!code) {
+                    throw new Error('Failed to generate code from intent');
+                }
 
-                // Throw the original error if retry fails
-                throw error;
+                return await this.codeEvaluator.evaluate(code, this.context);
+            } catch (error) {
+                lastError = error;
+                console.log('\x1b[33m%s\x1b[0m', `Attempt ${attempt} failed for step "${step}": ${error instanceof Error ? error.message : error}`);
+
+                if (attempt < attempts) {
+                    console.log('\x1b[33m%s\x1b[0m', 'Copilot is retrying...');
+
+                    const resultMessage = lastCode
+                        ? `Failed to evaluate "${step}", tried with generated code: "${lastCode}". Validate the code against the APIs and hierarchy and let's try a different approach. If can't, return a code that throws a descriptive error.`
+                        : `Failed to perform "${step}", could not generate prompt result. Let's try a different approach. If can't, return a code that throws a descriptive error.`;
+
+                    previous = [
+                        ...previous,
+                        {
+                            step,
+                            code: lastCode ?? 'undefined',
+                            result: resultMessage,
+                        },
+                    ];
+                }
             }
         }
+
+        throw lastError;
     }
 }
