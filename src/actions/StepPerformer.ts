@@ -7,6 +7,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import {extractCodeBlock} from '@/utils/extractCodeBlock';
 
+
 export class StepPerformer {
     private cache: Map<string, any> = new Map();
     private readonly cacheFilePath: string;
@@ -62,6 +63,10 @@ export class StepPerformer {
         return { snapshot, viewHierarchy, isSnapshotImageAttached };
     }
 
+    private shouldOverrideCache() {
+        return process.env.COPILOT_OVERRIDE_CACHE === "true" || process.env.COPILOT_OVERRIDE_CACHE === "1";
+    }
+
     private async generateCode(
         step: string,
         previous: PreviousStep[],
@@ -71,7 +76,7 @@ export class StepPerformer {
     ): Promise<string> {
         const cacheKey = this.generateCacheKey(step, previous, viewHierarchy);
 
-        if (this.cache.has(cacheKey)) {
+        if (!this.shouldOverrideCache() && this.cache.has(cacheKey)) {
             return this.cache.get(cacheKey);
         } else {
             const prompt = this.promptCreator.createPrompt(step, viewHierarchy, isSnapshotImageAttached, previous);
