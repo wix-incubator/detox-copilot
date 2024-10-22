@@ -263,7 +263,5 @@ describe('StepPerformer', () => {
         expect(mockPromptHandler.runPrompt).toHaveBeenCalled();
         expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('generated code', mockContext);
         expect(fs.writeFileSync).toHaveBeenCalled(); // Need to save cache
-
-
     });
 });

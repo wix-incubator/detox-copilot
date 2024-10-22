@@ -7,7 +7,6 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import {extractCodeBlock} from '@/utils/extractCodeBlock';
 
-
 export class StepPerformer {
     private cache: Map<string, any> = new Map();
     private readonly cacheFilePath: string;
