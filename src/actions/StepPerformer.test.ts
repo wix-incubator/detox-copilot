@@ -73,6 +73,7 @@ describe('StepPerformer', () => {
         promptResult?: string;
         codeEvaluationResult?: any;
         cacheExists?: boolean;
+        overrideCache?: boolean;
     }
 
     const setupMocks = ({
@@ -82,6 +83,7 @@ describe('StepPerformer', () => {
         promptResult = 'generated code',
         codeEvaluationResult = 'success',
         cacheExists = false,
+        overrideCache = false,
     }: SetupMockOptions = {}) => {
         mockPromptHandler.isSnapshotImageSupported.mockReturnValue(isSnapshotSupported);
         mockSnapshotManager.captureSnapshotImage.mockResolvedValue(
@@ -91,6 +93,10 @@ describe('StepPerformer', () => {
         mockPromptCreator.createPrompt.mockReturnValue('generated prompt');
         mockPromptHandler.runPrompt.mockResolvedValue(promptResult);
         mockCodeEvaluator.evaluate.mockResolvedValue(codeEvaluationResult);
+
+        if (overrideCache) {
+            process.env.COPILOT_OVERRIDE_CACHE = "true";
+        }
 
         const viewHierarchyHash = 'hash';
         (crypto.createHash as jest.Mock).mockReturnValue({
@@ -243,5 +249,19 @@ describe('StepPerformer', () => {
         expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(2);
         expect(mockCodeEvaluator.evaluate).not.toHaveBeenCalled();
         expect(fs.writeFileSync).not.toHaveBeenCalled();
+    });
+
+    it('should not use cached prompt result if COPILOT_OVERRIDE_CACHE is enabled', async () => {
+        const intent = 'tap button';
+        setupMocks({ cacheExists: true, overrideCache: true });
+
+        const result = await stepPerformer.perform(intent);
+
+        expect(result).toBe('success');
+        // Should call runPrompt or createPrompt. Shouldn't use current cache, but override it
+        expect(mockPromptCreator.createPrompt).toHaveBeenCalled();
+        expect(mockPromptHandler.runPrompt).toHaveBeenCalled();
+        expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('generated code', mockContext);
+        expect(fs.writeFileSync).toHaveBeenCalled(); // Need to save cache
     });
 });
