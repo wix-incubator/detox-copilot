@@ -78,6 +78,7 @@ describe('Copilot', () => {
 
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
+            instance.start();
             const intent = 'tap button';
 
             await instance.performStep(intent);
@@ -88,6 +89,7 @@ describe('Copilot', () => {
         it('should return the result from StepPerformer.perform', async () => {
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
+            instance.start();
             const intent = 'tap button';
 
             const result = await instance.performStep(intent);
@@ -98,6 +100,7 @@ describe('Copilot', () => {
         it('should accumulate previous intents', async () => {
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
+            instance.start();
             const intent1 = 'tap button 1';
             const intent2 = 'tap button 2';
 
@@ -112,18 +115,24 @@ describe('Copilot', () => {
         });
     });
 
-    describe('reset', () => {
+    describe('start', () => {
         it('should clear previous intents', async () => {
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
+            instance.start();
             const intent1 = 'tap button 1';
             const intent2 = 'tap button 2';
 
             await instance.performStep(intent1);
-            instance.reset();
+            instance.end(true);
+            instance.start();
             await instance.performStep(intent2);
 
             expect(StepPerformer.prototype.perform).toHaveBeenLastCalledWith(intent2, []);
         });
     });
 });
+
+
+// If end false - dont save to cache
+// If twice true, end + start etc.
