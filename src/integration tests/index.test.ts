@@ -4,6 +4,8 @@ import { PromptHandler, TestingFrameworkDriver } from "@/types";
 import fs from 'fs';
 import path from 'path';
 import * as crypto from 'crypto';
+import {mockedCacheFile, mockCache} from "../test-utils/cache";
+import {StepPerformer} from "../actions/StepPerformer";
 
 jest.mock('fs');
 jest.mock('path');
@@ -70,6 +72,7 @@ describe('Copilot Integration Tests', () => {
                 frameworkDriver: mockFrameworkDriver,
                 promptHandler: mockPromptHandler
             });
+            copilot.start();
         });
 
         it('should successfully perform an action', async () => {
@@ -123,6 +126,7 @@ describe('Copilot Integration Tests', () => {
                 frameworkDriver: mockFrameworkDriver,
                 promptHandler: mockPromptHandler
             });
+            copilot.start();
         });
 
         it('should perform multiple steps using spread operator', async () => {
@@ -167,6 +171,7 @@ describe('Copilot Integration Tests', () => {
                 frameworkDriver: mockFrameworkDriver,
                 promptHandler: mockPromptHandler
             });
+            copilot.start();
         });
 
         it('should throw error when PromptHandler fails', async () => {
@@ -194,13 +199,15 @@ describe('Copilot Integration Tests', () => {
                 frameworkDriver: mockFrameworkDriver,
                 promptHandler: mockPromptHandler
             });
+            copilot.start();
         });
 
         it('should reset context when reset is called', async () => {
             mockPromptHandler.runPrompt.mockResolvedValueOnce('// Login action');
             await copilot.perform('Log in to the application');
 
-            copilot.reset();
+            copilot.end();
+            copilot.start();
 
             mockPromptHandler.runPrompt.mockResolvedValueOnce('// New action after reset');
             await copilot.perform('Perform action after reset');
@@ -221,7 +228,8 @@ describe('Copilot Integration Tests', () => {
             expect(lastCallArgsBeforeReset).toContain('Action 1');
             expect(lastCallArgsBeforeReset).toContain('Action 2');
 
-            copilot.reset();
+            copilot.end();
+            copilot.start();
 
             mockPromptHandler.runPrompt.mockResolvedValueOnce('// New action');
             await copilot.perform('New action after reset');
@@ -239,15 +247,21 @@ describe('Copilot Integration Tests', () => {
                 frameworkDriver: mockFrameworkDriver,
                 promptHandler: mockPromptHandler
             });
+            copilot.start();
         });
 
         it('should create cache file if it does not exist', async () => {
-            mockFs.existsSync.mockReturnValue(false);
+            //mockFs.existsSync.mockReturnValue(false);
             mockPromptHandler.runPrompt.mockResolvedValue('// Perform action');
 
             await copilot.perform('Perform action');
+            copilot.end(true)
 
-            expect(mockFs.writeFileSync).toHaveBeenCalled();
+            expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+                expect.any(String),
+                expect.stringContaining('Perform action'),
+                expect.any(Object)
+            );
         });
 
         it('should read from existing cache file', async () => {
@@ -298,6 +312,7 @@ describe('Copilot Integration Tests', () => {
                 frameworkDriver: mockFrameworkDriver,
                 promptHandler: mockPromptHandler
             });
+            copilot.start();
         });
 
         it('should work without snapshot images when not supported', async () => {

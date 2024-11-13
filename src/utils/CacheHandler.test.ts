@@ -3,8 +3,7 @@ import * as path from 'path';
 import { CacheHandler } from './CacheHandler';
 jest.mock('fs');
 
-const CACHE_FILE_NAME = 'test_cache.json';
-const CACHE_FILE_PATH = path.resolve(process.cwd(), CACHE_FILE_NAME);
+import { mockCache, mockedCacheFile, CACHE_FILE_NAME} from "../test-utils/cache";
 
 describe('CacheHandler', () => {
     let cacheHandler: CacheHandler;
@@ -14,51 +13,42 @@ describe('CacheHandler', () => {
         cacheHandler = new CacheHandler(CACHE_FILE_NAME);
     });
 
-    it('should load cache from file successfully if the file exists and is valid', () => {
-        const cacheData = { 'cacheKey': 'value' };
-        (fs.existsSync as jest.Mock).mockReturnValue(true);
-        (fs.readFileSync as jest.Mock).mockReturnValueOnce(JSON.stringify(cacheData));
+    describe('cache and file operations', () => {
+        it('should load cache from file successfully if the file exists and is valid', () => {
+            mockCache({ 'cacheKey': 'value' });
 
-        cacheHandler.loadCacheFromFile();
+            expect(cacheHandler.getStepFromCache('cacheKey')).toBeUndefined();
 
-        expect (fs.existsSync as jest.Mock).toHaveBeenCalledWith(CACHE_FILE_PATH);
-        expect (fs.readFileSync as jest.Mock).toHaveBeenCalledWith(CACHE_FILE_PATH, 'utf-8');
-        expect(cacheHandler['cache'].get('cacheKey')).toBe('value');
-    });
+            cacheHandler.loadCacheFromFile();
 
-    it('should save cache to file successfully', () => {
-        const cacheData = { 'cacheKey': 'value' };
-        cacheHandler['cache'] = new Map(Object.entries(cacheData));
-        const writeFileSyncMock = (fs.writeFileSync as jest.Mock).mockImplementation(() => {});
+            expect(cacheHandler.getStepFromCache('cacheKey')).toBe('value');
+        });
 
-        cacheHandler.saveCacheToFile();
+        it('should save cache to file successfully', () => {
+            mockCache();
 
-        expect(writeFileSyncMock).toHaveBeenCalledWith(
-            cacheHandler['cacheFilePath'],
-            JSON.stringify(cacheData, null, 2),
-            { flag: 'w+' }
-        );
+            cacheHandler.addToTemporaryCache('cacheKey', 'value');
+            cacheHandler.flushTemporaryCache();
+
+            expect(mockedCacheFile).toEqual({ 'cacheKey': 'value' });
+        });
     });
 
     describe('addToTemporaryCache', () => {
-        it('should add a value to the temporary cache using addToTemporaryCache', () => {
-            cacheHandler.addToTemporaryCache('some_key', 'some_value');
+        it('should not save to cache', () => {
+            mockCache();
 
-            expect(cacheHandler['temporaryCache'].get('some_key')).toBe('some_value');
-        });
+            cacheHandler.addToTemporaryCache('cacheKey', 'value');
 
-        it('should update an existing value in the temporary cache using addToTemporaryCache', () => {
-            cacheHandler.addToTemporaryCache('some_key', 'initial_value');
-            cacheHandler.addToTemporaryCache('some_key', 'updated_value');
-
-            // Use `get` to isolate the tests of the getSthFromCache method
-            expect(cacheHandler['temporaryCache'].get('some_key')).toBe('updated_value');
+            expect(cacheHandler.getStepFromCache('cacheKey')).toBeUndefined();
+            expect(mockedCacheFile).toBeUndefined();
         });
     });
 
     describe('getStepFromCache', () => {
         it('should retrieve a value from cache using getStepFromCache', () => {
-            cacheHandler['cache'].set('some_key', 'value');  // Directly manipulating internal cache for testing
+            cacheHandler.addToTemporaryCache('some_key', 'value');
+            cacheHandler.flushTemporaryCache();
 
             const result = cacheHandler.getStepFromCache('some_key');
 
@@ -74,8 +64,41 @@ describe('CacheHandler', () => {
 
     describe('flushTemporaryCache', () => {
         it('should move all temporary cache entries to the main cache', () => {
-            cacheHandler.addToTemporaryCache('some_key', 'value');
+            expect(cacheHandler.getStepFromCache('cacheKey1')).toBeUndefined();
+
+            cacheHandler.addToTemporaryCache('cacheKey1', 'value1');
+            cacheHandler.addToTemporaryCache('cacheKey2', 'value2');
+            cacheHandler.addToTemporaryCache('cacheKey3', 'value3');
+
+            cacheHandler.flushTemporaryCache()
+
+            expect(cacheHandler.getStepFromCache('cacheKey1')).toBe('value1');
+            expect(cacheHandler.getStepFromCache('cacheKey3')).toBe('value3');
+            expect(cacheHandler.getStepFromCache('cacheKey2')).not.toBe('value3');
+        });
+
+        it('should get the updated value from cache', () => {
+            expect(cacheHandler.getStepFromCache('cacheKey1')).toBeUndefined();
+
+            cacheHandler.addToTemporaryCache('cacheKey1', 'value1');
+            cacheHandler.addToTemporaryCache('cacheKey1', 'value2');
+
+            cacheHandler.flushTemporaryCache()
+
+            expect(cacheHandler.getStepFromCache('cacheKey1')).toBe('value2');
         });
     });
 
+    it('should clear the temporary cache', () => {
+        mockCache();
+        cacheHandler.addToTemporaryCache('cacheKey', 'value');
+
+        expect(cacheHandler.getStepFromCache('cacheKey')).toBeUndefined();
+
+        cacheHandler.clearTemporaryCache();
+        cacheHandler.flushTemporaryCache()
+
+        expect(cacheHandler.getStepFromCache('cacheKey')).toBeUndefined();
+        expect(mockedCacheFile).toStrictEqual({});
+    });
 });

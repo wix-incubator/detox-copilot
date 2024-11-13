@@ -8,7 +8,7 @@ const copilot: CopilotFacade = {
     start: () => {
         Copilot.getInstance().start();
     },
-    end: (saveToCache: boolean) => {
+    end: (saveToCache?: boolean) => {
         Copilot.getInstance().end(saveToCache);
     },
     perform: async (...steps: string[]) => {

@@ -18,11 +18,11 @@ export interface CopilotFacade {
 
     /**
      * Finalizes the test flow and optionally saves temporary cache data to the main cache.
-     * If `saveToCache` is true, the temporary cache will be saved.
+     * If `saveToCache` is true, the temporary cache will be saved. True is the default value.
      * @param saveToCache
      * @note This must be called after the test flow is complete.
      */
-    end: (saveToCache: boolean) => void;
+    end: (saveToCache?: boolean) => void;
 
     /**
      * Performs a testing operation or series of testing operations in the app based on the given `steps`.

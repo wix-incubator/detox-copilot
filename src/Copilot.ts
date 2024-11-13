@@ -92,7 +92,7 @@ export class Copilot {
      * Ends the Copilot test flow and optionally saves the temporary cache to the main cache.
      * @param saveToCache -  boolean flag indicating whether the temporary cache data should be saved to the main cache.
      */
-    end(saveToCache: boolean): void {
+    end(saveToCache: boolean = true): void {
         if (!this.isRunning) {
             throw new CopilotError('Copilot is not running. Please call the `start()` method before ending the test flow.');
         }

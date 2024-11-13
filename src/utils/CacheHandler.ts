@@ -25,7 +25,7 @@ export class CacheHandler {
         }
     }
 
-    public saveCacheToFile(): void {
+    private saveCacheToFile(): void {
         try {
             const json = Object.fromEntries(this.cache);
             fs.writeFileSync(this.cacheFilePath, JSON.stringify(json, null, 2), { flag: 'w+' });
