@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
 
 export class CacheHandler {
     private cache: Map<string, any> = new Map();
@@ -13,6 +13,7 @@ export class CacheHandler {
     public loadCacheFromFile(): void {
         try {
             if (fs.existsSync(this.cacheFilePath)) {
+                const readFileSync = fs.readFileSync;
                 const data = fs.readFileSync(this.cacheFilePath, 'utf-8');
                 const json = JSON.parse(data);
                 this.cache = new Map(Object.entries(json));
