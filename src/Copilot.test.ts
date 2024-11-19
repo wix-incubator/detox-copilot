@@ -2,8 +2,13 @@ import { Copilot } from '@/Copilot';
 import { StepPerformer } from '@/actions/StepPerformer';
 import { CopilotError } from '@/errors/CopilotError';
 import { Config } from "@/types";
+import fs from "fs";
+import { mockCache, mockedCacheFile } from "./test-utils/cache";
 
 jest.mock('@/actions/StepPerformer');
+jest.mock('fs');
+
+const INTENT = 'tap button';
 
 describe('Copilot', () => {
     let mockConfig: Config;
@@ -78,19 +83,19 @@ describe('Copilot', () => {
 
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
-            const intent = 'tap button';
+            instance.start();
 
-            await instance.performStep(intent);
+            await instance.performStep(INTENT);
 
-            expect(StepPerformer.prototype.perform).toHaveBeenCalledWith(intent, []);
+            expect(StepPerformer.prototype.perform).toHaveBeenCalledWith(INTENT, []);
         });
 
         it('should return the result from StepPerformer.perform', async () => {
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
-            const intent = 'tap button';
+            instance.start();
 
-            const result = await instance.performStep(intent);
+            const result = await instance.performStep(INTENT);
 
             expect(result).toBe(true);
         });
@@ -98,6 +103,7 @@ describe('Copilot', () => {
         it('should accumulate previous intents', async () => {
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
+            instance.start();
             const intent1 = 'tap button 1';
             const intent2 = 'tap button 2';
 
@@ -112,18 +118,65 @@ describe('Copilot', () => {
         });
     });
 
-    describe('reset', () => {
+    describe('start', () => {
         it('should clear previous intents', async () => {
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
+            instance.start();
             const intent1 = 'tap button 1';
             const intent2 = 'tap button 2';
 
             await instance.performStep(intent1);
-            instance.reset();
+            instance.end(true);
+            instance.start();
             await instance.performStep(intent2);
 
             expect(StepPerformer.prototype.perform).toHaveBeenLastCalledWith(intent2, []);
+        });
+    });
+
+    describe('start and end behavior', () => {
+        it('should not perform before start', async () => {
+            Copilot.init(mockConfig);
+            const instance = Copilot.getInstance();
+
+            await expect(instance.performStep(INTENT)).rejects.toThrowError('Copilot is not running. Please call the `start()` method before performing any steps.');
+        });
+
+        it('should not start without end the previous flow(start->start)', async () => {
+            Copilot.init(mockConfig);
+            const instance = Copilot.getInstance();
+            instance.start();
+
+            await instance.performStep(INTENT);
+
+            expect(() => instance.start()).toThrowError('Copilot was already started. Please call the `end()` method before starting a new test flow.');
+        });
+
+        it('should not end without start a new flow(end->end)', async () => {
+            Copilot.init(mockConfig);
+            const instance = Copilot.getInstance();
+            instance.start();
+
+            await instance.performStep(INTENT);
+            instance.end(true);
+
+            expect(() => instance.end(true)).toThrowError('Copilot is not running. Please call the `start()` method before ending the test flow.');
+        });
+    });
+
+    describe('end', () => {
+        it('end with false should not save to cache', async () => {
+            mockCache();
+
+            Copilot.init(mockConfig);
+            const instance = Copilot.getInstance();
+            instance.start();
+
+            await instance.performStep(INTENT);
+            instance.end(false);
+
+            expect(mockedCacheFile).toBeUndefined();
         });
     });
 });

@@ -1,13 +1,23 @@
-import { StepPerformer } from '@/actions/StepPerformer';
-import { PromptCreator } from '@/utils/PromptCreator';
-import { CodeEvaluator } from '@/utils/CodeEvaluator';
-import { SnapshotManager } from '@/utils/SnapshotManager';
-import { PromptHandler, TestingFrameworkAPICatalog } from '@/types';
+import {StepPerformer} from '@/actions/StepPerformer';
+import {PromptCreator} from '@/utils/PromptCreator';
+import {CodeEvaluator} from '@/utils/CodeEvaluator';
+import {SnapshotManager} from '@/utils/SnapshotManager';
+import {CacheHandler} from '@/utils/CacheHandler';
+import {PromptHandler, TestingFrameworkAPICatalog} from '@/types';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
+import mock = jest.mock;
 
 jest.mock('fs');
 jest.mock('crypto');
+
+const INTENT = 'tap button';
+const VIEW_HIERARCHY = '<view></view>';
+const PROMPT_RESULT = 'generated code';
+const CODE_EVALUATION_RESULT = 'success';
+const SNAPSHOT_DATA = 'snapshot_data';
+const VIEW_HIERARCHY_HASH = 'hash';
+const CACHE_KEY = JSON.stringify({step: INTENT, previous: [], viewHierarchyHash: VIEW_HIERARCHY_HASH});
 
 describe('StepPerformer', () => {
     let stepPerformer: StepPerformer;
@@ -16,15 +26,10 @@ describe('StepPerformer', () => {
     let mockCodeEvaluator: jest.Mocked<CodeEvaluator>;
     let mockSnapshotManager: jest.Mocked<SnapshotManager>;
     let mockPromptHandler: jest.Mocked<PromptHandler>;
-    const cacheFileName = 'test_step_performer_cache.json';
+    let mockCacheHandler: jest.Mocked<CacheHandler>;
 
     beforeEach(() => {
         jest.resetAllMocks();
-
-        // Mock fs methods to prevent actual file system interactions
-        (fs.existsSync as jest.Mock).mockReturnValue(false);
-        (fs.readFileSync as jest.Mock).mockReturnValue('');
-        (fs.writeFileSync as jest.Mock).mockImplementation(() => {});
 
         const apiCatalog: TestingFrameworkAPICatalog = {
             context: {},
@@ -56,13 +61,23 @@ describe('StepPerformer', () => {
             isSnapshotImageSupported: jest.fn(),
         } as jest.Mocked<PromptHandler>;
 
+        mockCacheHandler = {
+            loadCacheFromFile: jest.fn(),
+            saveCacheToFile: jest.fn(),
+            existInCache: jest.fn(),
+            addToTemporaryCache: jest.fn(),
+            flushTemporaryCache: jest.fn(),
+            clearTemporaryCache: jest.fn(),
+            getStepFromCache: jest.fn(),
+        } as unknown as jest.Mocked<CacheHandler>;
+
         stepPerformer = new StepPerformer(
             mockContext,
             mockPromptCreator,
             mockCodeEvaluator,
             mockSnapshotManager,
             mockPromptHandler,
-            cacheFileName, // Use a test-specific cache file name
+            mockCacheHandler
         );
     });
 
@@ -77,14 +92,14 @@ describe('StepPerformer', () => {
     }
 
     const setupMocks = ({
-        isSnapshotSupported = true,
-        snapshotData = 'snapshot_data',
-        viewHierarchy = '<view></view>',
-        promptResult = 'generated code',
-        codeEvaluationResult = 'success',
-        cacheExists = false,
-        overrideCache = false,
-    }: SetupMockOptions = {}) => {
+                            isSnapshotSupported = true,
+                            snapshotData = SNAPSHOT_DATA,
+                            viewHierarchy = VIEW_HIERARCHY,
+                            promptResult = PROMPT_RESULT,
+                            codeEvaluationResult = CODE_EVALUATION_RESULT,
+                            cacheExists = false,
+                            overrideCache = false,
+                        }: SetupMockOptions = {}) => {
         mockPromptHandler.isSnapshotImageSupported.mockReturnValue(isSnapshotSupported);
         mockSnapshotManager.captureSnapshotImage.mockResolvedValue(
             snapshotData != null ? snapshotData : undefined,
@@ -105,71 +120,71 @@ describe('StepPerformer', () => {
             }),
         });
 
-        // Adjust fs mocks based on cacheExists
         if (cacheExists) {
-            (fs.existsSync as jest.Mock).mockReturnValue(true);
-            const cacheData = {};
-            const cacheKey = JSON.stringify({ step: 'tap button', previous: [], viewHierarchyHash });
-            // @ts-ignore
-            cacheData[cacheKey] = promptResult;
-            (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(cacheData));
-        } else {
-            (fs.existsSync as jest.Mock).mockReturnValue(false);
+            const cacheData: Map<string, any> = new Map();
+            cacheData.set(CACHE_KEY, PROMPT_RESULT);
+
+            mockCacheHandler.getStepFromCache.mockImplementation((key: string) => {
+                return cacheData.get(key);
+            });
         }
     };
 
     it('should perform an intent successfully with snapshot image support', async () => {
-        const intent = 'tap button';
         setupMocks();
 
-        const result = await stepPerformer.perform(intent);
+        const result = await stepPerformer.perform(INTENT);
 
+        expect(mockCacheHandler.loadCacheFromFile).toHaveBeenCalled();
         expect(result).toBe('success');
         expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
-            intent,
-            '<view></view>',
+            INTENT,
+            VIEW_HIERARCHY,
             true,
             [],
         );
-        expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', 'snapshot_data');
-        expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('generated code', mockContext);
-        expect(fs.writeFileSync).toHaveBeenCalled(); // Ensure cache is saved
+        expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', SNAPSHOT_DATA);
+        expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
+        expect(mockCacheHandler.getStepFromCache).toHaveBeenCalledWith(CACHE_KEY);
+        expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalledWith(CACHE_KEY, PROMPT_RESULT);
     });
 
     it('should perform an intent successfully without snapshot image support', async () => {
-        const intent = 'tap button';
-        setupMocks({ isSnapshotSupported: false });
+        setupMocks({isSnapshotSupported: false});
 
-        const result = await stepPerformer.perform(intent);
+        const result = await stepPerformer.perform(INTENT);
 
+        expect(mockCacheHandler.loadCacheFromFile).toHaveBeenCalled();
         expect(result).toBe('success');
         expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
-            intent,
-            '<view></view>',
+            INTENT,
+            VIEW_HIERARCHY,
             false,
             [],
         );
         expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', undefined);
-        expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('generated code', mockContext);
-        expect(fs.writeFileSync).toHaveBeenCalled();
+        expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
+        expect(mockCacheHandler.getStepFromCache).toHaveBeenCalledWith(CACHE_KEY);
+        expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalledWith(CACHE_KEY, PROMPT_RESULT);
     });
 
     it('should perform an intent with undefined snapshot', async () => {
-        const intent = 'tap button';
-        setupMocks({ snapshotData: null });
+        setupMocks({snapshotData: null});
 
-        const result = await stepPerformer.perform(intent);
+        const result = await stepPerformer.perform(INTENT);
 
+        expect(mockCacheHandler.loadCacheFromFile).toHaveBeenCalled();
         expect(result).toBe('success');
         expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
-            intent,
-            '<view></view>',
+            INTENT,
+            VIEW_HIERARCHY,
             false,
             [],
         );
         expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', undefined);
-        expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('generated code', mockContext);
-        expect(fs.writeFileSync).toHaveBeenCalled();
+        expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
+        expect(mockCacheHandler.getStepFromCache).toHaveBeenCalledWith(CACHE_KEY);
+        expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalledWith(CACHE_KEY, PROMPT_RESULT);
     });
 
     it('should perform an intent successfully with previous intents', async () => {
@@ -182,78 +197,84 @@ describe('StepPerformer', () => {
 
         setupMocks();
 
+        const thisCacheKey = JSON.stringify({
+            step: intent,
+            previous: previousIntents,
+            viewHierarchyHash: VIEW_HIERARCHY_HASH
+        });
         const result = await stepPerformer.perform(intent, previousIntents);
 
+        expect(mockCacheHandler.loadCacheFromFile).toHaveBeenCalled();
         expect(result).toBe('success');
         expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
             intent,
-            '<view></view>',
+            VIEW_HIERARCHY,
             true,
             previousIntents,
         );
-        expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', 'snapshot_data');
-        expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('generated code', mockContext);
-        expect(fs.writeFileSync).toHaveBeenCalled();
+        expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', SNAPSHOT_DATA);
+        expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
+        expect(mockCacheHandler.getStepFromCache).toHaveBeenCalledWith(thisCacheKey);
+        expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalledWith(thisCacheKey, PROMPT_RESULT);
     });
 
     it('should throw an error if code evaluation fails', async () => {
-        const intent = 'tap button';
         setupMocks();
         mockCodeEvaluator.evaluate.mockRejectedValue(new Error('Evaluation failed'));
 
-        await expect(stepPerformer.perform(intent)).rejects.toThrow('Evaluation failed');
-        expect(fs.writeFileSync).toHaveBeenCalled(); // Cache should be saved
+        await expect(stepPerformer.perform(INTENT)).rejects.toThrow('Evaluation failed');
+        expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalledWith(CACHE_KEY, PROMPT_RESULT);
     });
 
     it('should use cached prompt result if available', async () => {
-        const intent = 'tap button';
-        setupMocks({ cacheExists: true });
+        setupMocks({cacheExists: true});
 
-        const result = await stepPerformer.perform(intent);
+        const result = await stepPerformer.perform(INTENT);
 
         expect(result).toBe('success');
+        expect(mockCacheHandler.getStepFromCache).toHaveBeenCalledWith(CACHE_KEY);
         // Should not call runPrompt or createPrompt since result is cached
         expect(mockPromptCreator.createPrompt).not.toHaveBeenCalled();
         expect(mockPromptHandler.runPrompt).not.toHaveBeenCalled();
         expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('generated code', mockContext);
-        expect(fs.writeFileSync).not.toHaveBeenCalled(); // No need to save cache again
+        expect(mockCacheHandler.addToTemporaryCache).not.toHaveBeenCalled(); // No need to save cache again
     });
 
     it('should retry if initial runPrompt throws an error and succeed on retry', async () => {
-        const intent = 'tap button';
         setupMocks();
         const error = new Error('Initial prompt failed');
         mockPromptHandler.runPrompt.mockRejectedValueOnce(error);
         // On retry, it succeeds
         mockPromptHandler.runPrompt.mockResolvedValueOnce('retry generated code');
 
-        const result = await stepPerformer.perform(intent);
+        const result = await stepPerformer.perform(INTENT);
 
         expect(result).toBe('success');
+        expect(mockCacheHandler.loadCacheFromFile).toHaveBeenCalled();
         expect(mockPromptCreator.createPrompt).toHaveBeenCalledTimes(2);
         expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(2);
         expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('retry generated code', mockContext);
-        expect(fs.writeFileSync).toHaveBeenCalledTimes(1); // Cache should be saved after success
+        expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalledTimes(1); // Cache should be saved after success
     });
 
     it('should throw original error if retry also fails', async () => {
-        const intent = 'tap button';
         setupMocks();
         const error = new Error('Initial prompt failed');
         const retryError = new Error('Retry prompt failed');
         mockPromptHandler.runPrompt.mockRejectedValueOnce(error);
         mockPromptHandler.runPrompt.mockRejectedValueOnce(retryError);
 
-        await expect(stepPerformer.perform(intent)).rejects.toThrow(retryError);
+        await expect(stepPerformer.perform(INTENT)).rejects.toThrow(retryError);
+        expect(mockCacheHandler.loadCacheFromFile).toHaveBeenCalled();
         expect(mockPromptCreator.createPrompt).toHaveBeenCalledTimes(2);
         expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(2);
         expect(mockCodeEvaluator.evaluate).not.toHaveBeenCalled();
-        expect(fs.writeFileSync).not.toHaveBeenCalled();
+        expect(mockCacheHandler.addToTemporaryCache).not.toHaveBeenCalled();
     });
 
     it('should not use cached prompt result if COPILOT_OVERRIDE_CACHE is enabled', async () => {
         const intent = 'tap button';
-        setupMocks({ cacheExists: true, overrideCache: true });
+        setupMocks({cacheExists: true, overrideCache: true});
 
         const result = await stepPerformer.perform(intent);
 

@@ -4,6 +4,7 @@ import {CodeEvaluator} from "@/utils/CodeEvaluator";
 import {SnapshotManager} from "@/utils/SnapshotManager";
 import {StepPerformer} from "@/actions/StepPerformer";
 import {Config, PreviousStep} from "@/types";
+import {CacheHandler} from "@/utils/CacheHandler";
 
 /**
  * The main Copilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
@@ -18,18 +19,25 @@ export class Copilot {
     private readonly snapshotManager: SnapshotManager;
     private previousSteps: PreviousStep[] = [];
     private stepPerformer: StepPerformer;
+    private cacheHandler: CacheHandler;
+    //private isTestSuiteSuccessful: boolean;
+    private isRunning: boolean = false;
 
     private constructor(config: Config) {
         this.promptCreator = new PromptCreator(config.frameworkDriver.apiCatalog);
         this.codeEvaluator = new CodeEvaluator();
         this.snapshotManager = new SnapshotManager(config.frameworkDriver);
+        this.cacheHandler = new CacheHandler();
+        //this.isTestSuiteSuccessful = true;
         this.stepPerformer = new StepPerformer(
             config.frameworkDriver.apiCatalog.context,
             this.promptCreator,
             this.codeEvaluator,
             this.snapshotManager,
-            config.promptHandler
+            config.promptHandler,
+            this.cacheHandler
         );
+
     }
 
     /**
@@ -57,18 +65,42 @@ export class Copilot {
      * @param step The step describing the operation to perform.
      */
     async performStep(step: string): Promise<any> {
+        if (!this.isRunning) {
+            throw new CopilotError('Copilot is not running. Please call the `start()` method before performing any steps.');
+        }
+
         const {code, result} = await this.stepPerformer.perform(step, this.previousSteps);
         this.didPerformStep(step, code, result);
-
         return result;
     }
 
     /**
-     * Resets the Copilot by clearing the previous steps.
+     * Starts the Copilot by clearing the previous steps and temporary cache.
      * @note This must be called before starting a new test flow, in order to clean context from previous tests.
      */
-    reset(): void {
+    start(): void {
+        if (this.isRunning) {
+            throw new CopilotError('Copilot was already started. Please call the `end()` method before starting a new test flow.');
+        }
+
+        this.isRunning = true;
         this.previousSteps = [];
+        this.cacheHandler.clearTemporaryCache();
+    }
+
+    /**
+     * Ends the Copilot test flow and optionally saves the temporary cache to the main cache.
+     * @param saveToCache -  boolean flag indicating whether the temporary cache data should be saved to the main cache.
+     */
+    end(saveToCache: boolean = true): void {
+        if (!this.isRunning) {
+            throw new CopilotError('Copilot is not running. Please call the `start()` method before ending the test flow.');
+        }
+
+        this.isRunning = false;
+
+        if (saveToCache)
+            this.cacheHandler.flushTemporaryCache();
     }
 
     private didPerformStep(step: string, code: string, result: any): void {
