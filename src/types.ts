@@ -10,11 +10,19 @@ export interface CopilotFacade {
     init: (config: Config) => void;
 
     /**
-     * Resets the Copilot instance.
+     * Start the Copilot instance.
      * Must be called before each test to ensure a clean state (the Copilot uses the operations history as part of
      * its context).
      */
-    reset: () => void;
+    start: () => void;
+
+    /**
+     * Finalizes the test flow and optionally saves temporary cache data to the main cache.
+     * If `saveToCache` is true, the temporary cache will be saved. True is the default value.
+     * @param saveToCache
+     * @note This must be called after the test flow is complete.
+     */
+    end: (saveToCache?: boolean) => void;
 
     /**
      * Performs a testing operation or series of testing operations in the app based on the given `steps`.
