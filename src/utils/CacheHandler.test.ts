@@ -1,16 +1,14 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { CacheHandler } from './CacheHandler';
 jest.mock('fs');
 
-import { mockCache, mockedCacheFile, CACHE_FILE_NAME} from "../test-utils/cache";
+import { mockCache, mockedCacheFile} from "../test-utils/cache";
 
 describe('CacheHandler', () => {
     let cacheHandler: CacheHandler;
 
     beforeEach(() => {
         jest.resetAllMocks();
-        cacheHandler = new CacheHandler(CACHE_FILE_NAME);
+        cacheHandler = new CacheHandler();
     });
 
     describe('cache and file operations', () => {
