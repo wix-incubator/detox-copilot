@@ -161,7 +161,7 @@ describe('Copilot', () => {
             await instance.performStep(INTENT);
             instance.end(true);
 
-            expect(() => instance.end(true)).toThrowError('Copilot is not running. Please call the `start()` method before performing any steps.');
+            expect(() => instance.end(true)).toThrowError('Copilot is not running. Please call the `start()` method before ending the test flow.');
         });
     });
 
