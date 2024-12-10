@@ -8,8 +8,8 @@ const copilot: CopilotFacade = {
     start: () => {
         Copilot.getInstance().start();
     },
-    end: (saveToCache?: boolean) => {
-        Copilot.getInstance().end(saveToCache);
+    end: (isCacheDisabled?: boolean) => {
+        Copilot.getInstance().end(isCacheDisabled);
     },
     perform: async (...steps: string[]) => {
         const copilotInstance = Copilot.getInstance();

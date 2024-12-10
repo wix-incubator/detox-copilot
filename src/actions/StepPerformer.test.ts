@@ -7,6 +7,7 @@ import {PromptHandler, TestingFrameworkAPICatalog} from '@/types';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import mock = jest.mock;
+import copilot from "../index";
 
 jest.mock('fs');
 jest.mock('crypto');
@@ -283,6 +284,6 @@ describe('StepPerformer', () => {
         expect(mockPromptCreator.createPrompt).toHaveBeenCalled();
         expect(mockPromptHandler.runPrompt).toHaveBeenCalled();
         expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('generated code', mockContext);
-        expect(fs.writeFileSync).toHaveBeenCalled(); // Need to save cache
+        expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalled();
     });
 });

@@ -1,4 +1,5 @@
 import copilot from "@/index";
+import fs from 'fs';
 import { Copilot } from "@/Copilot";
 import { PromptHandler, TestingFrameworkDriver } from "@/types";
 import * as crypto from 'crypto';
@@ -27,14 +28,6 @@ describe('Copilot Integration Tests', () => {
             runPrompt: jest.fn(),
             isSnapshotImageSupported: jest.fn().mockReturnValue(true)
         };
-
-        // mockFs = fs as jest.Mocked<typeof fs>;
-        // mockPath = path as jest.Mocked<typeof path>;
-        //
-        // mockFs.existsSync.mockReturnValue(false);
-        // mockFs.readFileSync.mockReturnValue('{}');
-        // mockFs.writeFileSync.mockImplementation(() => {});
-        // mockPath.resolve.mockImplementation((...paths) => paths.join('/'));
 
         mockCache();
 
@@ -250,7 +243,7 @@ describe('Copilot Integration Tests', () => {
             mockPromptHandler.runPrompt.mockResolvedValue('// Perform action');
 
             await copilot.perform('Perform action');
-            copilot.end(true)
+            copilot.end(false)
 
             expect(mockedCacheFile).toEqual({
                 '{"step":"Perform action","previous":[],"viewHierarchyHash":"hash"}': '// Perform action'
@@ -278,22 +271,27 @@ describe('Copilot Integration Tests', () => {
             });
         });
 
-        // it('should handle fs.readFileSync errors', async () => {
-        //     mockFs.existsSync.mockReturnValue(true);
-        //     mockFs.readFileSync.mockImplementation(() => { throw new Error('Read error'); });
-        //     mockPromptHandler.runPrompt.mockResolvedValue('// New action code');
-        //
-        //     await copilot.perform('Action with read error');
-        //
-        //     expect(mockPromptHandler.runPrompt).toHaveBeenCalled();
-        // });
+        it('should handle fs.readFileSync errors', async () => {
+            mockCache({}); // Set up an initial mocked file
+            (fs.readFileSync as jest.Mock).mockImplementation(() => {
+                throw new Error('Read error');
+            });
+            mockPromptHandler.runPrompt.mockResolvedValue('// New action code');
 
-        // it('should handle fs.writeFileSync errors', async () => {
-        //     mockFs.writeFileSync.mockImplementation(() => { throw new Error('Write error'); });
-        //     mockPromptHandler.runPrompt.mockResolvedValue('// Action code');
-        //
-        //     await expect(copilot.perform('Action with write error')).resolves.not.toThrow();
-        // });
+            await copilot.perform('Action with read error');
+
+            expect(mockPromptHandler.runPrompt).toHaveBeenCalled();
+        });
+
+        it('should handle fs.writeFileSync errors', async () => {
+            mockCache(undefined); // No mocked file exists
+            (fs.writeFileSync as jest.Mock).mockImplementation(() => {
+                throw new Error('Write error');
+            });
+            mockPromptHandler.runPrompt.mockResolvedValue('// Action code');
+
+            await expect(copilot.perform('Action with write error')).resolves.not.toThrow();
+        });
     });
 
     describe('Feature Support', () => {

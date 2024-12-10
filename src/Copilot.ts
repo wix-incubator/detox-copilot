@@ -20,7 +20,6 @@ export class Copilot {
     private previousSteps: PreviousStep[] = [];
     private stepPerformer: StepPerformer;
     private cacheHandler: CacheHandler;
-    //private isTestSuiteSuccessful: boolean;
     private isRunning: boolean = false;
 
     private constructor(config: Config) {
@@ -28,7 +27,6 @@ export class Copilot {
         this.codeEvaluator = new CodeEvaluator();
         this.snapshotManager = new SnapshotManager(config.frameworkDriver);
         this.cacheHandler = new CacheHandler();
-        //this.isTestSuiteSuccessful = true;
         this.stepPerformer = new StepPerformer(
             config.frameworkDriver.apiCatalog.context,
             this.promptCreator,
@@ -90,16 +88,16 @@ export class Copilot {
 
     /**
      * Ends the Copilot test flow and optionally saves the temporary cache to the main cache.
-     * @param saveToCache -  boolean flag indicating whether the temporary cache data should be saved to the main cache.
+     * @param isCacheDisabled -  boolean flag indicating whether the temporary cache data should be saved to the main cache.
      */
-    end(saveToCache: boolean = true): void {
+    end(isCacheDisabled: boolean = false): void {
         if (!this.isRunning) {
             throw new CopilotError('Copilot is not running. Please call the `start()` method before ending the test flow.');
         }
 
         this.isRunning = false;
 
-        if (saveToCache)
+        if (!isCacheDisabled)
             this.cacheHandler.flushTemporaryCache();
     }
 

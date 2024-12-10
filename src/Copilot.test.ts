@@ -166,7 +166,7 @@ describe('Copilot', () => {
     });
 
     describe('end', () => {
-        it('end with false should not save to cache', async () => {
+        it('end with disable cache=true should not save to cache', async () => {
             mockCache();
 
             Copilot.init(mockConfig);
@@ -174,7 +174,7 @@ describe('Copilot', () => {
             instance.start();
 
             await instance.performStep(INTENT);
-            instance.end(false);
+            instance.end(true);
 
             expect(mockedCacheFile).toBeUndefined();
         });
