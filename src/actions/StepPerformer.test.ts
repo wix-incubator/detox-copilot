@@ -4,10 +4,7 @@ import {CodeEvaluator} from '@/utils/CodeEvaluator';
 import {SnapshotManager} from '@/utils/SnapshotManager';
 import {CacheHandler} from '@/utils/CacheHandler';
 import {PromptHandler, TestingFrameworkAPICatalog} from '@/types';
-import * as fs from 'fs';
 import * as crypto from 'crypto';
-import mock = jest.mock;
-import copilot from "../index";
 
 jest.mock('fs');
 jest.mock('crypto');

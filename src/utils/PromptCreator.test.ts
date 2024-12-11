@@ -1,9 +1,7 @@
 import { PromptCreator } from './PromptCreator';
 import {
     PreviousStep,
-    TestingFrameworkAPICatalog,
-    TestingFrameworkAPICatalogCategory,
-    TestingFrameworkAPICatalogItem
+    TestingFrameworkAPICatalog
 } from "@/types";
 
 const mockAPI: TestingFrameworkAPICatalog = {

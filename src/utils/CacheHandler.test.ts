@@ -1,7 +1,7 @@
 import { CacheHandler } from './CacheHandler';
-jest.mock('fs');
-
 import { mockCache, mockedCacheFile} from "../test-utils/cache";
+
+jest.mock('fs');
 
 describe('CacheHandler', () => {
     let cacheHandler: CacheHandler;
