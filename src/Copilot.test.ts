@@ -61,14 +61,11 @@ describe('Copilot', () => {
             expect(Copilot.getInstance()).toBeInstanceOf(Copilot);
         });
 
-        it('should overwrite existing instance when called multiple times', () => {
+        it('should throw an error when trying to initialize Copilot multiple times', () => {
             Copilot.init(mockConfig);
-            const instance1 = Copilot.getInstance();
 
-            Copilot.init(mockConfig);
-            const instance2 = Copilot.getInstance();
-
-            expect(instance1).not.toBe(instance2);
+            expect(() => Copilot.init(mockConfig))
+                .toThrow('Copilot has already been initialized. Please call the `init()` method only once.');
         });
 
         it('should throw an error if config is invalid', () => {

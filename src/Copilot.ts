@@ -55,6 +55,10 @@ export class Copilot {
      * @param config The configuration options for Copilot.
      */
     static init(config: Config): void {
+        if (Copilot.instance) {
+            throw new CopilotError('Copilot has already been initialized. Please call the `init()` method only once.');
+        }
+
         Copilot.instance = new Copilot(config);
     }
 

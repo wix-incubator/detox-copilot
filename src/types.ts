@@ -6,21 +6,22 @@ export interface CopilotFacade {
      * Initializes the Copilot with the given configuration.
      * Must be called before any other Copilot methods.
      * @param config The configuration for the Copilot.
+     * @note This method should only be called once.
      */
     init: (config: Config) => void;
 
     /**
      * Start the Copilot instance.
-     * Must be called before each test to ensure a clean state (the Copilot uses the operations history as part of
+     * @note Must be called before each flow to ensure a clean state (the Copilot uses the operations history as part of
      * its context).
      */
     start: () => void;
 
     /**
-     * Finalizes the test flow and optionally saves temporary cache data to the main cache.
+     * Finalizes the flow and optionally saves temporary cache data to the main cache.
      * If `isCacheDisabled` is true, the temporary cache will not be saved. False is the default value.
      * @param isCacheDisabled
-     * @note This must be called after the test flow is complete.
+     * @note This must be called after the flow is complete.
      */
     end: (isCacheDisabled?: boolean) => void;
 
