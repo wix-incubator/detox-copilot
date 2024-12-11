@@ -62,6 +62,13 @@ export class PromptCreator {
                 "A snapshot image is attached for visual reference.",
                 ""
             );
+        } else {
+            context.push(
+                "### Snapshot image",
+                "",
+                "No snapshot image is attached for this intent.",
+                ""
+            );
         }
 
         if (previousSteps.length > 0) {
@@ -139,6 +146,10 @@ export class PromptCreator {
             "",
             ...this.createStepByStepInstructions(isSnapshotImageAttached).map((instruction, index) => `${index + 1}. ${instruction}`),
             "",
+            "### Verify the prompt",
+            "",
+            "Before generating the code, please review the provided context and instructions to ensure they are clear and unambiguous. If you encounter any issues or have questions, please throw an informative error explaining the problem.",
+            "",
             "### Examples",
             "",
             "#### Example of throwing an informative error:",
@@ -166,6 +177,7 @@ export class PromptCreator {
         if (isSnapshotImageAttached) {
             steps.push(
                 "Analyze the provided intent, the view hierarchy, and the snapshot image to understand the required action.",
+                "Assess the positions of elements within the screen layout. Ensure that tests accurately reflect their intended locations, such as whether an element is centered or positioned relative to others. Tests should fail if the actual locations do not align with the expected configuration.",
                 "Determine if the intent can be fully validated visually using the snapshot image.",
                 "If the intent can be visually analyzed and passes the visual check, return only comments explaining the successful visual assertion.",
                 "If the visual assertion fails, return code that throws an informative error explaining the failure.",

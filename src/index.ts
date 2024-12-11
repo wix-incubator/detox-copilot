@@ -1,12 +1,15 @@
-import { Copilot } from "@/Copilot";
+import {Copilot} from "@/Copilot";
 import {CopilotFacade, Config} from "@/types";
 
 const copilot: CopilotFacade = {
     init: (config: Config) => {
         Copilot.init(config);
     },
-    reset: () => {
-        Copilot.getInstance().reset();
+    start: () => {
+        Copilot.getInstance().start();
+    },
+    end: (isCacheDisabled?: boolean) => {
+        Copilot.getInstance().end(isCacheDisabled);
     },
     perform: async (...steps: string[]) => {
         const copilotInstance = Copilot.getInstance();
