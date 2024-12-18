@@ -38,6 +38,10 @@ export class Copilot {
 
     }
 
+    static isInitialized(): boolean {
+        return !!Copilot.instance;
+    }
+
     /**
      * Gets the singleton instance of Copilot.
      * @returns The Copilot instance.

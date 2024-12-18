@@ -5,6 +5,9 @@ const copilot: CopilotFacade = {
     init: (config: Config) => {
         Copilot.init(config);
     },
+    isInitialized: () => {
+        return Copilot.isInitialized();
+    },
     start: () => {
         Copilot.getInstance().start();
     },

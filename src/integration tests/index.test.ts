@@ -53,6 +53,19 @@ describe('Copilot Integration Tests', () => {
                 promptHandler: mockPromptHandler
             })).not.toThrow();
         });
+
+        it('should return false when isInitialized is called before initialization', () => {
+            expect(copilot.isInitialized()).toBe(false);
+        });
+
+        it('should return true when isInitialized is called after initialization', () => {
+            copilot.init({
+                frameworkDriver: mockFrameworkDriver,
+                promptHandler: mockPromptHandler
+            });
+
+            expect(copilot.isInitialized()).toBe(true);
+        });
     });
 
     describe('Single Step Operations', () => {

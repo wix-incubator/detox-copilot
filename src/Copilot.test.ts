@@ -75,6 +75,18 @@ describe('Copilot', () => {
         });
     });
 
+    describe('isInitialized', () => {
+        it('should return false before initialization', () => {
+            expect(Copilot.isInitialized()).toBe(false);
+        });
+
+        it('should return true after initialization', () => {
+            Copilot.init(mockConfig);
+
+            expect(Copilot.isInitialized()).toBe(true);
+        });
+    });
+
     describe('perform', () => {
         it('should call StepPerformer.perform with the given intent', async () => {
 

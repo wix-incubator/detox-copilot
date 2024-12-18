@@ -11,6 +11,12 @@ export interface CopilotFacade {
     init: (config: Config) => void;
 
     /**
+     * Checks if the Copilot has been initialized.
+     * @returns True if the Copilot has been initialized, false otherwise.
+     */
+    isInitialized: () => boolean;
+
+    /**
      * Start the Copilot instance.
      * @note Must be called before each flow to ensure a clean state (the Copilot uses the operations history as part of
      * its context).
