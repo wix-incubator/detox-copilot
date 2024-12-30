@@ -1,5 +1,5 @@
 import {Copilot} from "@/Copilot";
-import {CopilotFacade, Config} from "@/types";
+import {CopilotFacade, Config, TestingFrameworkAPICatalogCategory} from "@/types";
 
 const copilot: CopilotFacade = {
     init: (config: Config) => {
@@ -23,6 +23,9 @@ const copilot: CopilotFacade = {
         }
 
         return result;
+    },
+    extendAPICatalog: (context: any, categories: TestingFrameworkAPICatalogCategory[]) => {
+        Copilot.getInstance().extendAPICatalog(context, categories);
     }
 };
 
