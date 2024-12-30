@@ -6,7 +6,7 @@
     'r': #3ba337,
     'y': #4bba47,
     'b': #57c353,
-    'u': #296f26,
+    'u': #bdbdbd,
     'e': #79d97a
   );
 
@@ -67,9 +67,9 @@
   --sci-fi-light-gradient: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 50%, #80deea 100%);
   --sci-fi-dark-gradient: linear-gradient(135deg, #00251a 0%, #004d40 50%, #00796b 100%);
   --section-background-gradient: var(--sci-fi-light-gradient);
-  
+
   --sci-fi-subtle-glow: 0 0 15px rgba(59, 163, 55, 0.8);
-  --sci-fi-gradient: linear-gradient(135deg, 
+  --sci-fi-gradient: linear-gradient(135deg,
                      rgba(59, 163, 55, 0.5) 0%,
                      rgba(45, 125, 42, 0.3) 100%);
   --sci-fi-border: 1px solid rgba(59, 163, 55, 0.15);
@@ -108,4 +108,5 @@
   --ifm-color-primary-light: #4bba47;
   --ifm-color-primary-lighter: #57c353;
   --ifm-color-primary-lightest: #79d97a;
+  --sci-fi-border: 1px solid rgba(59, 163, 55, 0.6);
 }

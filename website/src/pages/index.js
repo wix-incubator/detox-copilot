@@ -18,9 +18,9 @@ function HomepageHeader() {
   );
 }
 
-function FeatureSection({ title, description, link, linkText, shadowStyle }) {
+function FeatureSection({ title, description, link, linkText, boxStyle }) {
   return (
-    <div className={`${styles.featureSection} ${shadowStyle ? styles[shadowStyle] : ''}`}>
+    <div className={`${styles.featureSection} ${boxStyle ? styles[boxStyle] : ''}`}>
       <div className="container">
         <h2 className={styles.h2}>{title}</h2>
         <p>{description}</p>
@@ -47,21 +47,21 @@ export default function Home() {
             <DemoSection />
           </div>
         </section>
-        
+
         <FeatureSection
           title="Universal Testing Framework Support"
           description="Copilot is designed by Detox to work seamlessly with any testing framework, making your automation journey smoother than ever."
           link="/docs/guides/integrating-with-testing-frameworks"
           linkText="View Supported Frameworks"
-          shadowStyle="shadow-effect-light-green"
+          boxStyle="box-light-green"
         />
-        
+
         <FeatureSection
           title="Open for Contributions"
           description="Join our community and help expand Copilot's capabilities. Integrate your favorite testing framework today."
           link="/docs/Guides/contributing-to-copilot-by-detox"
           linkText="Contribute Now"
-          shadowStyle="shadow-effect-dark-green"
+          boxStyle="box-dark-green"
         />
       </main>
     </Layout>
