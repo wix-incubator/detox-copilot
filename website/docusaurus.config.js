@@ -80,8 +80,8 @@ const config = {
           },
           {
             type: 'doc',
-            label: 'Use Cases',
-            docId: 'use cases/detox-case',
+            label: 'Supported Frameworks',
+            docId: 'pages/supported-frameworks',
             position: 'right',
           },
           {
