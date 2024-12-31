@@ -51,7 +51,7 @@ export default function Home() {
         <FeatureSection
           title="Universal Testing Framework Support"
           description="Copilot is designed by Detox to work seamlessly with any testing framework, making your automation journey smoother than ever."
-          link="/docs/guides/integrating-with-testing-frameworks"
+          link="/docs/pages/supported-frameworks"
           linkText="View Supported Frameworks"
           boxStyle="box-light-green"
         />

@@ -7,75 +7,51 @@ sidebar_position: 5
 
 # Contributing to Copilot by Detox
 
-**Copilot by Detox** thrives on community contributions, and we welcome developers to help improve its functionality, extend its compatibility, and refine its features. This guide outlines how you can contribute by adding **prompt handlers** and **framework drivers**, along with some Detox-specific practices to follow.
+We welcome contributions to **Copilot by Detox**, whether through ideas, bug reports, code enhancements, or prompt handlers. Below, you’ll find the main ways to contribute and collaborate with our community.
+
+For reference on integrating with frameworks, see the [Implementing Custom Testing Framework Driver Guide](./implementing-custom-testing-framework-driver.md).
 
 ---
 
-## Adding a Prompt Handler
+## Types of Contributions
 
-Prompt handlers are responsible for interfacing with AI services, such as OpenAI, to send prompts and receive responses. To add a new prompt handler:
+### 1. **Report Issues**
 
-1. **Understand the Interface**:  
-   The prompt handler must implement the `PromptHandler` interface located in `src/prompt-handlers`. This ensures consistent behavior across all handlers.  
-   
-    👉 *Get to the [Prompt Handler API page](../API/prompt-handler.md) to see the full interface and an example implementation.*
-    
-    Key methods include:
-    - `runPrompt(prompt: string, image?: string): Promise<string>`
-    - `isSnapshotImageSupported(): boolean`
+Help us improve by reporting:
+- Bugs you encounter.
+- Ideas for new features or enhancements.
 
-2. **Create the Handler**:  
-   Add your handler in the `src/prompt-handlers` directory, following the structure of existing handlers. For instance, ensure your handler supports features like image snapshots if applicable.
+Submit your issues through our [GitHub Issues Page](https://github.com/wix-incubator/detox-copilot/issues). Providing detailed information about the problem or idea will help us address it more effectively.
 
-3. **Test Your Handler**:  
-   Write unit tests to validate your implementation. Check existing test examples to align with the project’s testing practices.
+### 2. **Code Contributions**
 
-For more details, explore the [issues section](https://github.com/wix-incubator/detox-copilot/issues?q=is%3Aopen+is%3Aissue+label%3A%22prompt+handler%22) for tasks related to prompt handlers.
+We’re always open to bug fixes and improvements. Whether it’s refining existing functionality or adding new features, your code contributions are invaluable.
 
----
+**High-level contribution steps:**
+- Propose your idea or fix via a GitHub issue.
+- Collaborate with maintainers to align on the approach.
+- Submit your pull request with well-documented changes.
 
-## Adding a Framework Driver
+### 3. **Prompt Handlers for the Community**
 
-Framework drivers provide Copilot with the ability to interact with testing frameworks. They are essential for maintaining Copilot’s framework-agnostic architecture. To add or improve a driver:
+Extend Copilot’s capabilities by creating prompt handlers for popular services like OpenAI and Claude. These handlers enable Copilot to interpret and execute natural language commands more effectively.
 
-1. **Understand the Interface**:  
-   Drivers must implement the `TestingFrameworkDriver` interface located in `src/drivers`.
-   
-    👉 *Check out the [Framework Driver API page](../API/framework-driver.md) for the full interface and a sample implementation.*
-   
-    Key methods include:
-    - `captureSnapshotImage(): Promise<string | undefined>`
-    - `captureViewHierarchyString(): Promise<string>`
-    - `apiCatalog: TestingFrameworkAPICatalog`
+- Design and implement handlers for specific use cases.
+- Share examples and best practices to help other developers.
 
-2. **Follow General Practices**:
-    - Place your driver code under `src/drivers`.
-    - Ensure that your driver integrates well with the framework you are targeting.
-    - Structure your driver in a way that is consistent with other drivers in the repository.
+### 4. **Framework Integrations**
 
-3. **Expand the API Catalog**:  
-   Drivers should include an `apiCatalog` defining the testing framework’s methods, categorized into actions, matchers, and utilities.
+Expand Copilot’s reach by integrating it with new testing frameworks. This involves developing the necessary drivers and APIs to enable Copilot’s compatibility with the framework.
 
-4. **Test Your Driver**:  
-   Add tests to validate the functionality of your driver, including edge cases and integration scenarios.
-
-Explore the [issues section](https://github.com/wix-incubator/detox-copilot/issues?q=is%3Aopen+is%3Aissue+label%3A%22testing+framework+driver%22) for tasks related to framework drivers.
+Check how to implement a custom testing framework driver in the [Implementing Custom Testing Framework Driver Guide](./implementing-custom-testing-framework-driver.md).
 
 ---
 
-## Contribution Tips
+## Getting Started
 
-- **Check Existing Code**:  
-  Review existing prompt handlers and drivers in `src/prompt-handlers` and `src/drivers` to follow established patterns.
-
-- **Stay Consistent**:  
-  Use the project’s coding standards and practices to ensure a seamless development experience.
-
-- **Open Issues for Discussion**:  
-  If you’re unsure about the implementation of a feature, feel free to open an issue on GitHub to discuss your ideas.
+If you’re unsure where to start, visit our [GitHub Issues Page](https://github.com/wix-incubator/detox-copilot/issues) to find open tasks or discuss your ideas with the community. We’re here to help you get involved and make meaningful contributions.
 
 ---
 
-## Ready to Get Started?
+Thank you for supporting **Copilot by Detox**! Together, we can enhance testing automation and make it accessible to a broader developer community.
 
-Visit our [GitHub repository](https://github.com/wix-incubator/detox-copilot/issues) to find open issues, suggest ideas, or submit pull requests. Your contributions are invaluable in making **Copilot by Detox** a versatile and powerful tool for developers everywhere.

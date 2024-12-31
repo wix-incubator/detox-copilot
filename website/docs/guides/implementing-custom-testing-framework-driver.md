@@ -4,94 +4,70 @@ title: Implementing Custom Testing Framework Driver
 sidebar_label: Implementing Custom Testing Framework Driver
 sidebar_position: 4
 ---
+
 # Implementing a Custom Testing Framework Driver
 
-The **testing framework driver** is a vital component of **Copilot by Detox** that enables integration with a chosen testing framework. It bridges Copilot's natural language capabilities with the framework's API, ensuring commands can be translated into executable actions. This guide provides detailed instructions on how to implement a custom testing framework driver and integrate it into the open-source project.
+The **testing framework driver** is a core component of **Copilot by Detox**, enabling seamless integration with any testing framework. It allows Copilot to translate natural language commands into actionable steps using the framework's API. This guide outlines how to implement and integrate a custom testing framework driver into the Copilot ecosystem.
 
 ---
 
-## Understanding the Role of a Framework Driver
+## Recommended Approach for Framework Support
 
-Framework drivers define the matchers, actions, and behaviors that allow Copilot to interact with testing frameworks. By implementing a driver, you provide the necessary APIs for Copilot to execute commands in your framework.
+Where possible, framework support should ideally be provided directly from the framework's codebase. For example, Detox includes support within its own repository: [Detox Copilot Driver](https://github.com/wix/Detox/tree/master/detox/src/copilot).
 
-The driver must conform to the `TestingFrameworkDriver` interface. For the full interface and an example implementation, see the [Framework Driver API page](../API/framework-driver.md).
-
----
-
-## Steps to Add a Custom Framework Driver
-
-### 1. **Understand the Interface**
-
-All drivers must implement the `TestingFrameworkDriver` interface, which includes:
-- `captureSnapshotImage(): Promise<string | undefined>`  
-  Takes a snapshot of the current screen (optional, based on framework support).
-
-- `captureViewHierarchyString(): Promise<string>`  
-  Returns the view hierarchy of the current screen in a string format.
-
-- `apiCatalog: TestingFrameworkAPICatalog`  
-  A categorized catalog of actions, matchers, and utilities provided by the testing framework.
-
-👉 Refer to the [Framework Driver API page](../API/framework-driver.md) for the detailed interface and a complete example.
+If this is not feasible, or for custom efforts, feel free to reach out via our [GitHub Issues Page](https://github.com/wix-incubator/detox-copilot/issues) to discuss integration ideas before development.
 
 ---
 
-### 2. **Set Up Your Driver**
+## Framework Integration
 
-- Place your custom driver file in the `src/drivers` directory.
-- Follow naming conventions and structure for consistency with other drivers.
-- Use the provided interface to guide your implementation.
+Copilot is designed to integrate with any testing framework. This flexibility allows developers to extend its capabilities by implementing custom drivers that align with the `TestingFrameworkDriver` interface.
+
+To view supported frameworks, visit our [Supported Frameworks](../pages/supported-frameworks) page.
 
 ---
+
+## Steps to Implement a Custom Framework Driver
+
+### 1. **Understand the ****`TestingFrameworkDriver`**** Interface**
+
+All drivers must implement the `TestingFrameworkDriver` interface. Key methods include:
+
+- `captureSnapshotImage(): Promise<string | undefined>`\
+  (Optional) Captures a snapshot of the current screen.
+
+- `captureViewHierarchyString(): Promise<string>`\
+  Returns the view hierarchy of the current screen as a string.
+
+- `apiCatalog: TestingFrameworkAPICatalog`\
+  Categorizes the framework’s actions, matchers, and utilities.
+
+For detailed documentation, see the [Framework Driver API](../API/framework-driver.md).
+
+### 2. **Develop Your Driver**
+
+- Create your driver under the `src/drivers` directory.
+- Follow naming conventions and maintain consistency with existing drivers.
+- Implement the required interface methods.
 
 ### 3. **Define the API Catalog**
 
-The `apiCatalog` organizes the testing framework's functionality into categories like **actions**, **matchers**, and **utilities**. For example:
-- **Actions**: Commands like `tap`, `longPress`, and `scroll`.
-- **Matchers**: Locators like `by.id` or `by.text`.
-- **Utilities**: Framework-specific tools or helpers.
+The `apiCatalog` organizes the framework’s capabilities into categories:
 
-Ensure you include clear documentation, examples, and best practices for each method.
+- **Actions**: e.g., `tap`, `longPress`, `scroll`.
+- **Matchers**: e.g., `by.id`, `by.text`.
+- **Utilities**: Framework-specific helpers.
 
----
+Provide clear documentation and examples for each method to ensure ease of use.
 
-### 4. **Test Your Driver**
+### 4. **Contribute and Collaborate**
 
-Testing is crucial for ensuring reliability. Validate your driver with:
-- Unit tests for each method.
-- Integration tests to confirm functionality with the target framework.
-- Edge cases to handle unusual scenarios.
-
-Place your tests alongside the driver in the appropriate test directory.
-
----
-
-### 5. **Contribute Your Driver**
-
-To share your driver with the community:
-1. Fork the **Copilot by Detox** repository on GitHub.
-2. Create a new branch for your driver:
-   ```bash
-   git checkout -b add-[framework-name]-driver
-    ```
-3. Add your driver under `src/drivers` and include tests.
-4. Commit and push your changes:
-   ```bash
-    git add .
-    git commit -m "Add framework driver for [framework-name]"
-    git push origin add-[framework-name]-driver
-    ```
-5. Open a pull request in the repository.
-
-For more details, check the [Contributing Guide](contributing-to-copilot-by-Detox.md).
+Share your driver with the community by proposing your idea on the [GitHub Issues Page](https://github.com/wix-incubator/detox-copilot/issues). Once aligned, contribute your work by adding your driver to the repository and providing relevant documentation.
 
 ---
 
 ## Additional Resources
- - [Framework Driver API](../API/framework-driver.md) – Full interface and examples.
- - [Integrating with Testing Frameworks](integrating-with-testing-frameworks.md) – Overview of framework drivers and their purpose.
- - [GitHub Issues Section](https://github.com/wix-incubator/detox-copilot/issues) – Explore tasks and ideas for new drivers.
 
----
-
-By following this guide, you can implement and contribute a custom testing framework driver, expanding the versatility of Copilot by Detox and empowering the community to use it with new frameworks.
+- [Framework Driver API](../API/framework-driver.md): Detailed interface and example implementation.
+- [Supported Frameworks](../pages/supported-frameworks): List of frameworks Copilot supports.
+- [GitHub Issues](https://github.com/wix-incubator/detox-copilot/issues): Collaborate and discuss new drivers.
