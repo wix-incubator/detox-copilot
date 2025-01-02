@@ -15,10 +15,10 @@ const config = {
   favicon: '/img/homepage/detox-logo.png',
 
   // Set the production url of your site here
-  url: 'https://CopilotByDetox.com',
+  url: 'https://wix-incubator.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: '/detox-copilot/',
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'wix-incubator', // Usually your GitHub org/user name.

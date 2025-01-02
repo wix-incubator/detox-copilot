@@ -28,7 +28,7 @@ export default function DemoSection() {
 
   const SuccessIcon = () => (
     <img
-      src="/img/demo/checkmark.svg"
+      src={require(`@site/static/img/demo/checkmark.svg`).default}
       alt="Success Icon"
       className={styles.successIcon}
     />
