@@ -20,7 +20,13 @@ jobs:
         with:
           node-version: 18  # Use a stable Node.js version like 18 LTS
 
-      # 3. Install dependencies and deploy
+      # 3. Configure Git
+      - name: Configure Git User
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      # 4. Install dependencies and deploy
       - name: Install dependencies and deploy
         run: |
           cd website
