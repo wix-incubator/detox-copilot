@@ -24,7 +24,7 @@ jobs:
       - name: Deploy Docusaurus
         run: |
           cd website
-          npm ci
+          npm install
           GIT_USER=${{ secrets.GITHUB_ACTOR }} npm run deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
