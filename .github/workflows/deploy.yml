@@ -10,18 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Check out the repository
       - name: Check out the repository
         uses: actions/checkout@v2
 
+      # 2. Set up Node.js
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 22
 
+      # 3. Install dependencies and deploy
       - name: Deploy Docusaurus
         run: |
           cd website
-          npm install
+          npm ci
           GIT_USER=${{ secrets.GITHUB_ACTOR }} npm run deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
