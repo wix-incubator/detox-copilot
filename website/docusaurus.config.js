@@ -12,7 +12,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'Copilot',
   tagline: 'Simplify your mobile app testing with intuitive, natural language commands, making automation faster and more efficient.',
-  favicon: '/img/homepage/detox-logo.png',
+  favicon: '/img/favicon.ico',
 
   // Set the production url of your site here
   url: 'https://wix-incubator.github.io',
