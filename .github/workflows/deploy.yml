@@ -20,15 +20,14 @@ jobs:
         with:
           node-version: 18  # Use a stable Node.js version like 18 LTS
 
-      # 3. Set GIT_USER
-      - name: Set GIT_USER
-        run: |
-          export GIT_USER="${{ github.actor }}"
-          echo "GIT_USER=$GIT_USER" >> $GITHUB_ENV
-
       # 4. Install dependencies and deploy
       - name: Install dependencies and deploy
+        env:
+          GIT_USER: git
+          USE_SSH: true
         run: |
+          git config --global user.email "asafk@wix.com"
+          git config --global user.name "Asaf Korem"
           cd website
           npm install
           npm run deploy
