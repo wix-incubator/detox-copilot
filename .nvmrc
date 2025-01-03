@@ -1,1 +1,1 @@
-echo "20" > .nvmrc
+lts/jod
