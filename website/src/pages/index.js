@@ -59,7 +59,7 @@ export default function Home() {
         <FeatureSection
           title="Open for Contributions"
           description="Join our community and help expand Copilot's capabilities. Integrate your favorite testing framework today."
-          link="/docs/Guides/contributing-to-copilot-by-detox"
+          link="/docs/guides/contributing-to-copilot-by-detox"
           linkText="Contribute Now"
           boxStyle="box-dark-green"
         />
