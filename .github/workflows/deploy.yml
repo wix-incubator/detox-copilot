@@ -3,7 +3,7 @@ name: Deploy Docusaurus to GitHub Pages
 on:
   push:
     branches:
-      - master
+      - master  # Replace with your branch name if different
 
 jobs:
   deploy:
@@ -18,13 +18,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: 18  # Use a stable Node.js version like 18 LTS
 
       # 3. Install dependencies and deploy
-      - name: Deploy Docusaurus
+      - name: Install dependencies and deploy
         run: |
           cd website
-          npm install
-          GIT_USER=${{ secrets.GITHUB_ACTOR }} npm run deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          npm ci
+          npm run deploy
