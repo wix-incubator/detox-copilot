@@ -24,8 +24,8 @@ const copilot: CopilotFacade = {
 
         return result;
     },
-    extendAPICatalog: (context: any, categories: TestingFrameworkAPICatalogCategory[]) => {
-        Copilot.getInstance().extendAPICatalog(context, categories);
+    extendAPICatalog: (categories: TestingFrameworkAPICatalogCategory[], context?: any) => {
+        Copilot.getInstance().extendAPICatalog(categories, context);
     }
 };
 

@@ -21,10 +21,8 @@ export class Copilot {
     private stepPerformer: StepPerformer;
     private cacheHandler: CacheHandler;
     private isRunning: boolean = false;
-    private config: Config;
 
     private constructor(config: Config) {
-        this.config = config;
         this.promptCreator = new PromptCreator(config.frameworkDriver.apiCatalog);
         this.codeEvaluator = new CodeEvaluator();
         this.snapshotManager = new SnapshotManager(config.frameworkDriver);
@@ -112,9 +110,9 @@ export class Copilot {
     }
 
     /**
-     * Allow the user to add context and categories (titles and items) to the existing API catalog.
-     * @param context - The contexts to register.
+     * Enriches the API catalog by adding the provided categories and JS context.
      * @param categories - The categories to register.
+     * @param context - (Optional) Additional JS context to register.
      */
     extendAPICatalog(categories: TestingFrameworkAPICatalogCategory[], context?: any): void {
         this.promptCreator.extendAPICategories(categories);

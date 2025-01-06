@@ -1,8 +1,9 @@
-import { PromptCreator } from './PromptCreator';
+import {PromptCreator} from './PromptCreator';
 import {
     PreviousStep,
     TestingFrameworkAPICatalog
 } from "@/types";
+import {bazCategory, barCategory2, promptCreatorConstructorMockAPI} from "../test-utils/APICatalogTestUtils";
 
 const mockAPI: TestingFrameworkAPICatalog = {
     context: {},
@@ -49,6 +50,19 @@ const mockAPI: TestingFrameworkAPICatalog = {
     ]
 };
 
+describe('PromptCreator constructor', () => {
+    it('should merge redundant categories', () => {
+        let promptCreator: PromptCreator;
+        promptCreator = new PromptCreator(promptCreatorConstructorMockAPI);
+        const intent = 'expect button to be visible';
+        const viewHierarchy = '<View><Button testID="submit" title="Submit" /></View>';
+
+        const promptConstructorCategory = promptCreator.createPrompt(intent, viewHierarchy, false, []);
+
+        expect(promptConstructorCategory).toMatchSnapshot();
+    });
+});
+
 describe('PromptCreator', () => {
     let promptCreator: PromptCreator;
 
@@ -92,5 +106,24 @@ describe('PromptCreator', () => {
         const prompt = promptCreator.createPrompt(intent, viewHierarchy, false, []);
 
         expect(prompt).toMatchSnapshot();
+    });
+
+    describe('extentAPICategories', () => {
+        const intent = 'expect button to be visible';
+        const viewHierarchy = '<View><Button testID="submit" title="Submit" /></View>';
+
+        it('should extend the API catalog with new category', () => {
+            promptCreator.extendAPICategories([bazCategory]);
+            const promptNewCategory = promptCreator.createPrompt(intent, viewHierarchy, false, []);
+
+            expect(promptNewCategory).toMatchSnapshot();
+        });
+
+        it('should extend the API with existing category', () => {
+            promptCreator.extendAPICategories([barCategory2]);
+            const promptOldCategory = promptCreator.createPrompt(intent, viewHierarchy, false, []);
+
+            expect(promptOldCategory).toMatchSnapshot();
+        });
     });
 });

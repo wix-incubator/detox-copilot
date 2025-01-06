@@ -1,5 +1,5 @@
-import { CacheHandler } from './CacheHandler';
-import { mockCache, mockedCacheFile} from "../test-utils/cache";
+import {CacheHandler} from './CacheHandler';
+import {mockCache, mockedCacheFile} from "../test-utils/cache";
 
 jest.mock('fs');
 
@@ -13,7 +13,7 @@ describe('CacheHandler', () => {
 
     describe('cache and file operations', () => {
         it('should load cache from file successfully if the file exists and is valid', () => {
-            mockCache({ 'cacheKey': 'value' });
+            mockCache({'cacheKey': 'value'});
 
             expect(cacheHandler.getStepFromCache('cacheKey')).toBeUndefined();
 
@@ -28,7 +28,7 @@ describe('CacheHandler', () => {
             cacheHandler.addToTemporaryCache('cacheKey', 'value');
             cacheHandler.flushTemporaryCache();
 
-            expect(mockedCacheFile).toEqual({ 'cacheKey': 'value' });
+            expect(mockedCacheFile).toEqual({'cacheKey': 'value'});
         });
     });
 
