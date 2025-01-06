@@ -6,7 +6,21 @@ import {
 } from "@/types";
 
 export class PromptCreator {
-    constructor(private apiCatalog: TestingFrameworkAPICatalog) {}
+    constructor(private apiCatalog: TestingFrameworkAPICatalog) {
+    }
+
+    extendAPICategories(newCategories: TestingFrameworkAPICatalogCategory[]): void {
+        for (const category of newCategories) {
+            const existingCategory = this.apiCatalog.categories.find((existingCategory) => existingCategory.title === category.title);
+            if (existingCategory) {
+                for (const item of category.items) {
+                    existingCategory.items.push(item);
+                }
+            } else {
+                this.apiCatalog.categories.push(category);
+            }
+        }
+    }
 
     createPrompt(
         intent: string,

@@ -116,7 +116,7 @@ export class Copilot {
      * @param context - The contexts to register.
      * @param categories - The categories to register.
      */
-    extendAPICatalog(categories: TestingFrameworkAPICatalogCategory[] | TestingFrameworkAPICatalogCategory, context?: any): void {
+    extendAPICatalog(categories: TestingFrameworkAPICatalogCategory[], context?: any): void {
         this.promptCreator.extendAPICategories(categories);
         if (context)
             this.stepPerformer.extendJSContext(context);
