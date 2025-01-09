@@ -7,24 +7,30 @@ import {
 
 export class PromptCreator {
     constructor(private apiCatalog: TestingFrameworkAPICatalog) {
+        this.apiCatalog.categories = this.mergeCategories(this.apiCatalog.categories);
     }
 
     extendAPICategories(
-        newCategories: TestingFrameworkAPICatalogCategory[] | TestingFrameworkAPICatalogCategory
+        newCategories: TestingFrameworkAPICatalogCategory[]
     ): void {
-        const categories = Array.isArray(newCategories) ? newCategories : [newCategories];
+        this.apiCatalog.categories = this.mergeCategories([...this.apiCatalog.categories, ...newCategories]);
+    }
 
-        categories.forEach((category) => {
-            const existingCategory = this.apiCatalog.categories.find(
-                (c) => c.title === category.title
-            );
+    private mergeCategories(categories: TestingFrameworkAPICatalogCategory[]): TestingFrameworkAPICatalogCategory[] {
+        return categories.reduce((mergedCategories, category) => {
+            const existingIndex = mergedCategories.findIndex(c => c.title === category.title);
 
-            if (existingCategory) {
-                existingCategory.items.push(...category.items);
+            const uniqueItems = (items: TestingFrameworkAPICatalogItem[]) => Array.from(new Set(items));
+
+            if (existingIndex >= 0) {
+                mergedCategories[existingIndex].items = uniqueItems([...mergedCategories[existingIndex].items, ...category.items]);
+                return mergedCategories;
             } else {
-                this.apiCatalog.categories.push(category);
+                category.items = uniqueItems(category.items);
             }
-        });
+
+            return [...mergedCategories, {...category}];
+        }, [] as TestingFrameworkAPICatalogCategory[]);
     }
 
     createPrompt(
