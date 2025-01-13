@@ -3,7 +3,7 @@ import {PromptCreator} from "@/utils/PromptCreator";
 import {CodeEvaluator} from "@/utils/CodeEvaluator";
 import {SnapshotManager} from "@/utils/SnapshotManager";
 import {StepPerformer} from "@/actions/StepPerformer";
-import {Config, PreviousStep} from "@/types";
+import {Config, PreviousStep, TestingFrameworkAPICatalogCategory} from "@/types";
 import {CacheHandler} from "@/utils/CacheHandler";
 
 /**
@@ -107,6 +107,17 @@ export class Copilot {
 
         if (!isCacheDisabled)
             this.cacheHandler.flushTemporaryCache();
+    }
+
+    /**
+     * Enriches the API catalog by adding the provided categories and JS context.
+     * @param categories - The categories to register.
+     * @param context - (Optional) Additional JS context to register.
+     */
+    extendAPICatalog(categories: TestingFrameworkAPICatalogCategory[], context?: any): void {
+        this.promptCreator.extendAPICategories(categories);
+        if (context)
+            this.stepPerformer.extendJSContext(context);
     }
 
     private didPerformStep(step: string, code: string, result: any): void {

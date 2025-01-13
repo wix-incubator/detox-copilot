@@ -1,9 +1,14 @@
-import { Copilot } from '@/Copilot';
-import { StepPerformer } from '@/actions/StepPerformer';
-import { CopilotError } from '@/errors/CopilotError';
-import { Config } from "@/types";
-import fs from "fs";
-import { mockCache, mockedCacheFile } from "./test-utils/cache";
+import {Copilot} from '@/Copilot';
+import {StepPerformer} from '@/actions/StepPerformer';
+import {CopilotError} from '@/errors/CopilotError';
+import {Config} from "@/types";
+import {mockCache, mockedCacheFile} from "./test-utils/cache";
+import {
+    bazCategory,
+    barCategory2,
+    barCategory1,
+    dummyContext
+} from "./test-utils/APICatalogTestUtils";
 
 jest.mock('@/actions/StepPerformer');
 jest.mock('fs');
@@ -28,7 +33,8 @@ describe('Copilot', () => {
                 isSnapshotImageSupported: jest.fn().mockReturnValue(true)
             }
         };
-        jest.spyOn(console, 'error').mockImplementation(() => {});
+        jest.spyOn(console, 'error').mockImplementation(() => {
+        });
 
         (StepPerformer.prototype.perform as jest.Mock).mockResolvedValue({code: 'code', result: true});
     });
@@ -186,6 +192,51 @@ describe('Copilot', () => {
             instance.end(true);
 
             expect(mockedCacheFile).toBeUndefined();
+        });
+    });
+
+    describe('extend API catalog', () => {
+        const spyStepPerformer = jest.spyOn(StepPerformer.prototype, 'extendJSContext');
+        it('should extend the API catalog with a new category', () => {
+            Copilot.init(mockConfig);
+            const instance = Copilot.getInstance();
+
+            instance.extendAPICatalog([barCategory1]);
+
+            expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([barCategory1]);
+            expect(spyStepPerformer).not.toHaveBeenCalled();
+
+        });
+
+        it('should extend the API catalog with a new category and context', () => {
+            Copilot.init(mockConfig);
+            const instance = Copilot.getInstance();
+            instance.extendAPICatalog([barCategory1], dummyContext);
+
+            expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([barCategory1]);
+            expect(spyStepPerformer).toHaveBeenCalledWith(dummyContext);
+        });
+
+        it('should extend the API catalog with an existing category', () => {
+            Copilot.init(mockConfig);
+            const instance = Copilot.getInstance();
+
+            instance.extendAPICatalog([barCategory1])
+            instance.extendAPICatalog([barCategory2], dummyContext);
+
+            expect(mockConfig.frameworkDriver.apiCatalog.categories.length).toEqual(1);
+            expect(mockConfig.frameworkDriver.apiCatalog.categories[0].items).toEqual([...barCategory1.items, ...barCategory2.items]);
+            expect(spyStepPerformer).toHaveBeenCalledWith(dummyContext);
+        });
+
+        it('should extend the API catalog with a new category', () => {
+            Copilot.init(mockConfig);
+            const instance = Copilot.getInstance();
+
+            instance.extendAPICatalog([barCategory1]);
+            instance.extendAPICatalog([bazCategory]);
+
+            expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([barCategory1, bazCategory]);
         });
     });
 });

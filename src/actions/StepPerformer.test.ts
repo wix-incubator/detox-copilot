@@ -5,6 +5,7 @@ import {SnapshotManager} from '@/utils/SnapshotManager';
 import {CacheHandler} from '@/utils/CacheHandler';
 import {PromptHandler, TestingFrameworkAPICatalog} from '@/types';
 import * as crypto from 'crypto';
+import {dummyContext, dummyBarContext1, dummyBarContext2} from "../test-utils/APICatalogTestUtils";
 
 jest.mock('fs');
 jest.mock('crypto');
@@ -282,5 +283,39 @@ describe('StepPerformer', () => {
         expect(mockPromptHandler.runPrompt).toHaveBeenCalled();
         expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('generated code', mockContext);
         expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalled();
+    });
+
+    describe('extendJSContext', () =>{
+        it('should extend the context with the given object', async () => {
+            // Initial context
+            stepPerformer.extendJSContext(dummyBarContext1);
+
+            setupMocks();
+            await stepPerformer.perform(INTENT);
+            expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, dummyBarContext1);
+
+            // Extended context
+            const extendedContext = { ...dummyBarContext1, ...dummyContext };
+            stepPerformer.extendJSContext(dummyContext);
+
+            await stepPerformer.perform(INTENT);
+            expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, extendedContext);
+        });
+
+        it('should log when a context is overridden', async () => {
+            jest.spyOn(console, 'log');
+            stepPerformer.extendJSContext(dummyBarContext1);
+
+            setupMocks();
+            await stepPerformer.perform(INTENT);
+            expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, dummyBarContext1);
+
+            stepPerformer.extendJSContext(dummyBarContext2);
+            expect(console.log).toHaveBeenCalledWith('Notice: Context bar is overridden by the new context value');
+
+            await stepPerformer.perform(INTENT);
+            expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, dummyBarContext2);
+
+        });
     });
 });

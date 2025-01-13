@@ -19,9 +19,19 @@ export class StepPerformer {
     ) {
     }
 
+    extendJSContext(newContext: any): void {
+        for (const key in newContext) {
+            if (key in this.context) {
+                console.log(`Notice: Context ${key} is overridden by the new context value`);
+                break;
+            }
+        }
+        this.context = {...this.context, ...newContext};
+    }
+
     private generateCacheKey(step: string, previous: PreviousStep[], viewHierarchy: string): string {
         const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
-        return JSON.stringify({ step, previous, viewHierarchyHash });
+        return JSON.stringify({step, previous, viewHierarchyHash});
     }
 
     private async captureSnapshotAndViewHierarchy() {
@@ -32,7 +42,7 @@ export class StepPerformer {
 
         const isSnapshotImageAttached = snapshot != null && this.promptHandler.isSnapshotImageSupported();
 
-        return { snapshot, viewHierarchy, isSnapshotImageAttached };
+        return {snapshot, viewHierarchy, isSnapshotImageAttached};
     }
 
     private shouldOverrideCache() {
@@ -73,7 +83,7 @@ export class StepPerformer {
 
         for (let attempt = 1; attempt <= attempts; attempt++) {
             try {
-                const { snapshot, viewHierarchy, isSnapshotImageAttached } = await this.captureSnapshotAndViewHierarchy();
+                const {snapshot, viewHierarchy, isSnapshotImageAttached} = await this.captureSnapshotAndViewHierarchy();
 
                 const code = await this.generateCode(step, previous, snapshot, viewHierarchy, isSnapshotImageAttached);
                 lastCode = code;

@@ -1,4 +1,4 @@
-import { extractCodeBlock } from "./extractCodeBlock";
+import {extractCodeBlock} from "./extractCodeBlock";
 
 describe('extractCodeBlock', () => {
     const runExtractionTest = (input: string, expected: string) => {

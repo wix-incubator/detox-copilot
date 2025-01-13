@@ -41,6 +41,14 @@ export interface CopilotFacade {
      * @example 'Tap on the login button', 'A login form should be visible'
      */
     perform: (...steps: string[]) => Promise<string>;
+
+    /**
+     * Extends the API catalog of the testing framework with additional APIs (categories and JS context).
+     * @param context The variables of the testing framework (i.e. exposes the matching function, expect, etc.).
+     * @param categories The categories to add to the API catalog.
+     * @note This can be used to add custom categories and items to the API catalog.
+     */
+    extendAPICatalog: (categories: TestingFrameworkAPICatalogCategory[], context?: any,) => void;
 }
 
 /**
