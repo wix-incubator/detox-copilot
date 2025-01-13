@@ -107,6 +107,7 @@ export class PromptCreator {
                     "```",
                     previousStep.code,
                     "```",
+                    ...(previousStep.result ? [`- Result: ${previousStep.result}`] : []),
                     ""
                 ]).flat(),
                 ""

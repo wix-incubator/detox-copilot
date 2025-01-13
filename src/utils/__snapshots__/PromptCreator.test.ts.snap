@@ -673,6 +673,7 @@ No snapshot image is attached for this intent.
 \`\`\`
 await element(by.id("login")).tap();
 \`\`\`
+- Result: success
 
 #### Step 2
 - Intent: "enter username"
@@ -680,6 +681,7 @@ await element(by.id("login")).tap();
 \`\`\`
 await element(by.id("username")).typeText("john_doe");
 \`\`\`
+- Result: john doe
 
 
 ## Available Testing Framework API
