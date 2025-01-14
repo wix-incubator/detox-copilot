@@ -43,12 +43,12 @@ Your task is to generate a one-line string that precisely describes the next act
 Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
 If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
 
-### Example for answer formats
+### Examples for answer formats
 
-click on login button
-make sure welcome message appeares
-scroll to settings
-drag the circle to its places
+1. click on login button
+2. make sure welcome message appeares
+3. scroll to settings
+4. drag the circle to its places
 
 ### Example of Throwing an Informative Error:
 \`\`\`
@@ -101,12 +101,12 @@ Your task is to generate a one-line string that precisely describes the next act
 Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
 If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
 
-### Example for answer formats
+### Examples for answer formats
 
-click on login button
-make sure welcome message appeares
-scroll to settings
-drag the circle to its places
+1. click on login button
+2. make sure welcome message appeares
+3. scroll to settings
+4. drag the circle to its places
 
 ### Example of Throwing an Informative Error:
 \`\`\`
@@ -176,12 +176,12 @@ Your task is to generate a one-line string that precisely describes the next act
 Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
 If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
 
-### Example for answer formats
+### Examples for answer formats
 
-click on login button
-make sure welcome message appeares
-scroll to settings
-drag the circle to its places
+1. click on login button
+2. make sure welcome message appeares
+3. scroll to settings
+4. drag the circle to its places
 
 ### Example of Throwing an Informative Error:
 \`\`\`
