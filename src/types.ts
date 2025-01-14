@@ -41,6 +41,15 @@ export interface CopilotFacade {
      * @example 'Tap on the login button', 'A login form should be visible'
      */
     perform: (...steps: string[]) => Promise<string>;
+
+     /**
+     * Preforms actions untill it reaches the goal.
+     * @example Book a class
+     * @example Buy a product
+     * @example win the shape matching game
+     */
+
+    pilot: (goal: string) => Promise<void>;
 }
 
 /**

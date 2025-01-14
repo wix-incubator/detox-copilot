@@ -23,6 +23,10 @@ const copilot: CopilotFacade = {
         }
 
         return result;
+    },
+    pilot : async (goal :string) => {
+        const copilotInstance = Copilot.getInstance();
+        await copilotInstance.pilot(goal);
     }
 };
 

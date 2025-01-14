@@ -5,7 +5,8 @@ import {SnapshotManager} from "@/utils/SnapshotManager";
 import {StepPerformer} from "@/actions/StepPerformer";
 import {Config, PreviousStep} from "@/types";
 import {CacheHandler} from "@/utils/CacheHandler";
-
+import {PilotStepCreator} from "@/actions/PilotStepCreator";
+import {PilotPromptCreator} from "@/utils/PilotPromptCreator";
 /**
  * The main Copilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
  * @note Originally, this class is designed to work with Detox, but it can be extended to work with other frameworks.
@@ -21,11 +22,15 @@ export class Copilot {
     private stepPerformer: StepPerformer;
     private cacheHandler: CacheHandler;
     private isRunning: boolean = false;
+    private pilotStepCreator : PilotStepCreator;
+    private pilotPromptCreator : PilotPromptCreator;
 
     private constructor(config: Config) {
         this.promptCreator = new PromptCreator(config.frameworkDriver.apiCatalog);
         this.codeEvaluator = new CodeEvaluator();
         this.snapshotManager = new SnapshotManager(config.frameworkDriver);
+        this.pilotPromptCreator = new PilotPromptCreator();
+        this.pilotStepCreator = new PilotStepCreator(this.pilotPromptCreator, this.snapshotManager, config.promptHandler);
         this.cacheHandler = new CacheHandler();
         this.stepPerformer = new StepPerformer(
             config.frameworkDriver.apiCatalog.context,
@@ -115,5 +120,21 @@ export class Copilot {
             code,
             result
         }];
+    }
+     /**
+     * Performs an entire test flow using the provided goal.
+     * @param goal A string which describes the flow should be executed.
+     * @returns void
+     */
+     async pilot(goal :string) : Promise<void> {
+        let genrateNextStep = true;
+        let attempts = 10;
+        while (genrateNextStep && attempts) {
+            const nextStep = await this.pilotStepCreator.createStep(goal, this.previousSteps);
+            await this.performStep(nextStep);
+            genrateNextStep = nextStep == 'success' ? false : true;
+            attempts --;
+        }
+        return;
     }
 }

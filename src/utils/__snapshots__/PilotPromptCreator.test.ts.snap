@@ -1,0 +1,171 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PilotPromptCreator should create a prompt for an intent correctly 1`] = `
+"# Next Step Generation
+
+You are an AI assistant tasked with predicting the next optimal action a user should take within an application to progress towards a specific goal.
+Please generate a one-line string that precisely describes the next action the user should take to move closer to their goal
+If you think that the goal has been reached return a one word 'success'
+
+## Context
+
+### Intent to perform
+
+Generate a one-line string that precisely describes the next action the user should take to move closer to their goal which is: "tap button"
+
+### View hierarchy
+
+\`\`\`
+<View><Button testID="submit" title="Submit" /></View>
+\`\`\`
+
+### Snapshot image
+
+A snapshot image is attached for visual reference.
+
+## Instructions
+
+Your task is to generate a one-line string that precisely describes the next action the user should take to move closer to their goal: "tap button"
+
+Please follow these steps carefully:
+
+1. Analyze the provided goal, view hierarchy, and previous steps to understand the user's progress and what actions are available.
+2. Consider the elements present in the view hierarchy and, if available, the snapshot image to determine possible next actions.
+3. Determine the optimal next action that the user should take to move closer to their goal.
+4. Ensure that the action is directly related to available elements in the view hierarchy.
+5. Generate a one-line string that precisely describes this next action.
+6. The description should be clear, specific, and actionable.
+7. Do not include any additional information or explanations beyond the one-line action description.
+8. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
+
+### Verify the Prompt
+
+Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
+If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
+
+### Example of Throwing an Informative Error:
+\`\`\`
+Error: Unable to determine the next action due to insufficient information in the view hierarchy.
+\`\`\`
+
+Please provide your response below:"
+`;
+
+exports[`PilotPromptCreator should handle when no snapshot image is attached 1`] = `
+"# Next Step Generation
+
+You are an AI assistant tasked with predicting the next optimal action a user should take within an application to progress towards a specific goal.
+Please generate a one-line string that precisely describes the next action the user should take to move closer to their goal
+If you think that the goal has been reached return a one word 'success'
+
+## Context
+
+### Intent to perform
+
+Generate a one-line string that precisely describes the next action the user should take to move closer to their goal which is: "expect button to be visible"
+
+### View hierarchy
+
+\`\`\`
+<View><Button testID="submit" title="Submit" /></View>
+\`\`\`
+
+### Snapshot image
+
+No snapshot image is attached for this intent.
+
+## Instructions
+
+Your task is to generate a one-line string that precisely describes the next action the user should take to move closer to their goal: "expect button to be visible"
+
+Please follow these steps carefully:
+
+1. Analyze the provided goal, view hierarchy, and previous steps to understand the user's progress and what actions are available.
+2. Consider the elements present in the view hierarchy and, if available, the snapshot image to determine possible next actions.
+3. Determine the optimal next action that the user should take to move closer to their goal.
+4. Ensure that the action is directly related to available elements in the view hierarchy.
+5. Generate a one-line string that precisely describes this next action.
+6. The description should be clear, specific, and actionable.
+7. Do not include any additional information or explanations beyond the one-line action description.
+8. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
+
+### Verify the Prompt
+
+Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
+If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
+
+### Example of Throwing an Informative Error:
+\`\`\`
+Error: Unable to determine the next action due to insufficient information in the view hierarchy.
+\`\`\`
+
+Please provide your response below:"
+`;
+
+exports[`PilotPromptCreator should include previous intents in the context 1`] = `
+"# Next Step Generation
+
+You are an AI assistant tasked with predicting the next optimal action a user should take within an application to progress towards a specific goal.
+Please generate a one-line string that precisely describes the next action the user should take to move closer to their goal
+If you think that the goal has been reached return a one word 'success'
+
+## Context
+
+### Intent to perform
+
+Generate a one-line string that precisely describes the next action the user should take to move closer to their goal which is: "tap button"
+
+### View hierarchy
+
+\`\`\`
+<View><Button testID="submit" title="Submit" /></View>
+\`\`\`
+
+### Snapshot image
+
+No snapshot image is attached for this intent.
+
+### Previous intents
+
+#### Step 1
+- Intent: "navigate to login screen"
+- Generated code:
+\`\`\`
+await element(by.id("login")).tap();
+\`\`\`
+
+#### Step 2
+- Intent: "enter username"
+- Generated code:
+\`\`\`
+await element(by.id("username")).typeText("john_doe");
+\`\`\`
+
+
+## Instructions
+
+Your task is to generate a one-line string that precisely describes the next action the user should take to move closer to their goal: "tap button"
+
+Please follow these steps carefully:
+
+1. Analyze the provided goal, view hierarchy, and previous steps to understand the user's progress and what actions are available.
+2. Consider the elements present in the view hierarchy and, if available, the snapshot image to determine possible next actions.
+3. Determine the optimal next action that the user should take to move closer to their goal.
+4. Ensure that the action is directly related to available elements in the view hierarchy.
+5. Generate a one-line string that precisely describes this next action.
+6. The description should be clear, specific, and actionable.
+7. Do not include any additional information or explanations beyond the one-line action description.
+8. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
+
+### Verify the Prompt
+
+Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
+If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
+
+### Example of Throwing an Informative Error:
+\`\`\`
+Error: Unable to determine the next action due to insufficient information in the view hierarchy.
+\`\`\`
+
+Please provide your response below:"
+`;
