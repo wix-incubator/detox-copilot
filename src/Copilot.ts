@@ -142,8 +142,10 @@ export class Copilot {
         let attempts = 10;
         while (genrateNextStep && attempts) {
             const nextStep = await this.pilotStepCreator.createStep(goal, this.previousSteps);
-            await this.performStep(nextStep);
             genrateNextStep = nextStep == 'success' ? false : true;
+            if (genrateNextStep) {
+              await this.performStep(nextStep);
+            }
             attempts --;
         }
         return;
