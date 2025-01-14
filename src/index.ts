@@ -28,6 +28,7 @@ const copilot: CopilotFacade = {
     pilot : async (goal :string) => {
         const copilotInstance = Copilot.getInstance();
         await copilotInstance.pilot(goal);
+    },
 
     extendAPICatalog: (categories: TestingFrameworkAPICatalogCategory[], context?: any) => {
         Copilot.getInstance().extendAPICatalog(categories, context);
