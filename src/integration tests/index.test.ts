@@ -1,9 +1,12 @@
 import copilot from "@/index";
 import fs from 'fs';
-import { Copilot } from "@/Copilot";
-import { PromptHandler, TestingFrameworkDriver } from "@/types";
+import {Copilot} from "@/Copilot";
+import {PromptHandler, TestingFrameworkDriver} from "@/types";
 import * as crypto from 'crypto';
 import {mockedCacheFile, mockCache} from "../test-utils/cache";
+import {PromptCreator} from "../utils/PromptCreator";
+import {StepPerformer} from "../actions/StepPerformer";
+import {bazCategory, barCategory1, dummyContext} from "../test-utils/APICatalogTestUtils";
 
 jest.mock('crypto');
 jest.mock('fs');
@@ -79,7 +82,6 @@ describe('Copilot Integration Tests', () => {
 
         it('should successfully perform an action', async () => {
             mockPromptHandler.runPrompt.mockResolvedValue('// No operation');
-
             await expect(copilot.perform('Tap on the login button')).resolves.not.toThrow();
 
             expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalled();
@@ -328,6 +330,30 @@ describe('Copilot Integration Tests', () => {
                 expect.stringContaining('Perform action without snapshot support'),
                 undefined
             );
+        });
+    });
+
+    describe('API Catalog Extension', () => {
+        const spyPromptCreator = jest.spyOn(PromptCreator.prototype, 'extendAPICategories');
+        const spyStepPerformer = jest.spyOn(StepPerformer.prototype, 'extendJSContext');
+
+        beforeEach(() => {
+            jest.clearAllMocks();
+            copilot.init({
+                frameworkDriver: mockFrameworkDriver,
+                promptHandler: mockPromptHandler,
+            });
+            copilot.start();
+        });
+
+        it('should call relevant functions to extend the catalog', () => {
+
+            copilot.extendAPICatalog([bazCategory]);
+            expect(spyPromptCreator).toHaveBeenCalledTimes(1);
+
+            copilot.extendAPICatalog([barCategory1], dummyContext);
+            expect(spyPromptCreator).toHaveBeenCalledTimes(2);
+            expect(spyStepPerformer).toHaveBeenCalledTimes(1);
         });
     });
 });

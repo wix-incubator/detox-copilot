@@ -1,4 +1,4 @@
-import { CodeEvaluator } from '@/utils/CodeEvaluator';
+import {CodeEvaluator} from '@/utils/CodeEvaluator';
 
 describe('CodeEvaluator', () => {
     let codeEvaluator: CodeEvaluator;
@@ -26,7 +26,7 @@ describe('CodeEvaluator', () => {
         const contextVariable = 43;
         const validCode = 'return contextVariable - 1;';
 
-        await expect(codeEvaluator.evaluate(validCode, { contextVariable })).resolves.toStrictEqual({
+        await expect(codeEvaluator.evaluate(validCode, {contextVariable})).resolves.toStrictEqual({
             code: 'return contextVariable - 1;',
             result: 42
         });
