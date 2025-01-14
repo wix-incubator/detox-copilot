@@ -27,7 +27,7 @@ A snapshot image is attached for visual reference.
 
 Your task is to generate a one-line string that precisely describes the next action the user should take to move closer to their goal: "tap button"
 
-Please follow these steps carefully:
+##Please follow these steps carefully:
 
 1. Analyze the provided goal, view hierarchy, and previous steps to understand the user's progress and what actions are available.
 2. Consider the elements present in the view hierarchy and, if available, the snapshot image to determine possible next actions.
@@ -42,6 +42,13 @@ Please follow these steps carefully:
 
 Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
 If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
+
+### Example for answer formats
+
+click on login button
+make sure welcome message appeares
+scroll to settings
+drag the circle to its places
 
 ### Example of Throwing an Informative Error:
 \`\`\`
@@ -78,7 +85,7 @@ No snapshot image is attached for this intent.
 
 Your task is to generate a one-line string that precisely describes the next action the user should take to move closer to their goal: "expect button to be visible"
 
-Please follow these steps carefully:
+##Please follow these steps carefully:
 
 1. Analyze the provided goal, view hierarchy, and previous steps to understand the user's progress and what actions are available.
 2. Consider the elements present in the view hierarchy and, if available, the snapshot image to determine possible next actions.
@@ -93,6 +100,13 @@ Please follow these steps carefully:
 
 Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
 If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
+
+### Example for answer formats
+
+click on login button
+make sure welcome message appeares
+scroll to settings
+drag the circle to its places
 
 ### Example of Throwing an Informative Error:
 \`\`\`
@@ -146,7 +160,7 @@ await element(by.id("username")).typeText("john_doe");
 
 Your task is to generate a one-line string that precisely describes the next action the user should take to move closer to their goal: "tap button"
 
-Please follow these steps carefully:
+##Please follow these steps carefully:
 
 1. Analyze the provided goal, view hierarchy, and previous steps to understand the user's progress and what actions are available.
 2. Consider the elements present in the view hierarchy and, if available, the snapshot image to determine possible next actions.
@@ -161,6 +175,13 @@ Please follow these steps carefully:
 
 Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
 If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
+
+### Example for answer formats
+
+click on login button
+make sure welcome message appeares
+scroll to settings
+drag the circle to its places
 
 ### Example of Throwing an Informative Error:
 \`\`\`
