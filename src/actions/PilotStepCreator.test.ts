@@ -9,10 +9,22 @@ jest.mock('crypto');
 
 const GOAL = 'tap button';
 const VIEW_HIERARCHY = '<view></view>';
-const PROMPT_RESULT = 'generated step';
+const PROMPT_RESULT = `
+        These are my thoughts:
+        <THOUGHTS>
+        I think this is great
+        </THOUGHTS>
+        This is the action the copilot should perform:
+         <ACTION>
+         Tap on GREAT button
+        </ACTION>
+        <ACTION>
+         Tap on WOW button
+        </ACTION>`;
 const CODE_EVALUATION_RESULT = 'success';
 const SNAPSHOT_DATA = 'snapshot_data';
 const VIEW_HIERARCHY_HASH = 'hash';
+
 
 
 describe('StepPerformer', () => {
@@ -61,14 +73,14 @@ describe('StepPerformer', () => {
         isSnapshotSupported?: boolean;
         snapshotData?: string | null;
         viewHierarchy?: string;
-        promptResult?: string;
+        promptResult?: any;
     }
 
     const setupMocks = ({
                             isSnapshotSupported = true,
                             snapshotData = SNAPSHOT_DATA,
                             viewHierarchy = VIEW_HIERARCHY,
-                            promptResult = PROMPT_RESULT,
+                            promptResult  = PROMPT_RESULT,
                         }: SetupMockOptions = {}) => {
         mockPromptHandler.isSnapshotImageSupported.mockReturnValue(isSnapshotSupported);
         mockSnapshotManager.captureSnapshotImage.mockResolvedValue(
@@ -91,7 +103,7 @@ describe('StepPerformer', () => {
 
         const result = await stepPerformer.createStep(GOAL);
 
-        expect(result).toBe('generated step');
+        expect(result).toEqual({thoughts: "I think this is great", action: 'Tap on GREAT button'});
         expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
             GOAL,
             VIEW_HIERARCHY,
@@ -107,7 +119,7 @@ describe('StepPerformer', () => {
 
         const result = await stepPerformer.createStep(GOAL);
 
-        expect(result).toBe('generated step');
+        expect(result).toEqual({thoughts: "I think this is great", action: 'Tap on GREAT button'});
         expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
             GOAL,
             VIEW_HIERARCHY,
@@ -123,7 +135,7 @@ describe('StepPerformer', () => {
 
         const result = await stepPerformer.createStep(GOAL);
 
-        expect(result).toBe('generated step');
+        expect(result).toEqual({thoughts: "I think this is great", action: 'Tap on GREAT button'});
         expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
             GOAL,
             VIEW_HIERARCHY,
@@ -150,7 +162,7 @@ describe('StepPerformer', () => {
         });
         const result = await stepPerformer.createStep(intent, previousIntents);
 
-        expect(result).toBe('generated step');
+        expect(result).toEqual({thoughts: "I think this is great", action: 'Tap on GREAT button'});
         expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
             intent,
             VIEW_HIERARCHY,
