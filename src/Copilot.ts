@@ -3,7 +3,7 @@ import {PromptCreator} from "@/utils/PromptCreator";
 import {CodeEvaluator} from "@/utils/CodeEvaluator";
 import {SnapshotManager} from "@/utils/SnapshotManager";
 import {StepPerformer} from "@/actions/StepPerformer";
-import {Config, PreviousStep, TestingFrameworkAPICatalogCategory} from "@/types";
+import {Config, PreviousStep, TestingFrameworkAPICatalogCategory, PilotOutput} from "@/types";
 import {CacheHandler} from "@/utils/CacheHandler";
 import {PilotStepCreator} from "@/actions/PilotStepCreator";
 import {PilotPromptCreator} from "@/utils/PilotPromptCreator";
@@ -24,6 +24,7 @@ export class Copilot {
     private isRunning: boolean = false;
     private pilotStepCreator : PilotStepCreator;
     private pilotPromptCreator : PilotPromptCreator;
+    private pilotOutputsList : PilotOutput[] = [];
 
     private constructor(config: Config) {
         this.promptCreator = new PromptCreator(config.frameworkDriver.apiCatalog);
@@ -137,17 +138,20 @@ export class Copilot {
      * @param goal A string which describes the flow should be executed.
      * @returns void
      */
-     async pilot(goal :string) : Promise<void> {
+     async pilot(goal :string) : Promise<PilotOutput[]> {
         let genrateNextStep = true;
         let attempts = 10;
         while (genrateNextStep && attempts) {
-            const nextStep = await this.pilotStepCreator.createStep(goal, this.previousSteps);
-            genrateNextStep = nextStep == 'success' ? false : true;
+            const pilotOutput = await this.pilotStepCreator.createStep(goal, this.previousSteps);
+            this.pilotOutputsList.push({action : pilotOutput.action, thoughts : pilotOutput.thoughts})
+            genrateNextStep = pilotOutput.action == 'success' ? false : true;
             if (genrateNextStep) {
-              await this.performStep(nextStep);
+              await this.performStep(pilotOutput.action);
             }
             attempts --;
+            console.log(pilotOutput)
         }
-        return;
+        console.log(this.pilotOutputsList)
+        return this.pilotOutputsList;
     }
 }

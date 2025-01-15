@@ -25,7 +25,7 @@ export class PilotPromptCreator {
             "# Next Step Generation",
             "",
             "You are an AI assistant tasked with predicting the next optimal action a user should take within an application to progress towards a specific goal.",
-            "Please generate a one-line string that precisely describes the next action the user should take to move closer to their goal",
+            "Please generate a one-line string that precisely describes the next action the user should take to move closer to their goal, and another string (which can be greater than one line) which describes your toughts while creating the step",
             "If you think that the goal has been reached return a one word 'success'",
             ""
         ];
@@ -107,10 +107,34 @@ export class PilotPromptCreator {
             "",
             "### Examples for answer formats",
             "",
-            "1. click on login button",
-            "2. make sure welcome message appeares",
-            "3. scroll to settings",
-            "4. drag the circle to its places",
+            `1.
+            <THOUGHTS>
+            I think that we should click the login button because it will authenticate the user and grant access to the application.
+            </THOUGHTS>
+            <ACTION>
+            Click on login button
+            </ACTION>
+            2.
+            <THOUGHTS>
+            Ensuring that the welcome message appears confirms that the login was successful and the user has properly accessed the system.
+            </THOUGHTS>
+            <ACTION>
+            Make sure the welcome message appears
+            </ACTION>
+            3.
+            <THOUGHTS>
+            To access the settings and adjust preferences, we need to navigate to the settings menu, which may require scrolling through the interface.
+            </THOUGHTS>
+            <ACTION>
+            Scroll to settings
+            </ACTION>
+            4.
+            <THOUGHTS>
+            Dragging the circle to its place is essential to complete the setup or task, ensuring that interactive elements function correctly.
+            </THOUGHTS>
+            <ACTION>
+            Drag the circle to its place
+            </ACTION>`,
             "",
             "### Example of Throwing an Informative Error:",
             "```",

@@ -183,3 +183,14 @@ export type CodeEvaluationResult = {
     code: string;
     result: any;
 }
+
+
+/**
+ * Represents the output of pilot.
+ * @property action that was created as next step for copilot.
+ * @property thoughts were taken by the LLM to create this specific action
+ */
+export type PilotOutput = {
+    action : string;
+    thoughts : string;
+}
