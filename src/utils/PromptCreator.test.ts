@@ -83,12 +83,12 @@ describe('PromptCreator', () => {
             {
                 step: 'navigate to login screen',
                 code: 'await element(by.id("login")).tap();',
-                result: undefined
+                result: 'success'
             },
             {
                 step: 'enter username',
                 code: 'await element(by.id("username")).typeText("john_doe");',
-                result: undefined
+                result: 'john doe'
             }
         ];
 
