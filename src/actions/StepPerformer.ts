@@ -34,7 +34,7 @@ export class StepPerformer {
         return JSON.stringify({step, previous, viewHierarchyHash});
     }
 
-    private async captureSnapshotAndViewHierarchy() {
+     async captureSnapshotAndViewHierarchy() {
         const snapshot = this.promptHandler.isSnapshotImageSupported()
             ? await this.snapshotManager.captureSnapshotImage()
             : undefined;

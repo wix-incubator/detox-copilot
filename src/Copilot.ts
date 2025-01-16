@@ -3,9 +3,9 @@ import {PromptCreator} from "@/utils/PromptCreator";
 import {CodeEvaluator} from "@/utils/CodeEvaluator";
 import {SnapshotManager} from "@/utils/SnapshotManager";
 import {StepPerformer} from "@/actions/StepPerformer";
-import {Config, PreviousStep, TestingFrameworkAPICatalogCategory, PilotOutput} from "@/types";
+import {Config, PreviousStep, TestingFrameworkAPICatalogCategory, PilotReport} from "@/types";
 import {CacheHandler} from "@/utils/CacheHandler";
-import {PilotStepCreator} from "@/actions/PilotStepCreator";
+import {PilotPerformer} from "@/actions/PilotPerformer";
 import {PilotPromptCreator} from "@/utils/PilotPromptCreator";
 /**
  * The main Copilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
@@ -22,16 +22,14 @@ export class Copilot {
     private stepPerformer: StepPerformer;
     private cacheHandler: CacheHandler;
     private isRunning: boolean = false;
-    private pilotStepCreator : PilotStepCreator;
+    private pilotPerformer : PilotPerformer;
     private pilotPromptCreator : PilotPromptCreator;
-    private pilotOutputsList : PilotOutput[] = [];
 
     private constructor(config: Config) {
         this.promptCreator = new PromptCreator(config.frameworkDriver.apiCatalog);
         this.codeEvaluator = new CodeEvaluator();
         this.snapshotManager = new SnapshotManager(config.frameworkDriver);
         this.pilotPromptCreator = new PilotPromptCreator();
-        this.pilotStepCreator = new PilotStepCreator(this.pilotPromptCreator, this.snapshotManager, config.promptHandler);
         this.cacheHandler = new CacheHandler();
         this.stepPerformer = new StepPerformer(
             config.frameworkDriver.apiCatalog.context,
@@ -41,6 +39,7 @@ export class Copilot {
             config.promptHandler,
             this.cacheHandler
         );
+        this.pilotPerformer = new PilotPerformer(this.pilotPromptCreator, this.stepPerformer, config.promptHandler, () => this.previousSteps);
 
     }
 
@@ -138,20 +137,7 @@ export class Copilot {
      * @param goal A string which describes the flow should be executed.
      * @returns void
      */
-     async pilot(goal :string) : Promise<PilotOutput[]> {
-        let genrateNextStep = true;
-        let attempts = 10;
-        while (genrateNextStep && attempts) {
-            const pilotOutput = await this.pilotStepCreator.createStep(goal, this.previousSteps);
-            this.pilotOutputsList.push({action : pilotOutput.action, thoughts : pilotOutput.thoughts})
-            genrateNextStep = pilotOutput.action == 'success' ? false : true;
-            if (genrateNextStep) {
-              await this.performStep(pilotOutput.action);
-            }
-            attempts --;
-            console.log(pilotOutput)
-        }
-        console.log(this.pilotOutputsList)
-        return this.pilotOutputsList;
-    }
+     async pilot(goal :string) : Promise<PilotReport> {
+        return await this.pilotPerformer.perform(goal);
+     }
 }

@@ -1,14 +1,20 @@
-export type OutputMapper = {[key:string]: string};
+export type OutputMapper = Record<string, string>;
 
-export function extractOutputs({text, outputsMapper}: {text:string, outputsMapper: OutputMapper}): {[tag:string]: string} {
-    let outputs : { [key: string]: string } = {};
-    Object.entries(outputsMapper).forEach(([tag, value]) => {
-        const regex = new RegExp(`<${tag}>(.*?)<\/${tag}>`, 's');
-        const match = text.match(regex);
-        if (match) {
-            outputs[value] = match[1].trim();
-        }
-    });
-    return outputs;
+export function extractOutputs<M extends OutputMapper>(
+  { text, outputsMapper }: { text: string; outputsMapper: M }
+): { [K in keyof M]: string } {
+  const outputs: Partial<{ [K in keyof M]: string }> = {};
+
+  for (const fieldName in outputsMapper) {
+    const tag = outputsMapper[fieldName];
+    const regex = new RegExp(`<${tag}>(.*?)<\/${tag}>`, 's');
+    const match = text.match(regex);
+    if (match) {
+      outputs[fieldName] = match[1].trim();
+    } else {
+      throw new Error(`Missing field for tag <${tag}>`);
+    }
+  }
+
+  return outputs as { [K in keyof M]: string };
 }
-

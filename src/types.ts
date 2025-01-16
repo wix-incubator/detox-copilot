@@ -50,7 +50,7 @@ export interface CopilotFacade {
      * @example win the shape matching game
      */
 
-    pilot: (goal: string) => Promise<void>;
+    pilot: (goal: string) => Promise<PilotReport>;
 
     /**
      * Extends the API catalog of the testing framework with additional APIs (categories and JS context).
@@ -190,7 +190,15 @@ export type CodeEvaluationResult = {
  * @property action that was created as next step for copilot.
  * @property thoughts were taken by the LLM to create this specific action
  */
-export type PilotOutput = {
+export type PilotStepReport = {
     action : string;
     thoughts : string;
+}
+
+/**
+ * Represents the output of pilot.
+ * @property report of pilot's actions (thoughts, actions, ect ....)
+ */
+export type PilotReport = {
+    report : PilotStepReport[];
 }
