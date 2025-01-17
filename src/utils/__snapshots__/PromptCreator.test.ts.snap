@@ -124,8 +124,9 @@ Please follow these steps carefully:
 2. Generate the minimal executable code required to perform the intent using the available API.
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
-5. Wrap the generated code with backticks, without any additional formatting.
-6. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+6. Wrap the generated code with backticks, without any additional formatting.
+7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -253,8 +254,9 @@ Please follow these steps carefully:
 2. Generate the minimal executable code required to perform the intent using the available API.
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
-5. Wrap the generated code with backticks, without any additional formatting.
-6. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+6. Wrap the generated code with backticks, without any additional formatting.
+7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -396,8 +398,9 @@ Please follow these steps carefully:
 2. Generate the minimal executable code required to perform the intent using the available API.
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
-5. Wrap the generated code with backticks, without any additional formatting.
-6. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+6. Wrap the generated code with backticks, without any additional formatting.
+7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -513,8 +516,9 @@ Please follow these steps carefully:
 6. If visual validation is not possible, proceed to generate the minimal executable code required to perform the intent.
 7. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 8. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
-9. Wrap the generated code with backticks, without any additional formatting.
-10. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+9. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+10. Wrap the generated code with backticks, without any additional formatting.
+11. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -631,8 +635,9 @@ Please follow these steps carefully:
 2. Generate the minimal executable code required to perform the intent using the available API.
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
-5. Wrap the generated code with backticks, without any additional formatting.
-6. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+6. Wrap the generated code with backticks, without any additional formatting.
+7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -763,8 +768,9 @@ Please follow these steps carefully:
 2. Generate the minimal executable code required to perform the intent using the available API.
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
-5. Wrap the generated code with backticks, without any additional formatting.
-6. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+6. Wrap the generated code with backticks, without any additional formatting.
+7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
