@@ -217,6 +217,7 @@ export class PromptCreator {
         }
         steps.push(
             "If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.",
+            "Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.",
             "Wrap the generated code with backticks, without any additional formatting.",
             "Do not provide any additional code beyond the minimal executable code required to perform the intent."
         );
