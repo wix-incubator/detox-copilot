@@ -40,7 +40,6 @@ export class PilotPerformer {
     }
 
     async perform(goal :string) : Promise<PilotReport> {
-        let genrateNextStep = true;
         let maxSteps = 100;
         const pilotReport : PilotReport = {report :[]};
         for (let step = 0; step < maxSteps ; step ++) {
