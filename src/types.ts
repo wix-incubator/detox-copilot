@@ -184,19 +184,28 @@ export type CodeEvaluationResult = {
 }
 
 /**
- * Represents the output of pilot.
- * @property action that was created as next step for copilot.
- * @property thoughts were taken by the LLM to create this specific action
+ * Represents the output of each iteration of pilot's perform.
+ * @property contains the action and thoughts that were taken by the LLM 
+ * @property the code that were created by the LLM from pilot's action
  */
 export type PilotStepReport = {
-    action : string;
-    thoughts : string;
+    plan: PilotStepPlan;
+    code?: string;
 }
 
 /**
  * Represents the output of pilot.
- * @property report of pilot's actions (thoughts, actions, ect ....)
+ * @property report of pilot's actions (thoughts, actions, code ....)
  */
 export type PilotReport = {
     report : PilotStepReport[];
+}
+
+/**
+ * Represents the output of pilots createStepPlan method.
+ * @property report of pilot's actions (thoughts, actions, ect ....)
+ */
+export type PilotStepPlan = {
+    action: string;
+    thoughts: string;
 }

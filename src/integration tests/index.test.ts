@@ -356,6 +356,7 @@ describe('Copilot Integration Tests', () => {
             expect(spyCopilotStepPerformer).toHaveBeenCalledTimes(1);
         });
     });
+    
     describe('Pilot Method', () => {
         beforeEach(() => {
           jest.clearAllMocks();
@@ -365,40 +366,52 @@ describe('Copilot Integration Tests', () => {
           });
           copilot.start();
         });
-    
+      
         it('should perform pilot flow and return a pilot report', async () => {
           const goal = 'Complete the login flow';
           const mockPilotReport: PilotReport = {
             report: [
-              { thoughts: 'First step thoughts', action: 'Tap on login button' },
-              { thoughts: 'Second step thoughts', action: 'Enter username' },
-              { thoughts: 'Third step thoughts', action: 'Enter password' },
-              { thoughts: 'Fourth step thoughts', action: 'success' },
+              {
+                plan: { thoughts: 'First step thoughts', action: 'Tap on login button' },
+                code: 'First step code output',
+              },
+              {
+                plan: { thoughts: 'Second step thoughts', action: 'Enter username' },
+                code: 'Second step code output',
+              },
+              {
+                plan: { thoughts: 'Third step thoughts', action: 'Enter password' },
+                code: 'Third step code output',
+              },
+              {
+                plan: { thoughts: 'Fourth step thoughts', action: 'success' },
+                code: '',
+              },
             ],
           };
           const copilotInstance = Copilot.getInstance();
           const spyPilotPerformerPerform = jest
             .spyOn(copilotInstance['pilotPerformer'], 'perform')
             .mockResolvedValue(mockPilotReport);
-    
+      
           const result = await copilot.pilot(goal);
-    
+      
           expect(spyPilotPerformerPerform).toHaveBeenCalledTimes(1);
           expect(spyPilotPerformerPerform).toHaveBeenCalledWith(goal);
           expect(result).toEqual(mockPilotReport);
         });
-    
+      
         it('should handle errors from pilotPerformer.perform', async () => {
           const goal = 'Some goal that causes an error';
-    
+      
           const errorMessage = 'Error during pilot execution';
           const copilotInstance = Copilot.getInstance();
           const spyPilotPerformerPerform = jest
             .spyOn(copilotInstance['pilotPerformer'], 'perform')
             .mockRejectedValue(new Error(errorMessage));
-    
+      
           await expect(copilot.pilot(goal)).rejects.toThrow(errorMessage);
-    
+      
           expect(spyPilotPerformerPerform).toHaveBeenCalledTimes(1);
           expect(spyPilotPerformerPerform).toHaveBeenCalledWith(goal);
         });

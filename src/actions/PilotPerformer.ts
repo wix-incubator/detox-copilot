@@ -1,36 +1,33 @@
 import { PilotPromptCreator } from '@/utils/PilotPromptCreator';
-import {PreviousStep, PromptHandler, PilotReport, PilotStepReport} from '@/types';
+import {PreviousStep, PromptHandler, PilotReport, PilotStepReport, PilotStepPlan} from '@/types';
 import {extractOutputs, OutputMapper} from '@/utils/extractOutputs'
 import {CopilotStepPerformer} from '@/actions/CopilotStepPerformer';
 
 
 export class PilotPerformer {
-
-    private getCopilotPreviousSteps: () => PreviousStep[];
+    
     constructor(
         private promptCreator: PilotPromptCreator,
         private copilotStepPerformer: CopilotStepPerformer,
         private promptHandler: PromptHandler,
-        getCopilotPreviousSteps: () => PreviousStep[],
     ) {
-        this.getCopilotPreviousSteps = getCopilotPreviousSteps;
     }
 
-    private  extractStepOutputs(text: string) : PilotStepReport {
+    private  extractStepOutputs(text: string) : PilotStepPlan {
         const outputsMapper: OutputMapper = {
             thoughts: 'THOUGHTS',
             action: 'ACTION',
         };
         const parsedResult = extractOutputs({text, outputsMapper});
-        return parsedResult as PilotStepReport;
+        return parsedResult as PilotStepPlan;
     }
 
-    async createStep(goal: string, previous: PreviousStep[] = []): Promise<PilotStepReport> {
+    async createStepPlan(goal: string, previous: PreviousStep[] = []): Promise<PilotStepPlan> {
             try {
                 const { snapshot, viewHierarchy, isSnapshotImageAttached } = await this.copilotStepPerformer.captureSnapshotAndViewHierarchy();
                 const prompt = this.promptCreator.createPrompt(goal, viewHierarchy, isSnapshotImageAttached, previous);
                 const generatedPilotTaskDetails : string = await this.promptHandler.runPrompt(prompt, snapshot);
-                const pilotOutputParsed : PilotStepReport = this.extractStepOutputs(generatedPilotTaskDetails)
+                const pilotOutputParsed : PilotStepPlan = this.extractStepOutputs(generatedPilotTaskDetails)
 
                 return pilotOutputParsed;
             } catch (error) {
@@ -41,19 +38,22 @@ export class PilotPerformer {
 
     async perform(goal :string) : Promise<PilotReport> {
         let maxSteps = 100;
+        const previousSteps : PreviousStep[] = [];
         const pilotReport : PilotReport = {report :[]};
         for (let step = 0; step < maxSteps ; step ++) {
-            const pilotOutput : PilotStepReport = await this.createStep(goal, this.getCopilotPreviousSteps());
-            pilotReport.report.push(pilotOutput);
-            if (pilotOutput.action == 'success') {
-                console.log(pilotReport)
+            const pilotStepPlan : PilotStepPlan = await this.createStepPlan(goal, previousSteps);
+            if (pilotStepPlan.action == 'success') {
+                pilotReport.report.push({plan : pilotStepPlan});
+                console.log(JSON.stringify(pilotReport, null, 2));
                 return pilotReport;
             }
-            await this.copilotStepPerformer.perform(pilotOutput.action, this.getCopilotPreviousSteps());
-            console.log(pilotOutput)
+            const {code, result} = await this.copilotStepPerformer.perform(pilotStepPlan.action, previousSteps);
+            previousSteps.push({step : pilotStepPlan.action, code, result})
+            const pilotStepReport : PilotStepReport = {plan : pilotStepPlan, code : code};
+            pilotReport.report.push(pilotStepReport);
         }
         console.log(`pilot finished execution due to maxSteps limit of ${maxSteps} has been achived`)
-        console.log(pilotReport)
+        console.log(JSON.stringify(pilotReport, null, 2));
         return pilotReport;
     }
 }

@@ -39,7 +39,7 @@ export class Copilot {
             config.promptHandler,
             this.cacheHandler
         );
-        this.pilotPerformer = new PilotPerformer(this.pilotPromptCreator, this.copilotStepPerformer, config.promptHandler, () => this.previousSteps);
+        this.pilotPerformer = new PilotPerformer(this.pilotPromptCreator, this.copilotStepPerformer, config.promptHandler);
 
     }
 
