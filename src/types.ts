@@ -45,11 +45,10 @@ export interface CopilotFacade {
 
      /**
      * Preforms actions untill it reaches the goal.
-     * @example Book a class
-     * @example Buy a product
-     * @example win the shape matching game
+     * @example login with user "testuser" and password "testpassword123"
+     * @example enter the store of "my store" site and buy one of the products
+     * @example achive 2 points in the shape matching game
      */
-
     pilot: (goal: string) => Promise<PilotReport>;
 
     /**
@@ -183,7 +182,6 @@ export type CodeEvaluationResult = {
     code: string;
     result: any;
 }
-
 
 /**
  * Represents the output of pilot.

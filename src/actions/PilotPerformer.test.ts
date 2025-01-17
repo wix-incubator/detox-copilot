@@ -1,7 +1,7 @@
 import { PilotPerformer } from '@/actions/PilotPerformer';
 import { PilotPromptCreator } from '@/utils/PilotPromptCreator';
 import { PreviousStep, PromptHandler } from '@/types';
-import { StepPerformer } from '@/actions/StepPerformer';
+import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
 
 const GOAL = 'tap button';
 const VIEW_HIERARCHY = '<view></view>';
@@ -24,7 +24,7 @@ describe('PilotPerformer', () => {
   let pilotPerformer: PilotPerformer;
   let mockPromptCreator: jest.Mocked<PilotPromptCreator>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
-  let mockStepPerformer: jest.Mocked<StepPerformer>;
+  let mockCopilotStepPerformer: jest.Mocked<CopilotStepPerformer>;
   let mockGetPreviousSteps: jest.MockedFunction<() => PreviousStep[]>;
 
   beforeEach(() => {
@@ -43,17 +43,17 @@ describe('PilotPerformer', () => {
       isSnapshotImageSupported: jest.fn(),
     } as jest.Mocked<PromptHandler>;
 
-    mockStepPerformer = {
+    mockCopilotStepPerformer = {
       captureSnapshotAndViewHierarchy: jest.fn(),
       perform: jest.fn(),
-    } as unknown as jest.Mocked<StepPerformer>;
+    } as unknown as jest.Mocked<CopilotStepPerformer>;
 
     mockGetPreviousSteps = jest.fn();
 
     // Instantiate PilotPerformer with the mocks
     pilotPerformer = new PilotPerformer(
       mockPromptCreator,
-      mockStepPerformer,
+      mockCopilotStepPerformer,
       mockPromptHandler,
       mockGetPreviousSteps,
     );
@@ -73,7 +73,7 @@ describe('PilotPerformer', () => {
     promptResult = PROMPT_RESULT,
   }: SetupMockOptions = {}) => {
     // Mock the StepPerformer.captureSnapshotAndViewHierarchy method
-    mockStepPerformer.captureSnapshotAndViewHierarchy.mockResolvedValue({
+    mockCopilotStepPerformer.captureSnapshotAndViewHierarchy.mockResolvedValue({
       snapshot: snapshotData !== null ? snapshotData : undefined,
       viewHierarchy: viewHierarchy,
       isSnapshotImageAttached: isSnapshotSupported && snapshotData !== null,
@@ -91,7 +91,7 @@ describe('PilotPerformer', () => {
     expect(result).toEqual({ thoughts: 'I think this is great', action: 'Tap on GREAT button' });
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(GOAL, VIEW_HIERARCHY, true, []);
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(GENERATED_PROMPT, SNAPSHOT_DATA);
-    expect(mockStepPerformer.captureSnapshotAndViewHierarchy).toHaveBeenCalled();
+    expect(mockCopilotStepPerformer.captureSnapshotAndViewHierarchy).toHaveBeenCalled();
   });
 
   it('should perform an intent successfully without snapshot image support', async () => {
@@ -102,7 +102,7 @@ describe('PilotPerformer', () => {
     expect(result).toEqual({ thoughts: 'I think this is great', action: 'Tap on GREAT button' });
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(GOAL, VIEW_HIERARCHY, false, []);
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(GENERATED_PROMPT, SNAPSHOT_DATA);
-    expect(mockStepPerformer.captureSnapshotAndViewHierarchy).toHaveBeenCalled();
+    expect(mockCopilotStepPerformer.captureSnapshotAndViewHierarchy).toHaveBeenCalled();
   });
 
   it('should perform an intent with undefined snapshot', async () => {
@@ -113,7 +113,7 @@ describe('PilotPerformer', () => {
     expect(result).toEqual({ thoughts: 'I think this is great', action: 'Tap on GREAT button' });
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(GOAL, VIEW_HIERARCHY, false, []);
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(GENERATED_PROMPT, undefined);
-    expect(mockStepPerformer.captureSnapshotAndViewHierarchy).toHaveBeenCalled();
+    expect(mockCopilotStepPerformer.captureSnapshotAndViewHierarchy).toHaveBeenCalled();
   });
 
   it('should perform an intent successfully with previous intents', async () => {
@@ -141,7 +141,7 @@ describe('PilotPerformer', () => {
       previousIntents,
     );
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(GENERATED_PROMPT, SNAPSHOT_DATA);
-    expect(mockStepPerformer.captureSnapshotAndViewHierarchy).toHaveBeenCalled();
+    expect(mockCopilotStepPerformer.captureSnapshotAndViewHierarchy).toHaveBeenCalled();
   });
   
   describe('perform', () => {
@@ -159,7 +159,7 @@ describe('PilotPerformer', () => {
 
       expect(createStepSpy).toHaveBeenCalledTimes(1);
       expect(createStepSpy).toHaveBeenCalledWith(GOAL, []);
-      expect(mockStepPerformer.perform).not.toHaveBeenCalled();
+      expect(mockCopilotStepPerformer.perform).not.toHaveBeenCalled();
       expect(result).toEqual({
         report: [pilotOutputSuccess],
       });

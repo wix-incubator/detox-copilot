@@ -1,5 +1,5 @@
 import {Copilot} from '@/Copilot';
-import {StepPerformer} from '@/actions/StepPerformer';
+import {CopilotStepPerformer} from '@/actions/CopilotStepPerformer';
 import {CopilotError} from '@/errors/CopilotError';
 import {Config} from "@/types";
 import {mockCache, mockedCacheFile} from "./test-utils/cache";
@@ -10,7 +10,7 @@ import {
     dummyContext
 } from "./test-utils/APICatalogTestUtils";
 
-jest.mock('@/actions/StepPerformer');
+jest.mock('@/actions/CopilotStepPerformer');
 jest.mock('fs');
 
 const INTENT = 'tap button';
@@ -36,7 +36,7 @@ describe('Copilot', () => {
         jest.spyOn(console, 'error').mockImplementation(() => {
         });
 
-        (StepPerformer.prototype.perform as jest.Mock).mockResolvedValue({code: 'code', result: true});
+        (CopilotStepPerformer.prototype.perform as jest.Mock).mockResolvedValue({code: 'code', result: true});
     });
 
     afterEach(() => {
@@ -94,7 +94,7 @@ describe('Copilot', () => {
     });
 
     describe('perform', () => {
-        it('should call StepPerformer.perform with the given intent', async () => {
+        it('should call CopilotStepPerformer.perform with the given intent', async () => {
 
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
@@ -102,10 +102,10 @@ describe('Copilot', () => {
 
             await instance.performStep(INTENT);
 
-            expect(StepPerformer.prototype.perform).toHaveBeenCalledWith(INTENT, []);
+            expect(CopilotStepPerformer.prototype.perform).toHaveBeenCalledWith(INTENT, []);
         });
 
-        it('should return the result from StepPerformer.perform', async () => {
+        it('should return the result from CopilotStepPerformer.perform', async () => {
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
             instance.start();
@@ -125,7 +125,7 @@ describe('Copilot', () => {
             await instance.performStep(intent1);
             await instance.performStep(intent2);
 
-            expect(StepPerformer.prototype.perform).toHaveBeenLastCalledWith(intent2, [{
+            expect(CopilotStepPerformer.prototype.perform).toHaveBeenLastCalledWith(intent2, [{
                 step: intent1,
                 code: 'code',
                 result: true
@@ -146,7 +146,7 @@ describe('Copilot', () => {
             instance.start();
             await instance.performStep(intent2);
 
-            expect(StepPerformer.prototype.perform).toHaveBeenLastCalledWith(intent2, []);
+            expect(CopilotStepPerformer.prototype.perform).toHaveBeenLastCalledWith(intent2, []);
         });
     });
 
@@ -196,7 +196,7 @@ describe('Copilot', () => {
     });
 
     describe('extend API catalog', () => {
-        const spyStepPerformer = jest.spyOn(StepPerformer.prototype, 'extendJSContext');
+        const spyCopilotStepPerformer = jest.spyOn(CopilotStepPerformer.prototype, 'extendJSContext');
         it('should extend the API catalog with a new category', () => {
             Copilot.init(mockConfig);
             const instance = Copilot.getInstance();
@@ -204,7 +204,7 @@ describe('Copilot', () => {
             instance.extendAPICatalog([barCategory1]);
 
             expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([barCategory1]);
-            expect(spyStepPerformer).not.toHaveBeenCalled();
+            expect(spyCopilotStepPerformer).not.toHaveBeenCalled();
 
         });
 
@@ -214,7 +214,7 @@ describe('Copilot', () => {
             instance.extendAPICatalog([barCategory1], dummyContext);
 
             expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([barCategory1]);
-            expect(spyStepPerformer).toHaveBeenCalledWith(dummyContext);
+            expect(spyCopilotStepPerformer).toHaveBeenCalledWith(dummyContext);
         });
 
         it('should extend the API catalog with an existing category', () => {
@@ -226,7 +226,7 @@ describe('Copilot', () => {
 
             expect(mockConfig.frameworkDriver.apiCatalog.categories.length).toEqual(1);
             expect(mockConfig.frameworkDriver.apiCatalog.categories[0].items).toEqual([...barCategory1.items, ...barCategory2.items]);
-            expect(spyStepPerformer).toHaveBeenCalledWith(dummyContext);
+            expect(spyCopilotStepPerformer).toHaveBeenCalledWith(dummyContext);
         });
 
         it('should extend the API catalog with a new category', () => {

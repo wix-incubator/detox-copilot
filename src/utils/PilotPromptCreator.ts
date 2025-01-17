@@ -24,7 +24,7 @@ export class PilotPromptCreator {
         return [
             "# Next Step Generation",
             "",
-            "You are an AI assistant tasked with predicting the next optimal action a user should take within an application to progress towards a specific goal.",
+            "You are an AI assistant tasked with predicting the next optimal action a user should take within an application to progress towards a specific goal or to declare success.",
             "Please generate a one-line string that precisely describes the next action the user should take to move closer to their goal, and another string (which can be greater than one line) which describes your toughts while creating the step",
             "If you think that the goal has been reached return a one word 'success'",
             ""
@@ -39,10 +39,6 @@ export class PilotPromptCreator {
     ): string[] {
         let context = [
             "## Context",
-            "",
-            "### Intent to perform",
-            "",
-            `Generate a one-line string that precisely describes the next action the user should take to move closer to their goal which is: \"${goal}\"`,
             "",
             "### View hierarchy",
             "",

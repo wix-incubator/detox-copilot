@@ -5,7 +5,7 @@ import {PromptHandler, TestingFrameworkDriver, PilotReport} from "@/types";
 import * as crypto from 'crypto';
 import {mockedCacheFile, mockCache} from "../test-utils/cache";
 import {PromptCreator} from "../utils/PromptCreator";
-import {StepPerformer} from "../actions/StepPerformer";
+import {CopilotStepPerformer} from "../actions/CopilotStepPerformer";
 import {bazCategory, barCategory1, dummyContext} from "../test-utils/APICatalogTestUtils";
 
 jest.mock('crypto');
@@ -335,7 +335,7 @@ describe('Copilot Integration Tests', () => {
 
     describe('API Catalog Extension', () => {
         const spyPromptCreator = jest.spyOn(PromptCreator.prototype, 'extendAPICategories');
-        const spyStepPerformer = jest.spyOn(StepPerformer.prototype, 'extendJSContext');
+        const spyCopilotStepPerformer = jest.spyOn(CopilotStepPerformer.prototype, 'extendJSContext');
 
         beforeEach(() => {
             jest.clearAllMocks();
@@ -353,7 +353,7 @@ describe('Copilot Integration Tests', () => {
 
             copilot.extendAPICatalog([barCategory1], dummyContext);
             expect(spyPromptCreator).toHaveBeenCalledTimes(2);
-            expect(spyStepPerformer).toHaveBeenCalledTimes(1);
+            expect(spyCopilotStepPerformer).toHaveBeenCalledTimes(1);
         });
     });
     describe('Pilot Method', () => {

@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import {extractCodeBlock} from '@/utils/extractCodeBlock';
 
-export class StepPerformer {
+export class CopilotStepPerformer {
     constructor(
         private context: any,
         private promptCreator: PromptCreator,
