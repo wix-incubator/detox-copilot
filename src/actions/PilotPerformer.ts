@@ -36,23 +36,27 @@ export class PilotPerformer {
             }
     }
 
-    async perform(goal :string) : Promise<PilotReport> {
+    async perform(goal: string): Promise<PilotReport> {
         let maxSteps = 100;
-        const previousSteps : PreviousStep[] = [];
-        const pilotReport : PilotReport = {report :[]};
-        for (let step = 0; step < maxSteps ; step ++) {
-            const pilotStepPlan : PilotStepPlan = await this.createStepPlan(goal, previousSteps);
+        const previousSteps: PreviousStep[] = [];
+        const pilotReport: PilotReport = { report: [] };
+    
+        for (let step = 0; step < maxSteps; step++) {
+            const pilotStepPlan: PilotStepPlan = await this.createStepPlan(goal, previousSteps);
+    
             if (pilotStepPlan.action == 'success') {
-                pilotReport.report.push({plan : pilotStepPlan});
+                pilotReport.report.push({ plan: pilotStepPlan });
                 console.log(JSON.stringify(pilotReport, null, 2));
                 return pilotReport;
             }
-            const {code, result} = await this.copilotStepPerformer.perform(pilotStepPlan.action, previousSteps);
-            previousSteps.push({step : pilotStepPlan.action, code, result})
-            const pilotStepReport : PilotStepReport = {plan : pilotStepPlan, code};
+    
+            const { code, result } = await this.copilotStepPerformer.perform(pilotStepPlan.action, previousSteps);
+            previousSteps.push({ step: pilotStepPlan.action, code, result });
+            const pilotStepReport: PilotStepReport = { plan: pilotStepPlan, code };
             pilotReport.report.push(pilotStepReport);
         }
-        console.log(`pilot finished execution due to maxSteps limit of ${maxSteps} has been achived`)
+    
+        console.log(`pilot finished execution due to maxSteps limit of ${maxSteps} has been achieved`);
         console.log(JSON.stringify(pilotReport, null, 2));
         return pilotReport;
     }
