@@ -49,7 +49,7 @@ export class PilotPerformer {
             }
             const {code, result} = await this.copilotStepPerformer.perform(pilotStepPlan.action, previousSteps);
             previousSteps.push({step : pilotStepPlan.action, code, result})
-            const pilotStepReport : PilotStepReport = {plan : pilotStepPlan, code : code};
+            const pilotStepReport : PilotStepReport = {plan : pilotStepPlan, code};
             pilotReport.report.push(pilotStepReport);
         }
         console.log(`pilot finished execution due to maxSteps limit of ${maxSteps} has been achived`)
