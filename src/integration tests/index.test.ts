@@ -356,4 +356,63 @@ describe('Copilot Integration Tests', () => {
             expect(spyStepPerformer).toHaveBeenCalledTimes(1);
         });
     });
+
+    describe('Cache Modes', () => {
+        beforeEach(() => {
+            mockPromptHandler.runPrompt.mockResolvedValue('// No operation');
+        });
+
+        it('should use full cache mode by default', async () => {
+            copilot.init({
+                frameworkDriver: mockFrameworkDriver,
+                promptHandler: mockPromptHandler
+            });
+            copilot.start();
+
+            await copilot.perform('Tap on the login button');
+            copilot.end();
+
+            expect(Object.keys(mockedCacheFile || {})[0]).toContain('viewHierarchyHash');
+        });
+
+        it('should not include view hierarchy in cache key when using lightweight mode', async () => {
+            copilot.init({
+                frameworkDriver: mockFrameworkDriver,
+                promptHandler: mockPromptHandler,
+                options: {
+                    cacheMode: 'lightweight'
+                }
+            });
+            copilot.start();
+
+            await copilot.perform('Tap on the login button');
+            copilot.end();
+
+            const cacheKeys = Object.keys(mockedCacheFile || {});
+            expect(cacheKeys[0]).not.toContain('viewHierarchyHash');
+        });
+
+        it('should not use cache when cache mode is disabled', async () => {
+            copilot.init({
+                frameworkDriver: mockFrameworkDriver,
+                promptHandler: mockPromptHandler,
+                options: {
+                    cacheMode: 'disabled'
+                }
+            });
+            copilot.start();
+
+            // First call
+            await copilot.perform('Tap on the login button');
+            copilot.end();
+
+            // Second call with same intent
+            copilot.start();
+            await copilot.perform('Tap on the login button');
+            copilot.end();
+
+            // Should call runPrompt twice since cache is disabled
+            expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(2);
+        });
+    });
 });
