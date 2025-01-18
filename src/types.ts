@@ -137,11 +137,12 @@ export interface PromptHandler {
 
 /**
  * The cache mode for the Copilot.
- * - 'disabled': No caching is used
- * - 'lightweight': Cache is used but only based on steps (without view hierarchy)
- * - 'full': Cache is used with view hierarchy (default)
+ *  - 'full': Cache is used with the screen state (default)
+ *  - 'lightweight': Cache is used but only based on steps (without screen state)
+ *  - 'disabled': No caching is used
+ * @default 'full'
  */
-export type CacheMode = 'disabled' | 'lightweight' | 'full';
+export type CacheMode = 'full' | 'lightweight' | 'disabled';
 
 /**
  * Configuration options for the Copilot behavior.
