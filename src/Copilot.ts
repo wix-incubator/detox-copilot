@@ -33,7 +33,8 @@ export class Copilot {
             this.codeEvaluator,
             this.snapshotManager,
             config.promptHandler,
-            this.cacheHandler
+            this.cacheHandler,
+            config.options?.cacheMode
         );
 
     }

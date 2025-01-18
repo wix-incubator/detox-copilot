@@ -3,7 +3,7 @@ import {PromptCreator} from '@/utils/PromptCreator';
 import {CodeEvaluator} from '@/utils/CodeEvaluator';
 import {SnapshotManager} from '@/utils/SnapshotManager';
 import {CacheHandler} from '@/utils/CacheHandler';
-import {PromptHandler, TestingFrameworkAPICatalog} from '@/types';
+import {CacheMode, PromptHandler, TestingFrameworkAPICatalog} from '@/types';
 import * as crypto from 'crypto';
 import {dummyContext, dummyBarContext1, dummyBarContext2} from "../test-utils/APICatalogTestUtils";
 
@@ -26,9 +26,13 @@ describe('StepPerformer', () => {
     let mockSnapshotManager: jest.Mocked<SnapshotManager>;
     let mockPromptHandler: jest.Mocked<PromptHandler>;
     let mockCacheHandler: jest.Mocked<CacheHandler>;
+    let uuidCounter = 0;
 
     beforeEach(() => {
         jest.resetAllMocks();
+        uuidCounter = 0;
+
+        (crypto.randomUUID as jest.Mock).mockImplementation(() => `uuid-${uuidCounter++}`);
 
         const apiCatalog: TestingFrameworkAPICatalog = {
             context: {},
@@ -316,6 +320,68 @@ describe('StepPerformer', () => {
             await stepPerformer.perform(INTENT);
             expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, dummyBarContext2);
 
+        });
+    });
+
+    describe('cache modes', () => {
+        const testCacheModes = async (cacheMode: CacheMode) => {
+            const generatedKeys: string[] = [];
+            mockCacheHandler.addToTemporaryCache.mockImplementation((key: string) => {
+                generatedKeys.push(key);
+            });
+
+            stepPerformer = new StepPerformer(
+                mockContext,
+                mockPromptCreator,
+                mockCodeEvaluator,
+                mockSnapshotManager,
+                mockPromptHandler,
+                mockCacheHandler,
+                cacheMode
+            );
+
+            setupMocks({
+                promptResult: '```\nconst code = true;\n```',
+                codeEvaluationResult: 'success'
+            });
+            await stepPerformer.perform(INTENT);
+            return generatedKeys[0];
+        };
+
+        it('should include view hierarchy hash in cache key when mode is full', async () => {
+            const cacheKey = await testCacheModes('full');
+            const parsedKey = JSON.parse(cacheKey);
+            expect(parsedKey).toHaveProperty('viewHierarchyHash');
+            expect(parsedKey.viewHierarchyHash).toBe('hash');
+        });
+
+        it('should not include view hierarchy hash in cache key when mode is lightweight', async () => {
+            const cacheKey = await testCacheModes('lightweight');
+            const parsedKey = JSON.parse(cacheKey);
+            expect(parsedKey).not.toHaveProperty('viewHierarchyHash');
+        });
+
+        it('should generate unique cache keys when mode is disabled', async () => {
+            const firstKey = await testCacheModes('disabled');
+            const secondKey = await testCacheModes('disabled');
+            expect(firstKey).not.toBe(secondKey);
+        });
+
+        it('should not use cache when mode is disabled', async () => {
+            stepPerformer = new StepPerformer(
+                mockContext,
+                mockPromptCreator,
+                mockCodeEvaluator,
+                mockSnapshotManager,
+                mockPromptHandler,
+                mockCacheHandler,
+                'disabled'
+            );
+
+            setupMocks({ cacheExists: true });
+            await stepPerformer.perform(INTENT);
+
+            expect(mockPromptHandler.runPrompt).toHaveBeenCalled();
         });
     });
 });

@@ -136,7 +136,30 @@ export interface PromptHandler {
 }
 
 /**
+ * The cache mode for the Copilot.
+ *  - 'full': Cache is used with the screen state (default)
+ *  - 'lightweight': Cache is used but only based on steps (without screen state)
+ *  - 'disabled': No caching is used
+ * @default 'full'
+ */
+export type CacheMode = 'full' | 'lightweight' | 'disabled';
+
+/**
+ * Configuration options for the Copilot behavior.
+ */
+export interface CopilotOptions {
+    /**
+     * The cache mode to use.
+     * @default 'full'
+     */
+    cacheMode?: CacheMode;
+}
+
+/**
  * Configuration options for Copilot.
+ * @property frameworkDriver The testing driver to use for interacting with the underlying testing framework.
+ * @property promptHandler The prompt handler to use for interacting with the AI service
+ * @property options Additional options for configuring Copilot behavior
  */
 export interface Config {
     /**
@@ -148,6 +171,11 @@ export interface Config {
      * The prompt handler to use for interacting with the AI service
      */
     promptHandler: PromptHandler;
+
+    /**
+     * Additional options for configuring Copilot behavior
+     */
+    options?: CopilotOptions;
 }
 
 /**
