@@ -74,10 +74,14 @@ export interface TestingFrameworkDriver {
 
 /**
  * Represents the available API of the testing framework that can be used by Copilot.
+ * @property name Optional name of the testing framework (e.g. "Detox", "Jest", etc.).
+ * @property description Optional description of the testing framework's purpose and capabilities.
  * @property context The available variables of the testing framework (i.e. exposes the matching function, expect, etc.).
  * @property categories The available categories of the testing framework API.
  */
 export type TestingFrameworkAPICatalog = {
+    name?: string;
+    description?: string;
     context: any;
     categories: TestingFrameworkAPICatalogCategory[];
 }

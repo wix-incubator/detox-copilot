@@ -6,6 +6,12 @@ exports[`PromptCreator constructor should merge redundant categories 1`] = `
 You are an AI assistant tasked with generating test code for an application using the provided UI testing framework API.
 Please generate the minimal executable code to perform the desired intent based on the given information and context.
 
+## Testing Framework
+
+Framework: Test Framework
+
+Description: A testing framework for unit testing purposes
+
 ## Context
 
 ### Intent to perform

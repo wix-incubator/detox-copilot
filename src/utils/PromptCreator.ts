@@ -50,13 +50,30 @@ export class PromptCreator {
     }
 
     private createBasePrompt(): string[] {
-        return [
+        const basePrompt = [
             "# Test Code Generation",
             "",
             "You are an AI assistant tasked with generating test code for an application using the provided UI testing framework API.",
             "Please generate the minimal executable code to perform the desired intent based on the given information and context.",
             ""
         ];
+
+        if (this.apiCatalog.name || this.apiCatalog.description) {
+            basePrompt.push("## Testing Framework");
+            basePrompt.push("");
+            
+            if (this.apiCatalog.name) {
+                basePrompt.push(`Framework: ${this.apiCatalog.name}`);
+                basePrompt.push("");
+            }
+            
+            if (this.apiCatalog.description) {
+                basePrompt.push(`Description: ${this.apiCatalog.description}`);
+                basePrompt.push("");
+            }
+        }
+
+        return basePrompt;
     }
 
     private createContext(
