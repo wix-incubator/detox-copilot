@@ -42,6 +42,8 @@ export const dummyBarContext2 = {bar: jest.fn()};
 
 export const promptCreatorConstructorMockAPI: TestingFrameworkAPICatalog = {
     context: {},
+    name: 'Test Framework',
+    description: 'A testing framework for unit testing purposes',
     categories: [
         {
             title: 'Actions',

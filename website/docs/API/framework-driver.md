@@ -20,10 +20,12 @@ By implementing a custom driver, you enable **Copilot** to communicate with your
 The `TestingFrameworkDriver` interface defines the essential methods that a driver should implement:
 
 - **`captureSnapshotImage`**: Takes a snapshot of the current screen and returns the path to the saved image. If the driver does not support snapshot functionality, it should return `undefined`.
-- **`captureViewHierarchyString`**: Returns the current view hierarchy in a string representation, which helps the AI understand the structure of the app’s UI.
-- **`apiCatalog`**: Provides access to the available methods of the testing framework's API, such as matchers and actions.
+- **`captureViewHierarchyString`**: Returns the current view hierarchy in a string representation, which helps the AI understand the structure of the app's UI.
+- **`apiCatalog`**: Provides access to the available methods of the testing framework's API, such as matchers and actions. The catalog can also include optional framework information:
+  - `name`: The name of the testing framework (e.g., "Detox", "Jest")
+  - `description`: A description of the framework's purpose and capabilities
 
-Here’s the interface definition for the driver:
+Here's the interface definition for the driver:
 
 ```typescript
 /**
@@ -42,7 +44,7 @@ export interface TestingFrameworkDriver {
     captureViewHierarchyString: () => Promise<string>;
 
     /**
-     * The available guides methods of the testing framework.
+     * The available API methods of the testing framework.
      */
     apiCatalog: TestingFrameworkAPICatalog;
 }
@@ -58,6 +60,8 @@ const detox = require('../..');
 const detoxCopilotFrameworkDriver = {
   apiCatalog: {
     context: { ...detox, jestExpect },
+    name: 'Detox',
+    description: 'End-to-end testing and automation framework for mobile apps',
     categories: [
       {
         title: 'Matchers',
