@@ -2,7 +2,7 @@ import {PromptCreator} from '@/utils/PromptCreator';
 import {CodeEvaluator} from '@/utils/CodeEvaluator';
 import {SnapshotManager} from '@/utils/SnapshotManager';
 import {CacheHandler} from '@/utils/CacheHandler';
-import {CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, CaptureResult} from '@/types';
+import {CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult} from '@/types';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -77,7 +77,7 @@ export class CopilotStepPerformer {
         }
     }
 
-    async perform(step: string, previous: PreviousStep[] = [], attempts: number = 2, captureResult : CaptureResult): Promise<CodeEvaluationResult> {
+    async perform(step: string, previous: PreviousStep[] = [], screenCapture : ScreenCapturerResult, attempts: number = 2): Promise<CodeEvaluationResult> {
         // TODO: replace with the user's logger
         console.log('\x1b[90m%s\x1b[0m%s', 'Copilot performing:', `"${step}"`);
 
@@ -88,7 +88,7 @@ export class CopilotStepPerformer {
 
         for (let attempt = 1; attempt <= attempts; attempt++) {
             try {
-                const {snapshot, viewHierarchy, isSnapshotImageAttached} = captureResult;
+                const {snapshot, viewHierarchy, isSnapshotImageAttached} = screenCapture;
 
                 const code = await this.generateCode(step, previous, snapshot, viewHierarchy, isSnapshotImageAttached);
                 lastCode = code;

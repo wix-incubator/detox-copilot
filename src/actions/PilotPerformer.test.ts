@@ -1,6 +1,7 @@
 import { PilotPerformer } from '@/actions/PilotPerformer';
 import { PilotPromptCreator } from '@/utils/PilotPromptCreator';
-import { PreviousStep, PromptHandler, CaptureResult } from '@/types';
+import {ScreenCapturer} from '@/utils/ScreenCapturer'
+import { PreviousStep, PromptHandler, ScreenCapturerResult } from '@/types';
 import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
 
 const GOAL = 'tap button';
@@ -25,8 +26,8 @@ describe('PilotPerformer', () => {
   let mockPromptCreator: jest.Mocked<PilotPromptCreator>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
   let mockCopilotStepPerformer: jest.Mocked<CopilotStepPerformer>;
-  let mockCapture: jest.MockedFunction<() => Promise<CaptureResult>>;
-  let mockCaptureResult: CaptureResult;
+  let mockScreenCapturer: jest.Mocked<ScreenCapturer>;
+  let mockCaptureResult: ScreenCapturerResult;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -49,14 +50,16 @@ describe('PilotPerformer', () => {
     } as unknown as jest.Mocked<CopilotStepPerformer>;
 
     // Create mock for capture function
-    mockCapture = jest.fn();
+    mockScreenCapturer = {
+        capture: jest.fn(),
+      } as unknown as jest.Mocked<ScreenCapturer>;
 
     // Instantiate PilotPerformer with the mocks, including the capture function
     pilotPerformer = new PilotPerformer(
       mockPromptCreator,
       mockCopilotStepPerformer,
       mockPromptHandler,
-      mockCapture // Pass the mock capture function
+      mockScreenCapturer // Pass the mock capture function
     );
   });
 
@@ -81,7 +84,7 @@ describe('PilotPerformer', () => {
     };
 
     // Mock the capture function to return mockCaptureResult
-    mockCapture.mockResolvedValue(mockCaptureResult);
+    mockScreenCapturer.capture.mockResolvedValue(mockCaptureResult);
 
     mockPromptCreator.createPrompt.mockReturnValue(GENERATED_PROMPT);
     mockPromptHandler.runPrompt.mockResolvedValue(promptResult);
@@ -95,7 +98,7 @@ describe('PilotPerformer', () => {
     expect(result).toEqual({ thoughts: 'I think this is great', action: 'Tap on GREAT button' });
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(GOAL, VIEW_HIERARCHY, true, []);
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(GENERATED_PROMPT, SNAPSHOT_DATA);
-    // No need to check mockCapture in createStepPlan, since we passed in the captureResult directly
+    // No need to check mockCapture in createStepPlan, since we passed in the ScreenCapturerResult directly
   });
 
   it('should perform an intent successfully without snapshot image support', async () => {
@@ -143,6 +146,7 @@ describe('PilotPerformer', () => {
   });
 
   describe('perform', () => {
+    
     it('should perform multiple steps until success is returned', async () => {
       const pilotOutputStep1 = {
         thoughts: 'Step 1 thoughts',
@@ -154,38 +158,33 @@ describe('PilotPerformer', () => {
         action: 'success',
       };
 
-      const captureResult = {
+      const ScreenCapturerResult = {
         snapshot: SNAPSHOT_DATA,
         viewHierarchy: VIEW_HIERARCHY,
         isSnapshotImageAttached: true,
       };
-
-      // Mock capture to return captureResult on each call
-      mockCapture.mockResolvedValue(captureResult);
+      const performSpy = jest.spyOn(mockCopilotStepPerformer, 'perform').mockResolvedValue({
+        code: 'code executed',
+        result: 'result of execution',
+      });
+      
+      // Mock capture to return ScreenCapturerResult on each call
+      mockScreenCapturer.capture.mockResolvedValue(ScreenCapturerResult);
 
       // Mock createStepPlan to return pilotOutputStep1, then pilotOutputSuccess
       const createStepPlanSpy = jest.spyOn(pilotPerformer, 'createStepPlan')
         .mockResolvedValueOnce(pilotOutputStep1)
         .mockResolvedValueOnce(pilotOutputSuccess);
 
-      const performSpy = mockCopilotStepPerformer.perform.mockResolvedValue({
-        code: 'code executed',
-        result: 'result of execution',
-      });
-
       const result = await pilotPerformer.perform(GOAL);
 
-      expect(mockCapture).toHaveBeenCalledTimes(2);
+    
+      expect(mockScreenCapturer.capture).toHaveBeenCalledTimes(2);
       expect(createStepPlanSpy).toHaveBeenCalledTimes(2);
-
-      // Access the arguments passed to perform at the time of the call
-      const performCallArgs = performSpy.mock.calls[0];
-
-      // Assert on the arguments
+      const performCallArgs = performSpy.mock.calls[0].slice(); 
       expect(performCallArgs[0]).toBe('Tap on GREAT button');
-      expect(performCallArgs[1]).toEqual([]); // previousSteps should be empty at the time of the call
-      expect(performCallArgs[2]).toBeUndefined();
-      expect(performCallArgs[3]).toBe(captureResult);
+      expect(performCallArgs[1]).toEqual([]);
+      expect(performCallArgs[2]).toBe(ScreenCapturerResult);
 
       expect(result).toEqual({
         steps: [

@@ -1,7 +1,7 @@
 import { Copilot } from '@/Copilot';
 import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
 import { CopilotError } from '@/errors/CopilotError';
-import { Config, CaptureResult } from '@/types';
+import { Config, ScreenCapturerResult } from '@/types';
 import { mockCache, mockedCacheFile } from './test-utils/cache';
 import { ScreenCapturer } from '@/utils/ScreenCapturer';
 import {
@@ -21,7 +21,7 @@ const VIEW_HIERARCHY = 'hash';
 
 describe('Copilot', () => {
   let mockConfig: Config;
-  let captureResult: CaptureResult;
+  let screenCapture: ScreenCapturerResult;
 
   beforeEach(() => {
     mockConfig = {
@@ -39,7 +39,7 @@ describe('Copilot', () => {
       },
     };
 
-    captureResult = {
+    screenCapture = {
       snapshot: SNAPSHOT_DATA,
       viewHierarchy: VIEW_HIERARCHY,
       isSnapshotImageAttached: true,
@@ -47,7 +47,7 @@ describe('Copilot', () => {
 
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    ScreenCapturer.prototype.capture = jest.fn().mockResolvedValue(captureResult);
+    ScreenCapturer.prototype.capture = jest.fn().mockResolvedValue(screenCapture);
     (CopilotStepPerformer.prototype.perform as jest.Mock).mockResolvedValue({
       code: 'code',
       result: true,
@@ -121,8 +121,7 @@ describe('Copilot', () => {
       expect(CopilotStepPerformer.prototype.perform).toHaveBeenCalledWith(
         INTENT,
         [],
-        undefined,
-        captureResult
+        screenCapture,
       );
     });
 
@@ -155,8 +154,7 @@ describe('Copilot', () => {
             result: true,
           },
         ],
-        undefined,
-        captureResult
+        screenCapture
       );
     });
   });
@@ -177,8 +175,7 @@ describe('Copilot', () => {
       expect(CopilotStepPerformer.prototype.perform).toHaveBeenLastCalledWith(
         intent2,
         [],
-        undefined,
-        captureResult
+        screenCapture
       );
     });
   });

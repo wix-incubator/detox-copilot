@@ -3,7 +3,7 @@ import {PromptCreator} from "@/utils/PromptCreator";
 import {CodeEvaluator} from "@/utils/CodeEvaluator";
 import {SnapshotManager} from "@/utils/SnapshotManager";
 import {CopilotStepPerformer} from "@/actions/CopilotStepPerformer";
-import {Config, PreviousStep, TestingFrameworkAPICatalogCategory, PilotReport, CaptureResult} from "@/types";
+import {Config, PreviousStep, TestingFrameworkAPICatalogCategory, PilotReport, ScreenCapturerResult} from "@/types";
 import {CacheHandler} from "@/utils/CacheHandler";
 import {PilotPerformer} from "@/actions/PilotPerformer";
 import {PilotPromptCreator} from "@/utils/PilotPromptCreator";
@@ -44,7 +44,7 @@ export class Copilot {
             this.cacheHandler,
             config.options?.cacheMode
         );
-        this.pilotPerformer = new PilotPerformer(this.pilotPromptCreator, this.copilotStepPerformer, config.promptHandler, () => this.screenCapturer.capture());
+        this.pilotPerformer = new PilotPerformer(this.pilotPromptCreator, this.copilotStepPerformer, config.promptHandler, this.screenCapturer);
     }
 
     static isInitialized(): boolean {
@@ -83,8 +83,8 @@ export class Copilot {
         if (!this.isRunning) {
             throw new CopilotError('Copilot is not running. Please call the `start()` method before performing any steps.');
         }
-        const captueResult : CaptureResult = await this.screenCapturer.capture();
-        const {code, result} = await this.copilotStepPerformer.perform(step, this.previousSteps, undefined, captueResult);
+        const screenCapture : ScreenCapturerResult = await this.screenCapturer.capture();
+        const {code, result} = await this.copilotStepPerformer.perform(step, this.previousSteps, screenCapture);
         this.didPerformStep(step, code, result);
         return result;
     }

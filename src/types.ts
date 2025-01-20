@@ -246,7 +246,7 @@ export type PilotStepPlan = {
  * @property view hierarchy of the current screen
  * @property boolean indicating if snapshot is supported or not
  */
-export type CaptureResult = {
+export type ScreenCapturerResult = {
     snapshot: string | undefined;
     viewHierarchy: string;
     isSnapshotImageAttached: boolean;

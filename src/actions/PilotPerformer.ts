@@ -1,7 +1,8 @@
 import { PilotPromptCreator } from '@/utils/PilotPromptCreator';
-import {PreviousStep, PromptHandler, PilotReport, PilotStepReport, PilotStepPlan, CaptureResult} from '@/types';
+import {PreviousStep, PromptHandler, PilotReport, PilotStepReport, PilotStepPlan, ScreenCapturerResult} from '@/types';
 import {extractOutputs, OutputMapper} from '@/utils/extractOutputs'
 import {CopilotStepPerformer} from '@/actions/CopilotStepPerformer';
+import {ScreenCapturer} from '@/utils/ScreenCapturer';
 
 
 
@@ -11,7 +12,7 @@ export class PilotPerformer {
         private promptCreator: PilotPromptCreator,
         private copilotStepPerformer: CopilotStepPerformer,
         private promptHandler: PromptHandler,
-        private capture: () => Promise<CaptureResult>
+        private screenCapturer: ScreenCapturer
     ) {
     }
 
@@ -23,9 +24,9 @@ export class PilotPerformer {
         return extractOutputs({text, outputsMapper}) as PilotStepPlan;
     }
 
-    async createStepPlan(goal: string, previous: PreviousStep[] = [], captureResult : CaptureResult): Promise<PilotStepPlan> {
+    async createStepPlan(goal: string, previous: PreviousStep[] = [], screenCapture : ScreenCapturerResult): Promise<PilotStepPlan> {
             try {
-                const { snapshot, viewHierarchy, isSnapshotImageAttached } = captureResult;
+                const { snapshot, viewHierarchy, isSnapshotImageAttached } = screenCapture;
                 const prompt = this.promptCreator.createPrompt(goal, viewHierarchy, isSnapshotImageAttached, previous);
                 const generatedPilotTaskDetails : string = await this.promptHandler.runPrompt(prompt, snapshot);
                 const pilotOutputParsed : PilotStepPlan = this.extractStepOutputs(generatedPilotTaskDetails)
@@ -43,8 +44,8 @@ export class PilotPerformer {
         const report: PilotReport = { steps: [] };
         
         for (let step = 0; step < maxSteps; step++) {
-            const captureResult : CaptureResult = await this.capture();
-            const plan: PilotStepPlan = await this.createStepPlan(goal, previousSteps, captureResult);
+            const screenCapture : ScreenCapturerResult = await this.screenCapturer.capture();
+            const plan: PilotStepPlan = await this.createStepPlan(goal, previousSteps, screenCapture);
     
             if (plan.action == 'success') {
                 report.steps.push({ plan });
@@ -52,8 +53,7 @@ export class PilotPerformer {
                 return report;
             }
             
-            const previousStepsSnapshot = [...previousSteps];
-            const { code, result } = await this.copilotStepPerformer.perform(plan.action, previousStepsSnapshot, undefined, captureResult);
+            const { code, result } = await this.copilotStepPerformer.perform(plan.action, [...previousSteps], screenCapture);
             previousSteps.push({ step: plan.action, code, result });
             const pilotStepReport: PilotStepReport = { plan, code };
             report.steps.push(pilotStepReport);
