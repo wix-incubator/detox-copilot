@@ -50,13 +50,30 @@ export class PromptCreator {
     }
 
     private createBasePrompt(): string[] {
-        return [
+        const basePrompt = [
             "# Test Code Generation",
             "",
             "You are an AI assistant tasked with generating test code for an application using the provided UI testing framework API.",
             "Please generate the minimal executable code to perform the desired intent based on the given information and context.",
             ""
         ];
+
+        if (this.apiCatalog.name || this.apiCatalog.description) {
+            basePrompt.push("## Testing Framework");
+            basePrompt.push("");
+            
+            if (this.apiCatalog.name) {
+                basePrompt.push(`Framework: ${this.apiCatalog.name}`);
+                basePrompt.push("");
+            }
+            
+            if (this.apiCatalog.description) {
+                basePrompt.push(`Description: ${this.apiCatalog.description}`);
+                basePrompt.push("");
+            }
+        }
+
+        return basePrompt;
     }
 
     private createContext(
@@ -107,6 +124,7 @@ export class PromptCreator {
                     "```",
                     previousStep.code,
                     "```",
+                    ...(previousStep.result ? [`- Result: ${previousStep.result}`] : []),
                     ""
                 ]).flat(),
                 ""
@@ -216,6 +234,8 @@ export class PromptCreator {
         }
         steps.push(
             "If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.",
+            "Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.",
+            "Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.",
             "Wrap the generated code with backticks, without any additional formatting.",
             "Do not provide any additional code beyond the minimal executable code required to perform the intent."
         );

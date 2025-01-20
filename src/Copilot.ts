@@ -41,7 +41,8 @@ export class Copilot {
             this.codeEvaluator,
             this.snapshotManager,
             config.promptHandler,
-            this.cacheHandler
+            this.cacheHandler,
+            config.options?.cacheMode
         );
         this.pilotPerformer = new PilotPerformer(this.pilotPromptCreator, this.copilotStepPerformer, config.promptHandler, () => this.screenCapturer.capture());
     }

@@ -6,6 +6,12 @@ exports[`PromptCreator constructor should merge redundant categories 1`] = `
 You are an AI assistant tasked with generating test code for an application using the provided UI testing framework API.
 Please generate the minimal executable code to perform the desired intent based on the given information and context.
 
+## Testing Framework
+
+Framework: Test Framework
+
+Description: A testing framework for unit testing purposes
+
 ## Context
 
 ### Intent to perform
@@ -123,8 +129,10 @@ Please follow these steps carefully:
 1. Analyze the provided intent and the view hierarchy to understand the required action.
 2. Generate the minimal executable code required to perform the intent using the available API.
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
-4. Wrap the generated code with backticks, without any additional formatting.
-5. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
+5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+6. Wrap the generated code with backticks, without any additional formatting.
+7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -251,8 +259,10 @@ Please follow these steps carefully:
 1. Analyze the provided intent and the view hierarchy to understand the required action.
 2. Generate the minimal executable code required to perform the intent using the available API.
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
-4. Wrap the generated code with backticks, without any additional formatting.
-5. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
+5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+6. Wrap the generated code with backticks, without any additional formatting.
+7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -393,8 +403,10 @@ Please follow these steps carefully:
 1. Analyze the provided intent and the view hierarchy to understand the required action.
 2. Generate the minimal executable code required to perform the intent using the available API.
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
-4. Wrap the generated code with backticks, without any additional formatting.
-5. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
+5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+6. Wrap the generated code with backticks, without any additional formatting.
+7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -509,8 +521,10 @@ Please follow these steps carefully:
 5. If the visual assertion fails, return code that throws an informative error explaining the failure.
 6. If visual validation is not possible, proceed to generate the minimal executable code required to perform the intent.
 7. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
-8. Wrap the generated code with backticks, without any additional formatting.
-9. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+8. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
+9. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+10. Wrap the generated code with backticks, without any additional formatting.
+11. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -626,8 +640,10 @@ Please follow these steps carefully:
 1. Analyze the provided intent and the view hierarchy to understand the required action.
 2. Generate the minimal executable code required to perform the intent using the available API.
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
-4. Wrap the generated code with backticks, without any additional formatting.
-5. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
+5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+6. Wrap the generated code with backticks, without any additional formatting.
+7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -673,6 +689,7 @@ No snapshot image is attached for this intent.
 \`\`\`
 await element(by.id("login")).tap();
 \`\`\`
+- Result: success
 
 #### Step 2
 - Intent: "enter username"
@@ -680,6 +697,7 @@ await element(by.id("login")).tap();
 \`\`\`
 await element(by.id("username")).typeText("john_doe");
 \`\`\`
+- Result: john doe
 
 
 ## Available Testing Framework API
@@ -755,8 +773,10 @@ Please follow these steps carefully:
 1. Analyze the provided intent and the view hierarchy to understand the required action.
 2. Generate the minimal executable code required to perform the intent using the available API.
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
-4. Wrap the generated code with backticks, without any additional formatting.
-5. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
+5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
+6. Wrap the generated code with backticks, without any additional formatting.
+7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 

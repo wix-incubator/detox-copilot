@@ -2,13 +2,16 @@ import {PromptCreator} from '@/utils/PromptCreator';
 import {CodeEvaluator} from '@/utils/CodeEvaluator';
 import {SnapshotManager} from '@/utils/SnapshotManager';
 import {CacheHandler} from '@/utils/CacheHandler';
-import {CodeEvaluationResult, PreviousStep, PromptHandler, CaptureResult} from '@/types';
+import {CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, CaptureResult} from '@/types';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import {extractCodeBlock} from '@/utils/extractCodeBlock';
 
 export class CopilotStepPerformer {
+    private readonly cacheMode: CacheMode;
+    
+
     constructor(
         private context: any,
         private promptCreator: PromptCreator,
@@ -16,7 +19,9 @@ export class CopilotStepPerformer {
         private snapshotManager: SnapshotManager,
         private promptHandler: PromptHandler,
         private cacheHandler: CacheHandler,
+        cacheMode: CacheMode = 'full',
     ) {
+        this.cacheMode = cacheMode;
     }
 
     extendJSContext(newContext: any): void {
@@ -30,8 +35,19 @@ export class CopilotStepPerformer {
     }
 
     private generateCacheKey(step: string, previous: PreviousStep[], viewHierarchy: string): string {
-        const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
-        return JSON.stringify({step, previous, viewHierarchyHash});
+        if (this.cacheMode === 'disabled') {
+            // Return a unique key that won't match any cached value
+            return crypto.randomUUID();
+        }
+
+        const cacheKeyData: any = {step, previous};
+        
+        if (this.cacheMode === 'full') {
+            const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
+            cacheKeyData.viewHierarchyHash = viewHierarchyHash;
+        }
+
+        return JSON.stringify(cacheKeyData);
     }
 
     private shouldOverrideCache() {
