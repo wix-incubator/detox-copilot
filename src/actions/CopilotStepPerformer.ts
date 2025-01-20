@@ -2,14 +2,15 @@ import {PromptCreator} from '@/utils/PromptCreator';
 import {CodeEvaluator} from '@/utils/CodeEvaluator';
 import {SnapshotManager} from '@/utils/SnapshotManager';
 import {CacheHandler} from '@/utils/CacheHandler';
-import {CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler} from '@/types';
+import {CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult} from '@/types';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import {extractCodeBlock} from '@/utils/extractCodeBlock';
 
-export class StepPerformer {
+export class CopilotStepPerformer {
     private readonly cacheMode: CacheMode;
+    
 
     constructor(
         private context: any,
@@ -49,17 +50,6 @@ export class StepPerformer {
         return JSON.stringify(cacheKeyData);
     }
 
-    private async captureSnapshotAndViewHierarchy() {
-        const snapshot = this.promptHandler.isSnapshotImageSupported()
-            ? await this.snapshotManager.captureSnapshotImage()
-            : undefined;
-        const viewHierarchy = await this.snapshotManager.captureViewHierarchyString();
-
-        const isSnapshotImageAttached = snapshot != null && this.promptHandler.isSnapshotImageSupported();
-
-        return {snapshot, viewHierarchy, isSnapshotImageAttached};
-    }
-
     private shouldOverrideCache() {
         return process.env.COPILOT_OVERRIDE_CACHE === "true" || process.env.COPILOT_OVERRIDE_CACHE === "1";
     }
@@ -87,7 +77,7 @@ export class StepPerformer {
         }
     }
 
-    async perform(step: string, previous: PreviousStep[] = [], attempts: number = 2): Promise<CodeEvaluationResult> {
+    async perform(step: string, previous: PreviousStep[] = [], screenCapture : ScreenCapturerResult, attempts: number = 2): Promise<CodeEvaluationResult> {
         // TODO: replace with the user's logger
         console.log('\x1b[90m%s\x1b[0m%s', 'Copilot performing:', `"${step}"`);
 
@@ -98,7 +88,7 @@ export class StepPerformer {
 
         for (let attempt = 1; attempt <= attempts; attempt++) {
             try {
-                const {snapshot, viewHierarchy, isSnapshotImageAttached} = await this.captureSnapshotAndViewHierarchy();
+                const {snapshot, viewHierarchy, isSnapshotImageAttached} = screenCapture;
 
                 const code = await this.generateCode(step, previous, snapshot, viewHierarchy, isSnapshotImageAttached);
                 lastCode = code;

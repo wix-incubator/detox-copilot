@@ -1,242 +1,337 @@
-import {Copilot} from '@/Copilot';
-import {StepPerformer} from '@/actions/StepPerformer';
-import {CopilotError} from '@/errors/CopilotError';
-import {Config} from "@/types";
-import {mockCache, mockedCacheFile} from "./test-utils/cache";
+import { Copilot } from '@/Copilot';
+import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
+import { CopilotError } from '@/errors/CopilotError';
+import { Config, ScreenCapturerResult } from '@/types';
+import { mockCache, mockedCacheFile } from './test-utils/cache';
+import { ScreenCapturer } from '@/utils/ScreenCapturer';
 import {
-    bazCategory,
-    barCategory2,
-    barCategory1,
-    dummyContext
-} from "./test-utils/APICatalogTestUtils";
+  bazCategory,
+  barCategory2,
+  barCategory1,
+  dummyContext,
+} from './test-utils/APICatalogTestUtils';
 
-jest.mock('@/actions/StepPerformer');
+jest.mock('@/actions/CopilotStepPerformer');
+jest.mock('@/utils/ScreenCapturer');
 jest.mock('fs');
 
 const INTENT = 'tap button';
+const SNAPSHOT_DATA = 'snapshot_data';
+const VIEW_HIERARCHY = 'hash';
 
 describe('Copilot', () => {
-    let mockConfig: Config;
+  let mockConfig: Config;
+  let screenCapture: ScreenCapturerResult;
 
-    beforeEach(() => {
-        mockConfig = {
-            frameworkDriver: {
-                captureSnapshotImage: jest.fn(),
-                captureViewHierarchyString: jest.fn(),
-                apiCatalog: {
-                    context: {},
-                    categories: []
-                },
-            },
-            promptHandler: {
-                runPrompt: jest.fn(),
-                isSnapshotImageSupported: jest.fn().mockReturnValue(true)
-            }
-        };
-        jest.spyOn(console, 'error').mockImplementation(() => {
-        });
+  beforeEach(() => {
+    mockConfig = {
+      frameworkDriver: {
+        captureSnapshotImage: jest.fn(),
+        captureViewHierarchyString: jest.fn(),
+        apiCatalog: {
+          context: {},
+          categories: [],
+        },
+      },
+      promptHandler: {
+        runPrompt: jest.fn(),
+        isSnapshotImageSupported: jest.fn().mockReturnValue(true),
+      },
+    };
 
-        (StepPerformer.prototype.perform as jest.Mock).mockResolvedValue({code: 'code', result: true});
+    screenCapture = {
+      snapshot: SNAPSHOT_DATA,
+      viewHierarchy: VIEW_HIERARCHY,
+      isSnapshotImageAttached: true,
+    };
+
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    ScreenCapturer.prototype.capture = jest.fn().mockResolvedValue(screenCapture);
+    (CopilotStepPerformer.prototype.perform as jest.Mock).mockResolvedValue({
+      code: 'code',
+      result: true,
+    });
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+    (console.error as jest.Mock).mockRestore();
+    (Copilot as any)['instance'] = undefined;
+  });
+
+  describe('getInstance', () => {
+    it('should return the same instance after initialization', () => {
+      Copilot.init(mockConfig);
+
+      const instance1 = Copilot.getInstance();
+      const instance2 = Copilot.getInstance();
+
+      expect(instance1).toBe(instance2);
     });
 
-    afterEach(() => {
-        jest.resetAllMocks();
-        (console.error as jest.Mock).mockRestore();
-        Copilot['instance'] = undefined;
+    it('should throw CopilotError if getInstance is called before init', () => {
+      expect(() => Copilot.getInstance()).toThrow(CopilotError);
+      expect(() => Copilot.getInstance()).toThrow(
+        'Copilot has not been initialized. Please call the `init()` method before using it.'
+      );
+    });
+  });
+
+  describe('init', () => {
+    it('should create a new instance of Copilot', () => {
+      Copilot.init(mockConfig);
+      expect(Copilot.getInstance()).toBeInstanceOf(Copilot);
     });
 
-    describe('getInstance', () => {
-        it('should return the same instance after initialization', () => {
-            Copilot.init(mockConfig);
+    it('should throw an error when trying to initialize Copilot multiple times', () => {
+      Copilot.init(mockConfig);
 
-            const instance1 = Copilot.getInstance();
-            const instance2 = Copilot.getInstance();
-
-            expect(instance1).toBe(instance2);
-        });
-
-        it('should throw CopilotError if getInstance is called before init', () => {
-            expect(() => Copilot.getInstance()).toThrow(CopilotError);
-            expect(() => Copilot.getInstance()).toThrow('Copilot has not been initialized. Please call the `init()` method before using it.');
-        });
+      expect(() => Copilot.init(mockConfig)).toThrow(
+        'Copilot has already been initialized. Please call the `init()` method only once.'
+      );
     });
 
-    describe('init', () => {
-        it('should create a new instance of Copilot', () => {
-            Copilot.init(mockConfig);
-            expect(Copilot.getInstance()).toBeInstanceOf(Copilot);
-        });
+    it('should throw an error if config is invalid', () => {
+      const invalidConfig = {} as Config;
 
-        it('should throw an error when trying to initialize Copilot multiple times', () => {
-            Copilot.init(mockConfig);
+      expect(() => Copilot.init(invalidConfig)).toThrow();
+    });
+  });
 
-            expect(() => Copilot.init(mockConfig))
-                .toThrow('Copilot has already been initialized. Please call the `init()` method only once.');
-        });
-
-        it('should throw an error if config is invalid', () => {
-            const invalidConfig = {} as Config;
-
-            expect(() => Copilot.init(invalidConfig)).toThrow();
-        });
+  describe('isInitialized', () => {
+    it('should return false before initialization', () => {
+      expect(Copilot.isInitialized()).toBe(false);
     });
 
-    describe('isInitialized', () => {
-        it('should return false before initialization', () => {
-            expect(Copilot.isInitialized()).toBe(false);
-        });
+    it('should return true after initialization', () => {
+      Copilot.init(mockConfig);
 
-        it('should return true after initialization', () => {
-            Copilot.init(mockConfig);
+      expect(Copilot.isInitialized()).toBe(true);
+    });
+  });
 
-            expect(Copilot.isInitialized()).toBe(true);
-        });
+  describe('performStep', () => {
+    it('should call CopilotStepPerformer.perform with the given intent', async () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+      instance.start();
+      await instance.performStep(INTENT);
+
+      expect(CopilotStepPerformer.prototype.perform).toHaveBeenCalledWith(
+        INTENT,
+        [],
+        screenCapture,
+      );
     });
 
-    describe('perform', () => {
-        it('should call StepPerformer.perform with the given intent', async () => {
+    it('should return the result from CopilotStepPerformer.perform', async () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+      instance.start();
 
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
-            instance.start();
+      const result = await instance.performStep(INTENT);
 
-            await instance.performStep(INTENT);
-
-            expect(StepPerformer.prototype.perform).toHaveBeenCalledWith(INTENT, []);
-        });
-
-        it('should return the result from StepPerformer.perform', async () => {
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
-            instance.start();
-
-            const result = await instance.performStep(INTENT);
-
-            expect(result).toBe(true);
-        });
-
-        it('should accumulate previous intents', async () => {
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
-            instance.start();
-            const intent1 = 'tap button 1';
-            const intent2 = 'tap button 2';
-
-            await instance.performStep(intent1);
-            await instance.performStep(intent2);
-
-            expect(StepPerformer.prototype.perform).toHaveBeenLastCalledWith(intent2, [{
-                step: intent1,
-                code: 'code',
-                result: true
-            }]);
-        });
+      expect(result).toBe(true);
     });
 
-    describe('start', () => {
-        it('should clear previous intents', async () => {
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
-            instance.start();
-            const intent1 = 'tap button 1';
-            const intent2 = 'tap button 2';
+    it('should accumulate previous steps', async () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+      instance.start();
+      const intent1 = 'tap button 1';
+      const intent2 = 'tap button 2';
 
-            await instance.performStep(intent1);
-            instance.end(true);
-            instance.start();
-            await instance.performStep(intent2);
+      await instance.performStep(intent1);
+      await instance.performStep(intent2);
 
-            expect(StepPerformer.prototype.perform).toHaveBeenLastCalledWith(intent2, []);
-        });
+      expect(CopilotStepPerformer.prototype.perform).toHaveBeenLastCalledWith(
+        intent2,
+        [
+          {
+            step: intent1,
+            code: 'code',
+            result: true,
+          },
+        ],
+        screenCapture
+      );
+    });
+  });
+
+  describe('start', () => {
+    it('should clear previous steps', async () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+      instance.start();
+      const intent1 = 'tap button 1';
+      const intent2 = 'tap button 2';
+
+      await instance.performStep(intent1);
+      instance.end(true);
+      instance.start();
+      await instance.performStep(intent2);
+
+      expect(CopilotStepPerformer.prototype.perform).toHaveBeenLastCalledWith(
+        intent2,
+        [],
+        screenCapture
+      );
+    });
+  });
+
+  describe('start and end behavior', () => {
+    it('should not performStep before start', async () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+
+      await expect(instance.performStep(INTENT)).rejects.toThrowError(
+        'Copilot is not running. Please call the `start()` method before performing any steps.'
+      );
     });
 
-    describe('start and end behavior', () => {
-        it('should not perform before start', async () => {
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
+    it('should not start without ending the previous flow (start->start)', async () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+      instance.start();
 
-            await expect(instance.performStep(INTENT)).rejects.toThrowError('Copilot is not running. Please call the `start()` method before performing any steps.');
-        });
+      await instance.performStep(INTENT);
 
-        it('should not start without end the previous flow(start->start)', async () => {
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
-            instance.start();
-
-            await instance.performStep(INTENT);
-
-            expect(() => instance.start()).toThrowError('Copilot was already started. Please call the `end()` method before starting a new test flow.');
-        });
-
-        it('should not end without start a new flow(end->end)', async () => {
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
-            instance.start();
-
-            await instance.performStep(INTENT);
-            instance.end(true);
-
-            expect(() => instance.end(true)).toThrowError('Copilot is not running. Please call the `start()` method before ending the test flow.');
-        });
+      expect(() => instance.start()).toThrowError(
+        'Copilot was already started. Please call the `end()` method before starting a new test flow.'
+      );
     });
 
-    describe('end', () => {
-        it('end with disable cache=true should not save to cache', async () => {
-            mockCache();
+    it('should not end without starting a new flow (end->end)', () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+      instance.start();
 
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
-            instance.start();
+      instance.end(true);
 
-            await instance.performStep(INTENT);
-            instance.end(true);
+      expect(() => instance.end(true)).toThrowError(
+        'Copilot is not running. Please call the `start()` method before ending the test flow.'
+      );
+    });
+  });
 
-            expect(mockedCacheFile).toBeUndefined();
-        });
+  describe('end', () => {
+    it('end with isCacheDisabled=true should not save to cache', async () => {
+      mockCache();
+
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+      instance.start();
+
+      await instance.performStep(INTENT);
+      instance.end(true);
+
+      expect(mockedCacheFile).toBeUndefined();
+    });
+  });
+
+  describe('extend API catalog', () => {
+    it('should extend the API catalog with a new category', () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+
+      const spyCopilotStepPerformer = jest.spyOn(
+        instance['copilotStepPerformer'],
+        'extendJSContext'
+      );
+
+      instance.extendAPICatalog([barCategory1]);
+
+      expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([
+        barCategory1,
+      ]);
+      expect(spyCopilotStepPerformer).not.toHaveBeenCalled();
     });
 
-    describe('extend API catalog', () => {
-        const spyStepPerformer = jest.spyOn(StepPerformer.prototype, 'extendJSContext');
-        it('should extend the API catalog with a new category', () => {
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
+    it('should extend the API catalog with a new category and context', () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
 
-            instance.extendAPICatalog([barCategory1]);
+      const spyCopilotStepPerformer = jest.spyOn(
+        instance['copilotStepPerformer'],
+        'extendJSContext'
+      );
 
-            expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([barCategory1]);
-            expect(spyStepPerformer).not.toHaveBeenCalled();
+      instance.extendAPICatalog([barCategory1], dummyContext);
 
-        });
-
-        it('should extend the API catalog with a new category and context', () => {
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
-            instance.extendAPICatalog([barCategory1], dummyContext);
-
-            expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([barCategory1]);
-            expect(spyStepPerformer).toHaveBeenCalledWith(dummyContext);
-        });
-
-        it('should extend the API catalog with an existing category', () => {
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
-
-            instance.extendAPICatalog([barCategory1])
-            instance.extendAPICatalog([barCategory2], dummyContext);
-
-            expect(mockConfig.frameworkDriver.apiCatalog.categories.length).toEqual(1);
-            expect(mockConfig.frameworkDriver.apiCatalog.categories[0].items).toEqual([...barCategory1.items, ...barCategory2.items]);
-            expect(spyStepPerformer).toHaveBeenCalledWith(dummyContext);
-        });
-
-        it('should extend the API catalog with a new category', () => {
-            Copilot.init(mockConfig);
-            const instance = Copilot.getInstance();
-
-            instance.extendAPICatalog([barCategory1]);
-            instance.extendAPICatalog([bazCategory]);
-
-            expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([barCategory1, bazCategory]);
-        });
+      expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([
+        barCategory1,
+      ]);
+      expect(spyCopilotStepPerformer).toHaveBeenCalledWith(dummyContext);
     });
+
+    it('should extend the API catalog with an existing category', () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+
+      const spyCopilotStepPerformer = jest.spyOn(
+        instance['copilotStepPerformer'],
+        'extendJSContext'
+      );
+
+      instance.extendAPICatalog([barCategory1]);
+      instance.extendAPICatalog([barCategory2], dummyContext);
+
+      expect(
+        mockConfig.frameworkDriver.apiCatalog.categories.length
+      ).toEqual(1);
+      expect(
+        mockConfig.frameworkDriver.apiCatalog.categories[0].items
+      ).toEqual([...barCategory1.items, ...barCategory2.items]);
+      expect(spyCopilotStepPerformer).toHaveBeenCalledWith(dummyContext);
+    });
+
+    it('should extend the API catalog with a new category', () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+
+      instance.extendAPICatalog([barCategory1]);
+      instance.extendAPICatalog([bazCategory]);
+
+      expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([
+        barCategory1,
+        bazCategory,
+      ]);
+    });
+  });
+
+  describe('pilot', () => {
+    it('should perform an entire test flow using the provided goal', async () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+      const goal = 'Test the login flow';
+      const pilotOutputStep1 = {
+        thoughts: 'Step 1 thoughts',
+        action: 'Tap on GREAT button',
+      };
+
+      const pilotOutputSuccess = {
+        thoughts: 'Completed successfully',
+        action: 'success',
+      };
+      jest
+        .spyOn(instance['pilotPerformer'], 'perform')
+        .mockResolvedValue({
+            steps: [
+                { plan: pilotOutputStep1, code: 'code executed' },
+                { plan: pilotOutputSuccess },
+              ],
+        });
+
+      const result = await instance.pilot(goal);
+
+      expect(instance['pilotPerformer'].perform).toHaveBeenCalledWith(goal);
+      expect(result).toEqual({
+        steps: [
+            { plan: pilotOutputStep1, code: 'code executed' },
+            { plan: pilotOutputSuccess },
+          ],
+      });
+    });
+  });
 });

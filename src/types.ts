@@ -42,6 +42,15 @@ export interface CopilotFacade {
      */
     perform: (...steps: string[]) => Promise<string>;
 
+
+     /**
+     * Preforms actions untill it reaches the goal.
+     * @example login with user "testuser" and password "testpassword123"
+     * @example enter the store of "my store" site and buy one of the products
+     * @example achive 2 points in the shape matching game
+     */
+    pilot: (goal: string) => Promise<PilotReport>;
+
     /**
      * Extends the API catalog of the testing framework with additional APIs (categories and JS context).
      * @param context The variables of the testing framework (i.e. exposes the matching function, expect, etc.).
@@ -49,6 +58,7 @@ export interface CopilotFacade {
      * @note This can be used to add custom categories and items to the API catalog.
      */
     extendAPICatalog: (categories: TestingFrameworkAPICatalogCategory[], context?: any,) => void;
+
 }
 
 /**
@@ -147,7 +157,6 @@ export interface PromptHandler {
  * @default 'full'
  */
 export type CacheMode = 'full' | 'lightweight' | 'disabled';
-
 /**
  * Configuration options for the Copilot behavior.
  */
@@ -158,7 +167,6 @@ export interface CopilotOptions {
      */
     cacheMode?: CacheMode;
 }
-
 /**
  * Configuration options for Copilot.
  * @property frameworkDriver The testing driver to use for interacting with the underlying testing framework.
@@ -203,4 +211,43 @@ export type PreviousStep = {
 export type CodeEvaluationResult = {
     code: string;
     result: any;
+}
+
+/**
+ * Represents the output of each iteration of pilot's perform.
+ * @property contains the action and thoughts that were taken by the LLM 
+ * @property the code that were created by the LLM from pilot's action
+ */
+export type PilotStepReport = {
+    plan: PilotStepPlan;
+    code?: string;
+}
+
+/**
+ * Represents the output of pilot.
+ * @property steps report of pilot's actions (thoughts, actions, code ....)
+ */
+export type PilotReport = {
+    steps : PilotStepReport[];
+}
+
+/**
+ * Represents the output of pilots createStepPlan method.
+ * @property report of pilot's actions (thoughts, actions, ect ....)
+ */
+export type PilotStepPlan = {
+    action: string;
+    thoughts: string;
+}
+
+/**
+ * Represents the output of screen capturer createStepPlan method.
+ * @property snapshot of the currnet screen or undeifned 
+ * @property view hierarchy of the current screen
+ * @property boolean indicating if snapshot is supported or not
+ */
+export type ScreenCapturerResult = {
+    snapshot: string | undefined;
+    viewHierarchy: string;
+    isSnapshotImageAttached: boolean;
 }

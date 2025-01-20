@@ -2,9 +2,12 @@ import {CopilotError} from "@/errors/CopilotError";
 import {PromptCreator} from "@/utils/PromptCreator";
 import {CodeEvaluator} from "@/utils/CodeEvaluator";
 import {SnapshotManager} from "@/utils/SnapshotManager";
-import {StepPerformer} from "@/actions/StepPerformer";
-import {Config, PreviousStep, TestingFrameworkAPICatalogCategory} from "@/types";
+import {CopilotStepPerformer} from "@/actions/CopilotStepPerformer";
+import {Config, PreviousStep, TestingFrameworkAPICatalogCategory, PilotReport, ScreenCapturerResult} from "@/types";
 import {CacheHandler} from "@/utils/CacheHandler";
+import {PilotPerformer} from "@/actions/PilotPerformer";
+import {PilotPromptCreator} from "@/utils/PilotPromptCreator";
+import {ScreenCapturer} from "@/utils/ScreenCapturer";
 
 /**
  * The main Copilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
@@ -18,16 +21,21 @@ export class Copilot {
     private readonly codeEvaluator: CodeEvaluator;
     private readonly snapshotManager: SnapshotManager;
     private previousSteps: PreviousStep[] = [];
-    private stepPerformer: StepPerformer;
+    private copilotStepPerformer: CopilotStepPerformer;
     private cacheHandler: CacheHandler;
     private isRunning: boolean = false;
+    private pilotPerformer : PilotPerformer;
+    private pilotPromptCreator : PilotPromptCreator;
+    private screenCapturer : ScreenCapturer;
 
     private constructor(config: Config) {
         this.promptCreator = new PromptCreator(config.frameworkDriver.apiCatalog);
         this.codeEvaluator = new CodeEvaluator();
         this.snapshotManager = new SnapshotManager(config.frameworkDriver);
+        this.pilotPromptCreator = new PilotPromptCreator();
         this.cacheHandler = new CacheHandler();
-        this.stepPerformer = new StepPerformer(
+        this.screenCapturer = new ScreenCapturer(this.snapshotManager, config.promptHandler);
+        this.copilotStepPerformer = new CopilotStepPerformer(
             config.frameworkDriver.apiCatalog.context,
             this.promptCreator,
             this.codeEvaluator,
@@ -36,7 +44,7 @@ export class Copilot {
             this.cacheHandler,
             config.options?.cacheMode
         );
-
+        this.pilotPerformer = new PilotPerformer(this.pilotPromptCreator, this.copilotStepPerformer, config.promptHandler, this.screenCapturer);
     }
 
     static isInitialized(): boolean {
@@ -75,8 +83,8 @@ export class Copilot {
         if (!this.isRunning) {
             throw new CopilotError('Copilot is not running. Please call the `start()` method before performing any steps.');
         }
-
-        const {code, result} = await this.stepPerformer.perform(step, this.previousSteps);
+        const screenCapture : ScreenCapturerResult = await this.screenCapturer.capture();
+        const {code, result} = await this.copilotStepPerformer.perform(step, this.previousSteps, screenCapture);
         this.didPerformStep(step, code, result);
         return result;
     }
@@ -118,7 +126,7 @@ export class Copilot {
     extendAPICatalog(categories: TestingFrameworkAPICatalogCategory[], context?: any): void {
         this.promptCreator.extendAPICategories(categories);
         if (context)
-            this.stepPerformer.extendJSContext(context);
+            this.copilotStepPerformer.extendJSContext(context);
     }
 
     private didPerformStep(step: string, code: string, result: any): void {
@@ -128,4 +136,12 @@ export class Copilot {
             result
         }];
     }
+     /**
+     * Performs an entire test flow using the provided goal.
+     * @param goal A string which describes the flow should be executed.
+     * @returns pilot report with info about the actions thoughts ect ... 
+     */
+     async pilot(goal :string) : Promise<PilotReport> {
+        return await this.pilotPerformer.perform(goal);
+     }
 }

@@ -1,0 +1,252 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PilotPromptCreator should create a prompt for an intent correctly 1`] = `
+"# Next Step Generation
+
+You are an AI assistant tasked with predicting the next optimal action a user should take within an application to progress towards a specific goal or to declare success.
+Please generate a one-line string that precisely describes the next action the user should take to move closer to their goal, and another string (which can be greater than one line) which describes your toughts while creating the step
+If you think that the goal has been reached return a one word 'success'
+
+## Context
+
+### View hierarchy
+
+\`\`\`
+<View><Button testID="submit" title="Submit" /></View>
+\`\`\`
+
+### Snapshot image
+
+A snapshot image is attached for visual reference.
+
+## Instructions
+
+Your task is to generate a one-line string that precisely describes the next action the user should take to move closer to their goal: "tap button"
+
+##Please follow these steps carefully:
+
+1. Analyze the provided goal, view hierarchy, and previous steps to understand the user's progress and what actions are available.
+2. Consider the elements present in the view hierarchy and, if available, the snapshot image to determine possible next actions.
+3. Determine the optimal next action that the user should take to move closer to their goal.
+4. Ensure that the action is directly related to available elements in the view hierarchy.
+5. Generate a one-line string that precisely describes this next action.
+6. The description should be clear, specific, and actionable.
+7. Do not include any additional information or explanations beyond the one-line action description.
+8. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
+
+### Verify the Prompt
+
+Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
+If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
+
+### Examples for answer formats
+
+1.
+            <THOUGHTS>
+            I think that we should click the login button because it will authenticate the user and grant access to the application.
+            </THOUGHTS>
+            <ACTION>
+            Click on login button
+            </ACTION>
+            2.
+            <THOUGHTS>
+            Ensuring that the welcome message appears confirms that the login was successful and the user has properly accessed the system.
+            </THOUGHTS>
+            <ACTION>
+            Make sure the welcome message appears
+            </ACTION>
+            3.
+            <THOUGHTS>
+            To access the settings and adjust preferences, we need to navigate to the settings menu, which may require scrolling through the interface.
+            </THOUGHTS>
+            <ACTION>
+            Scroll to settings
+            </ACTION>
+            4.
+            <THOUGHTS>
+            Dragging the circle to its place is essential to complete the setup or task, ensuring that interactive elements function correctly.
+            </THOUGHTS>
+            <ACTION>
+            Drag the circle to its place
+            </ACTION>
+
+### Example of Throwing an Informative Error:
+\`\`\`
+Error: Unable to determine the next action due to insufficient information in the view hierarchy.
+\`\`\`
+
+Please provide your response below:"
+`;
+
+exports[`PilotPromptCreator should handle when no snapshot image is attached 1`] = `
+"# Next Step Generation
+
+You are an AI assistant tasked with predicting the next optimal action a user should take within an application to progress towards a specific goal or to declare success.
+Please generate a one-line string that precisely describes the next action the user should take to move closer to their goal, and another string (which can be greater than one line) which describes your toughts while creating the step
+If you think that the goal has been reached return a one word 'success'
+
+## Context
+
+### View hierarchy
+
+\`\`\`
+<View><Button testID="submit" title="Submit" /></View>
+\`\`\`
+
+### Snapshot image
+
+No snapshot image is attached for this intent.
+
+## Instructions
+
+Your task is to generate a one-line string that precisely describes the next action the user should take to move closer to their goal: "expect button to be visible"
+
+##Please follow these steps carefully:
+
+1. Analyze the provided goal, view hierarchy, and previous steps to understand the user's progress and what actions are available.
+2. Consider the elements present in the view hierarchy and, if available, the snapshot image to determine possible next actions.
+3. Determine the optimal next action that the user should take to move closer to their goal.
+4. Ensure that the action is directly related to available elements in the view hierarchy.
+5. Generate a one-line string that precisely describes this next action.
+6. The description should be clear, specific, and actionable.
+7. Do not include any additional information or explanations beyond the one-line action description.
+8. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
+
+### Verify the Prompt
+
+Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
+If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
+
+### Examples for answer formats
+
+1.
+            <THOUGHTS>
+            I think that we should click the login button because it will authenticate the user and grant access to the application.
+            </THOUGHTS>
+            <ACTION>
+            Click on login button
+            </ACTION>
+            2.
+            <THOUGHTS>
+            Ensuring that the welcome message appears confirms that the login was successful and the user has properly accessed the system.
+            </THOUGHTS>
+            <ACTION>
+            Make sure the welcome message appears
+            </ACTION>
+            3.
+            <THOUGHTS>
+            To access the settings and adjust preferences, we need to navigate to the settings menu, which may require scrolling through the interface.
+            </THOUGHTS>
+            <ACTION>
+            Scroll to settings
+            </ACTION>
+            4.
+            <THOUGHTS>
+            Dragging the circle to its place is essential to complete the setup or task, ensuring that interactive elements function correctly.
+            </THOUGHTS>
+            <ACTION>
+            Drag the circle to its place
+            </ACTION>
+
+### Example of Throwing an Informative Error:
+\`\`\`
+Error: Unable to determine the next action due to insufficient information in the view hierarchy.
+\`\`\`
+
+Please provide your response below:"
+`;
+
+exports[`PilotPromptCreator should include previous intents in the context 1`] = `
+"# Next Step Generation
+
+You are an AI assistant tasked with predicting the next optimal action a user should take within an application to progress towards a specific goal or to declare success.
+Please generate a one-line string that precisely describes the next action the user should take to move closer to their goal, and another string (which can be greater than one line) which describes your toughts while creating the step
+If you think that the goal has been reached return a one word 'success'
+
+## Context
+
+### View hierarchy
+
+\`\`\`
+<View><Button testID="submit" title="Submit" /></View>
+\`\`\`
+
+### Snapshot image
+
+No snapshot image is attached for this intent.
+
+### Previous intents
+
+#### Step 1
+- Intent: "navigate to login screen"
+- Generated code:
+\`\`\`
+await element(by.id("login")).tap();
+\`\`\`
+
+#### Step 2
+- Intent: "enter username"
+- Generated code:
+\`\`\`
+await element(by.id("username")).typeText("john_doe");
+\`\`\`
+
+
+## Instructions
+
+Your task is to generate a one-line string that precisely describes the next action the user should take to move closer to their goal: "tap button"
+
+##Please follow these steps carefully:
+
+1. Analyze the provided goal, view hierarchy, and previous steps to understand the user's progress and what actions are available.
+2. Consider the elements present in the view hierarchy and, if available, the snapshot image to determine possible next actions.
+3. Determine the optimal next action that the user should take to move closer to their goal.
+4. Ensure that the action is directly related to available elements in the view hierarchy.
+5. Generate a one-line string that precisely describes this next action.
+6. The description should be clear, specific, and actionable.
+7. Do not include any additional information or explanations beyond the one-line action description.
+8. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
+
+### Verify the Prompt
+
+Before generating the next action, please review the provided context and instructions to ensure they are clear and unambiguous.
+If you encounter any issues or have questions, please throw an informative error explaining the problem in one sentence.
+
+### Examples for answer formats
+
+1.
+            <THOUGHTS>
+            I think that we should click the login button because it will authenticate the user and grant access to the application.
+            </THOUGHTS>
+            <ACTION>
+            Click on login button
+            </ACTION>
+            2.
+            <THOUGHTS>
+            Ensuring that the welcome message appears confirms that the login was successful and the user has properly accessed the system.
+            </THOUGHTS>
+            <ACTION>
+            Make sure the welcome message appears
+            </ACTION>
+            3.
+            <THOUGHTS>
+            To access the settings and adjust preferences, we need to navigate to the settings menu, which may require scrolling through the interface.
+            </THOUGHTS>
+            <ACTION>
+            Scroll to settings
+            </ACTION>
+            4.
+            <THOUGHTS>
+            Dragging the circle to its place is essential to complete the setup or task, ensuring that interactive elements function correctly.
+            </THOUGHTS>
+            <ACTION>
+            Drag the circle to its place
+            </ACTION>
+
+### Example of Throwing an Informative Error:
+\`\`\`
+Error: Unable to determine the next action due to insufficient information in the view hierarchy.
+\`\`\`
+
+Please provide your response below:"
+`;
