@@ -157,7 +157,6 @@ export interface PromptHandler {
  * @default 'full'
  */
 export type CacheMode = 'full' | 'lightweight' | 'disabled';
-
 /**
  * Configuration options for the Copilot behavior.
  */
@@ -168,7 +167,6 @@ export interface CopilotOptions {
      */
     cacheMode?: CacheMode;
 }
-
 /**
  * Configuration options for Copilot.
  * @property frameworkDriver The testing driver to use for interacting with the underlying testing framework.
@@ -244,9 +242,9 @@ export type PilotStepPlan = {
 
 /**
  * Represents the output of screen capturer createStepPlan method.
- * @property report of pilot's actions (thoughts, actions, ect ....)
- * @property report of pilot's actions (thoughts, actions, ect ....)
- * @property report of pilot's actions (thoughts, actions, ect ....)
+ * @property snapshot of the currnet screen or undeifned 
+ * @property view hierarchy of the current screen
+ * @property boolean indicating if snapshot is supported or not
  */
 export type CaptureResult = {
     snapshot: string | undefined;
