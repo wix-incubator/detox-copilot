@@ -195,10 +195,10 @@ export type PilotStepReport = {
 
 /**
  * Represents the output of pilot.
- * @property report of pilot's actions (thoughts, actions, code ....)
+ * @property steps report of pilot's actions (thoughts, actions, code ....)
  */
 export type PilotReport = {
-    report : PilotStepReport[];
+    steps : PilotStepReport[];
 }
 
 /**
@@ -208,4 +208,16 @@ export type PilotReport = {
 export type PilotStepPlan = {
     action: string;
     thoughts: string;
+}
+
+/**
+ * Represents the output of screen capturer createStepPlan method.
+ * @property report of pilot's actions (thoughts, actions, ect ....)
+ * @property report of pilot's actions (thoughts, actions, ect ....)
+ * @property report of pilot's actions (thoughts, actions, ect ....)
+ */
+export type CaptureResult = {
+    snapshot: string | undefined;
+    viewHierarchy: string;
+    isSnapshotImageAttached: boolean;
 }

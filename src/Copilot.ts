@@ -3,10 +3,12 @@ import {PromptCreator} from "@/utils/PromptCreator";
 import {CodeEvaluator} from "@/utils/CodeEvaluator";
 import {SnapshotManager} from "@/utils/SnapshotManager";
 import {CopilotStepPerformer} from "@/actions/CopilotStepPerformer";
-import {Config, PreviousStep, TestingFrameworkAPICatalogCategory, PilotReport} from "@/types";
+import {Config, PreviousStep, TestingFrameworkAPICatalogCategory, PilotReport, CaptureResult} from "@/types";
 import {CacheHandler} from "@/utils/CacheHandler";
 import {PilotPerformer} from "@/actions/PilotPerformer";
 import {PilotPromptCreator} from "@/utils/PilotPromptCreator";
+import {ScreenCapturer} from "@/utils/ScreenCapturer";
+
 /**
  * The main Copilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
  * @note Originally, this class is designed to work with Detox, but it can be extended to work with other frameworks.
@@ -24,6 +26,7 @@ export class Copilot {
     private isRunning: boolean = false;
     private pilotPerformer : PilotPerformer;
     private pilotPromptCreator : PilotPromptCreator;
+    private screenCapturer : ScreenCapturer;
 
     private constructor(config: Config) {
         this.promptCreator = new PromptCreator(config.frameworkDriver.apiCatalog);
@@ -31,6 +34,7 @@ export class Copilot {
         this.snapshotManager = new SnapshotManager(config.frameworkDriver);
         this.pilotPromptCreator = new PilotPromptCreator();
         this.cacheHandler = new CacheHandler();
+        this.screenCapturer = new ScreenCapturer(this.snapshotManager, config.promptHandler);
         this.copilotStepPerformer = new CopilotStepPerformer(
             config.frameworkDriver.apiCatalog.context,
             this.promptCreator,
@@ -39,8 +43,7 @@ export class Copilot {
             config.promptHandler,
             this.cacheHandler
         );
-        this.pilotPerformer = new PilotPerformer(this.pilotPromptCreator, this.copilotStepPerformer, config.promptHandler);
-
+        this.pilotPerformer = new PilotPerformer(this.pilotPromptCreator, this.copilotStepPerformer, config.promptHandler, () => this.screenCapturer.capture());
     }
 
     static isInitialized(): boolean {
@@ -79,8 +82,8 @@ export class Copilot {
         if (!this.isRunning) {
             throw new CopilotError('Copilot is not running. Please call the `start()` method before performing any steps.');
         }
-
-        const {code, result} = await this.copilotStepPerformer.perform(step, this.previousSteps);
+        const captueResult : CaptureResult = await this.screenCapturer.capture();
+        const {code, result} = await this.copilotStepPerformer.perform(step, this.previousSteps, undefined, captueResult);
         this.didPerformStep(step, code, result);
         return result;
     }

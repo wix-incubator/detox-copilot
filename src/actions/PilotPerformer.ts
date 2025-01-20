@@ -1,7 +1,8 @@
 import { PilotPromptCreator } from '@/utils/PilotPromptCreator';
-import {PreviousStep, PromptHandler, PilotReport, PilotStepReport, PilotStepPlan} from '@/types';
+import {PreviousStep, PromptHandler, PilotReport, PilotStepReport, PilotStepPlan, CaptureResult} from '@/types';
 import {extractOutputs, OutputMapper} from '@/utils/extractOutputs'
 import {CopilotStepPerformer} from '@/actions/CopilotStepPerformer';
+
 
 
 export class PilotPerformer {
@@ -10,6 +11,7 @@ export class PilotPerformer {
         private promptCreator: PilotPromptCreator,
         private copilotStepPerformer: CopilotStepPerformer,
         private promptHandler: PromptHandler,
+        private capture: () => Promise<CaptureResult>
     ) {
     }
 
@@ -18,13 +20,12 @@ export class PilotPerformer {
             thoughts: 'THOUGHTS',
             action: 'ACTION',
         };
-        const parsedResult = extractOutputs({text, outputsMapper});
-        return parsedResult as PilotStepPlan;
+        return extractOutputs({text, outputsMapper}) as PilotStepPlan;
     }
 
-    async createStepPlan(goal: string, previous: PreviousStep[] = []): Promise<PilotStepPlan> {
+    async createStepPlan(goal: string, previous: PreviousStep[] = [], captureResult : CaptureResult): Promise<PilotStepPlan> {
             try {
-                const { snapshot, viewHierarchy, isSnapshotImageAttached } = await this.copilotStepPerformer.captureSnapshotAndViewHierarchy();
+                const { snapshot, viewHierarchy, isSnapshotImageAttached } = captureResult;
                 const prompt = this.promptCreator.createPrompt(goal, viewHierarchy, isSnapshotImageAttached, previous);
                 const generatedPilotTaskDetails : string = await this.promptHandler.runPrompt(prompt, snapshot);
                 const pilotOutputParsed : PilotStepPlan = this.extractStepOutputs(generatedPilotTaskDetails)
@@ -39,25 +40,27 @@ export class PilotPerformer {
     async perform(goal: string): Promise<PilotReport> {
         let maxSteps = 100;
         const previousSteps: PreviousStep[] = [];
-        const pilotReport: PilotReport = { report: [] };
-    
+        const report: PilotReport = { steps: [] };
+        
         for (let step = 0; step < maxSteps; step++) {
-            const pilotStepPlan: PilotStepPlan = await this.createStepPlan(goal, previousSteps);
+            const captureResult : CaptureResult = await this.capture();
+            const plan: PilotStepPlan = await this.createStepPlan(goal, previousSteps, captureResult);
     
-            if (pilotStepPlan.action == 'success') {
-                pilotReport.report.push({ plan: pilotStepPlan });
-                console.log(JSON.stringify(pilotReport, null, 2));
-                return pilotReport;
+            if (plan.action == 'success') {
+                report.steps.push({ plan });
+                console.log(JSON.stringify(report, null, 2));
+                return report;
             }
-    
-            const { code, result } = await this.copilotStepPerformer.perform(pilotStepPlan.action, previousSteps);
-            previousSteps.push({ step: pilotStepPlan.action, code, result });
-            const pilotStepReport: PilotStepReport = { plan: pilotStepPlan, code };
-            pilotReport.report.push(pilotStepReport);
+            
+            const previousStepsSnapshot = [...previousSteps];
+            const { code, result } = await this.copilotStepPerformer.perform(plan.action, previousStepsSnapshot, undefined, captureResult);
+            previousSteps.push({ step: plan.action, code, result });
+            const pilotStepReport: PilotStepReport = { plan, code };
+            report.steps.push(pilotStepReport);
         }
     
-        console.log(`pilot finished execution due to maxSteps limit of ${maxSteps} has been achieved`);
-        console.log(JSON.stringify(pilotReport, null, 2));
-        return pilotReport;
+        console.warn(`pilot finished execution due to maxSteps limit of ${maxSteps} has been achieved`);
+        console.log(JSON.stringify(report, null, 2));
+        return report;
     }
 }
