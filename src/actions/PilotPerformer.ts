@@ -40,7 +40,7 @@ export class PilotPerformer {
 
     async perform(goal: string): Promise<PilotReport> {
         let maxSteps = 100;
-        const previousSteps: PreviousStep[] = [];
+        let previousSteps: PreviousStep[] = [];
         const report: PilotReport = { steps: [] };
         
         for (let step = 0; step < maxSteps; step++) {
@@ -48,15 +48,15 @@ export class PilotPerformer {
             const plan: PilotStepPlan = await this.createStepPlan(goal, previousSteps, screenCapture);
     
             if (plan.action == 'success') {
-                report.steps.push({ plan });
+                report.steps = [...report.steps, { plan }];
                 console.log(JSON.stringify(report, null, 2));
                 return report;
             }
             
             const { code, result } = await this.copilotStepPerformer.perform(plan.action, [...previousSteps], screenCapture);
-            previousSteps.push({ step: plan.action, code, result });
+            previousSteps = [...previousSteps, { step: plan.action, code, result }];
             const pilotStepReport: PilotStepReport = { plan, code };
-            report.steps.push(pilotStepReport);
+            report.steps = [...report.steps, pilotStepReport];
         }
     
         console.warn(`pilot finished execution due to maxSteps limit of ${maxSteps} has been achieved`);
