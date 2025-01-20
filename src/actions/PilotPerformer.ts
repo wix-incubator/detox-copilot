@@ -55,8 +55,8 @@ export class PilotPerformer {
             
             const { code, result } = await this.copilotStepPerformer.perform(plan.action, [...previousSteps], screenCapture);
             previousSteps = [...previousSteps, { step: plan.action, code, result }];
-            const pilotStepReport: PilotStepReport = { plan, code };
-            report.steps = [...report.steps, pilotStepReport];
+            const stepReport: PilotStepReport = { plan, code };
+            report.steps = [...report.steps, stepReport];
         }
     
         console.warn(`pilot finished execution due to maxSteps limit of ${maxSteps} has been achieved`);
