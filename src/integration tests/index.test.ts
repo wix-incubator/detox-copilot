@@ -1,12 +1,12 @@
-import copilot from '../../src/index';
+import copilot from '@/index';
 import fs from 'fs';
-import { Copilot } from '../../src/Copilot';
-import { PromptHandler, TestingFrameworkDriver, PilotReport } from '../../src/types';
+import { Copilot } from '@/Copilot';
+import { PromptHandler, TestingFrameworkDriver, PilotReport } from '@/types';
 import * as crypto from 'crypto';
-import { mockedCacheFile, mockCache } from '../test-utils/cache';
-import { PromptCreator } from '../../src/utils/PromptCreator';
-import { CopilotStepPerformer } from '../../src/actions/CopilotStepPerformer';
-import { bazCategory, barCategory1, dummyContext } from '../test-utils/APICatalogTestUtils';
+import { mockedCacheFile, mockCache } from '@/test-utils/cache';
+import { PromptCreator } from '@/utils/PromptCreator';
+import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
+import { bazCategory, barCategory1, dummyContext } from '@/test-utils/APICatalogTestUtils';
 
 jest.mock('crypto');
 jest.mock('fs');
