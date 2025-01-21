@@ -1,27 +1,29 @@
 import {PromptCreator} from '@/utils/PromptCreator';
 import {CodeEvaluator} from '@/utils/CodeEvaluator';
-import {SnapshotManager} from '@/utils/SnapshotManager';
+import {CopilotAPISearchPromptCreator} from '@/utils/CopilotAPISearchPromptCreator';
+import {ViewAnalysisPromptCreator} from '@/utils/ViewAnalysisPromptCreator';
 import {CacheHandler} from '@/utils/CacheHandler';
-import {CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult} from '@/types';
-import * as fs from 'fs';
-import * as path from 'path';
+import {AnalysisMode, CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult} from '@/types';
 import * as crypto from 'crypto';
 import {extractCodeBlock} from '@/utils/extractCodeBlock';
 
 export class CopilotStepPerformer {
     private readonly cacheMode: CacheMode;
-    
+    private readonly analysisMode: AnalysisMode;
 
     constructor(
         private context: any,
         private promptCreator: PromptCreator,
+        private apiSearchPromptCreator: CopilotAPISearchPromptCreator,
+        private viewAnalysisPromptCreator: ViewAnalysisPromptCreator,
         private codeEvaluator: CodeEvaluator,
-        private snapshotManager: SnapshotManager,
         private promptHandler: PromptHandler,
         private cacheHandler: CacheHandler,
         cacheMode: CacheMode = 'full',
+        analysisMode: AnalysisMode = 'fast',
     ) {
         this.cacheMode = cacheMode;
+        this.analysisMode = analysisMode;
     }
 
     extendJSContext(newContext: any): void {
@@ -41,7 +43,7 @@ export class CopilotStepPerformer {
         }
 
         const cacheKeyData: any = {step, previous};
-        
+
         if (this.cacheMode === 'full') {
             const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
             cacheKeyData.viewHierarchyHash = viewHierarchyHash;
@@ -67,7 +69,30 @@ export class CopilotStepPerformer {
         if (!this.shouldOverrideCache() && cachedCode) {
             return cachedCode;
         } else {
-            const prompt = this.promptCreator.createPrompt(step, viewHierarchy, isSnapshotImageAttached, previous);
+            let viewAnalysisResult = '';
+            let apiSearchResult = '';
+
+            if (this.analysisMode === 'full') {
+                // Perform view hierarchy analysis and API search only in full mode
+                viewAnalysisResult = await this.promptHandler.runPrompt(
+                    this.viewAnalysisPromptCreator.createPrompt(step, viewHierarchy, previous),
+                    undefined
+                );
+
+                apiSearchResult = await this.promptHandler.runPrompt(
+                    this.apiSearchPromptCreator.createPrompt(step, viewAnalysisResult),
+                    undefined
+                );
+            }
+
+            const prompt = this.promptCreator.createPrompt(
+                step,
+                viewHierarchy,
+                isSnapshotImageAttached,
+                previous,
+                apiSearchResult
+            );
+
             const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
             const code = extractCodeBlock(promptResult);
 
