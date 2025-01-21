@@ -1,7 +1,7 @@
 import { Copilot } from '@/Copilot';
 import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
 import { CopilotError } from '@/errors/CopilotError';
-import { Config, ScreenCapturerResult } from '@/types';
+import { Config, ScreenCapturerResult, PromptHandler } from '@/types';
 import { mockCache, mockedCacheFile } from './test-utils/cache';
 import { ScreenCapturer } from '@/utils/ScreenCapturer';
 import {
@@ -10,6 +10,7 @@ import {
   barCategory1,
   dummyContext,
 } from './test-utils/APICatalogTestUtils';
+import { PilotPerformer } from './actions/PilotPerformer';
 
 jest.mock('@/actions/CopilotStepPerformer');
 jest.mock('@/utils/ScreenCapturer');
@@ -21,28 +22,41 @@ const VIEW_HIERARCHY = 'hash';
 
 describe('Copilot', () => {
   let mockConfig: Config;
+  let mockPromptHandler: jest.Mocked<PromptHandler>;
+  let mockFrameworkDriver: any;
+  let mockPilotPerformer: jest.Mocked<PilotPerformer>;
   let screenCapture: ScreenCapturerResult;
 
   beforeEach(() => {
-    mockConfig = {
-      frameworkDriver: {
-        captureSnapshotImage: jest.fn(),
-        captureViewHierarchyString: jest.fn(),
-        apiCatalog: {
-          context: {},
-          categories: [],
-        },
+    mockPromptHandler = {
+      runPrompt: jest.fn(),
+      isSnapshotImageSupported: jest.fn()
+    } as any;
+
+    mockFrameworkDriver = {
+      apiCatalog: {
+        context: {},
+        categories: []
       },
-      promptHandler: {
-        runPrompt: jest.fn(),
-        isSnapshotImageSupported: jest.fn().mockReturnValue(true),
-      },
+      captureSnapshotImage: jest.fn(),
+      captureViewHierarchyString: jest.fn()
     };
 
+    mockPilotPerformer = {
+      perform: jest.fn()
+    } as any;
+
+    mockConfig = {
+      promptHandler: mockPromptHandler,
+      frameworkDriver: mockFrameworkDriver
+    };
+
+    jest.spyOn(PilotPerformer.prototype, 'perform').mockImplementation(mockPilotPerformer.perform);
+
     screenCapture = {
-      snapshot: SNAPSHOT_DATA,
-      viewHierarchy: VIEW_HIERARCHY,
-      isSnapshotImageAttached: true,
+      snapshot: 'base64-encoded-image',
+      viewHierarchy: '<View><Button testID="login" title="Login" /></View>',
+      isSnapshotImageAttached: true
     };
 
     jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -286,17 +300,45 @@ describe('Copilot', () => {
       expect(spyCopilotStepPerformer).toHaveBeenCalledWith(dummyContext);
     });
 
-    it('should extend the API catalog with a new category', () => {
+    it('should extend the API catalog with multiple categories sequentially', () => {
       Copilot.init(mockConfig);
       const instance = Copilot.getInstance();
 
       instance.extendAPICatalog([barCategory1]);
       instance.extendAPICatalog([bazCategory]);
 
-      expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([
-        barCategory1,
-        bazCategory,
-      ]);
+      expect(mockConfig.frameworkDriver.apiCatalog.categories).toEqual([barCategory1, bazCategory]);
+    });
+
+    it('should pilot through steps successfully', async () => {
+      Copilot.init(mockConfig);
+      const instance = Copilot.getInstance();
+      const goal = 'test goal';
+
+      const mockPilotResult = {
+        steps: [
+          {
+            plan: {
+              thoughts: "Step 1 thoughts",
+              action: "Tap on GREAT button"
+            },
+            code: "code executed"
+          },
+          {
+            plan: {
+              thoughts: "Completed successfully",
+              action: "success"
+            }
+          }
+        ]
+      };
+
+      mockPilotPerformer.perform.mockResolvedValue(mockPilotResult);
+
+      const pilotResult = await instance.pilot(goal);
+
+      expect(instance['pilotPerformer'].perform).toHaveBeenCalledWith(goal);
+      expect(pilotResult).toEqual(mockPilotResult);
     });
   });
 

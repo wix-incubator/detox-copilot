@@ -4,10 +4,14 @@ import {
     TestingFrameworkAPICatalogCategory,
     TestingFrameworkAPICatalogItem
 } from "@/types";
+import {APIFormatter} from '@/utils/APIFormatter';
 
 export class PromptCreator {
-    constructor(private apiCatalog: TestingFrameworkAPICatalog) {
+    private apiFormatter: APIFormatter;
+
+    constructor(public readonly apiCatalog: TestingFrameworkAPICatalog) {
         this.apiCatalog.categories = this.mergeCategories(this.apiCatalog.categories);
+        this.apiFormatter = new APIFormatter(this.apiCatalog);
     }
 
     extendAPICategories(
@@ -37,12 +41,19 @@ export class PromptCreator {
         intent: string,
         viewHierarchy: string,
         isSnapshotImageAttached: boolean,
-        previousSteps: PreviousStep[]
+        previousSteps: PreviousStep[],
+        apiSearchResults?: string
     ): string {
         return [
             this.createBasePrompt(),
             this.createContext(intent, viewHierarchy, isSnapshotImageAttached, previousSteps),
             this.createAPIInfo(),
+            ...(apiSearchResults ? [
+                "## Semantic Matches from API Search",
+                "",
+                apiSearchResults,
+                ""
+            ] : []),
             this.createInstructions(intent, isSnapshotImageAttached)
         ]
             .flat()
@@ -61,12 +72,12 @@ export class PromptCreator {
         if (this.apiCatalog.name || this.apiCatalog.description) {
             basePrompt.push("## Testing Framework");
             basePrompt.push("");
-            
+
             if (this.apiCatalog.name) {
                 basePrompt.push(`Framework: ${this.apiCatalog.name}`);
                 basePrompt.push("");
             }
-            
+
             if (this.apiCatalog.description) {
                 basePrompt.push(`Description: ${this.apiCatalog.description}`);
                 basePrompt.push("");
@@ -137,46 +148,9 @@ export class PromptCreator {
     private createAPIInfo(): string[] {
         return [
             "## Available Testing Framework API",
-            ""
-        ].concat(
-            this.apiCatalog.categories
-                .map((category) => this.formatAPICategory(category))
-                .flat()
-        );
-    }
-
-    private formatAPICategory(category: TestingFrameworkAPICatalogCategory): string[] {
-        return [
-            `### ${category.title}`,
             "",
-            ...category.items.map((item) => this.formatAPIMethod(item)).flat()
+            this.apiFormatter.formatAPIInfo()
         ];
-    }
-
-    private formatAPIMethod(method: TestingFrameworkAPICatalogItem): string[] {
-        const methodInfo = [
-            `#### ${method.signature}`,
-            "",
-            method.description,
-            "",
-            "##### Example",
-            "",
-            "```",
-            method.example,
-            "```",
-            ""
-        ];
-
-        if (method.guidelines && method.guidelines.length > 0) {
-            methodInfo.push(
-                "##### Guidelines",
-                "",
-                ...method.guidelines.map((guideline) => `- ${guideline}`),
-                ""
-            );
-        }
-
-        return methodInfo;
     }
 
     private createInstructions(intent: string, isSnapshotImageAttached: boolean): string[] {

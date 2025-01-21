@@ -1,11 +1,12 @@
 import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
 import { PromptCreator } from '@/utils/PromptCreator';
 import { CodeEvaluator } from '@/utils/CodeEvaluator';
-import { SnapshotManager } from '@/utils/SnapshotManager';
 import { CacheHandler } from '@/utils/CacheHandler';
 import { PromptHandler, TestingFrameworkAPICatalog, ScreenCapturerResult, PreviousStep, CacheMode } from '@/types';
 import * as crypto from 'crypto';
-import { dummyContext, dummyBarContext1, dummyBarContext2 } from '../test-utils/APICatalogTestUtils';
+import {dummyContext, dummyBarContext1, dummyBarContext2} from '../test-utils/APICatalogTestUtils';
+import {CopilotAPISearchPromptCreator} from '@/utils/CopilotAPISearchPromptCreator';
+import {ViewAnalysisPromptCreator} from '@/utils/ViewAnalysisPromptCreator';
 
 jest.mock('fs');
 jest.mock('crypto');
@@ -15,15 +16,14 @@ const VIEW_HIERARCHY = '<view></view>';
 const PROMPT_RESULT = 'generated code';
 const CODE_EVALUATION_RESULT = 'success';
 const SNAPSHOT_DATA = 'snapshot_data';
-const VIEW_HIERARCHY_HASH = 'hash';
-const CACHE_KEY = JSON.stringify({ step: INTENT, previous: [], viewHierarchyHash: VIEW_HIERARCHY_HASH });
 
 describe('CopilotStepPerformer', () => {
   let copilotStepPerformer: CopilotStepPerformer;
   let mockContext: jest.Mocked<any>;
   let mockPromptCreator: jest.Mocked<PromptCreator>;
+  let mockApiSearchPromptCreator: jest.Mocked<CopilotAPISearchPromptCreator>;
+  let mockViewAnalysisPromptCreator: jest.Mocked<ViewAnalysisPromptCreator>;
   let mockCodeEvaluator: jest.Mocked<CodeEvaluator>;
-  let mockSnapshotManager: jest.Mocked<SnapshotManager>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
   let mockCacheHandler: jest.Mocked<CacheHandler>;
   let uuidCounter = 0;
@@ -31,7 +31,7 @@ describe('CopilotStepPerformer', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     uuidCounter = 0;
-        (crypto.randomUUID as jest.Mock).mockImplementation(() => `uuid-${uuidCounter++}`);
+    (crypto.randomUUID as jest.Mock).mockImplementation(() => `uuid-${uuidCounter++}`);
     const apiCatalog: TestingFrameworkAPICatalog = {
       context: {},
       categories: [],
@@ -46,16 +46,20 @@ describe('CopilotStepPerformer', () => {
       createBasePrompt: jest.fn(),
       createContext: jest.fn(),
       createAPIInfo: jest.fn(),
+      extendAPICategories: jest.fn(),
     } as unknown as jest.Mocked<PromptCreator>;
+
+    mockApiSearchPromptCreator = {
+      createPrompt: jest.fn(),
+    } as unknown as jest.Mocked<CopilotAPISearchPromptCreator>;
+
+    mockViewAnalysisPromptCreator = {
+      createPrompt: jest.fn(),
+    } as unknown as jest.Mocked<ViewAnalysisPromptCreator>;
 
     mockCodeEvaluator = {
       evaluate: jest.fn(),
     } as unknown as jest.Mocked<CodeEvaluator>;
-
-    mockSnapshotManager = {
-      captureSnapshotImage: jest.fn(),
-      captureViewHierarchyString: jest.fn(),
-    } as unknown as jest.Mocked<SnapshotManager>;
 
     mockPromptHandler = {
       runPrompt: jest.fn(),
@@ -70,15 +74,19 @@ describe('CopilotStepPerformer', () => {
       flushTemporaryCache: jest.fn(),
       clearTemporaryCache: jest.fn(),
       getStepFromCache: jest.fn(),
+      getFromTemporaryCache: jest.fn(),
     } as unknown as jest.Mocked<CacheHandler>;
 
     copilotStepPerformer = new CopilotStepPerformer(
-      mockContext,
-      mockPromptCreator,
-      mockCodeEvaluator,
-      mockSnapshotManager,
-      mockPromptHandler,
-      mockCacheHandler
+        mockContext,
+        mockPromptCreator,
+        mockApiSearchPromptCreator,
+        mockViewAnalysisPromptCreator,
+        mockCodeEvaluator,
+        mockPromptHandler,
+        mockCacheHandler,
+        'full',
+        'fast'
     );
   });
 
@@ -95,19 +103,17 @@ describe('CopilotStepPerformer', () => {
   }
 
   const setupMocks = ({
-    isSnapshotSupported = true,
-    snapshotData = SNAPSHOT_DATA,
-    viewHierarchy = VIEW_HIERARCHY,
-    promptResult = PROMPT_RESULT,
-    codeEvaluationResult = CODE_EVALUATION_RESULT,
-    cacheExists = false,
-    overrideCache = false,
-    previous = [],
-    intent = INTENT,
-  }: SetupMockOptions = {}) => {
+                        isSnapshotSupported = true,
+                        snapshotData = SNAPSHOT_DATA,
+                        viewHierarchy = VIEW_HIERARCHY,
+                        promptResult = PROMPT_RESULT,
+                        codeEvaluationResult = CODE_EVALUATION_RESULT,
+                        cacheExists = false,
+                        overrideCache = false,
+                        previous = [],
+                        intent = INTENT,
+                      }: SetupMockOptions = {}) => {
     mockPromptHandler.isSnapshotImageSupported.mockReturnValue(isSnapshotSupported);
-    mockSnapshotManager.captureSnapshotImage.mockResolvedValue(snapshotData != null ? snapshotData : undefined);
-    mockSnapshotManager.captureViewHierarchyString.mockResolvedValue(viewHierarchy);
     mockPromptCreator.createPrompt.mockReturnValue('generated prompt');
     mockPromptHandler.runPrompt.mockResolvedValue(promptResult);
     mockCodeEvaluator.evaluate.mockResolvedValue(codeEvaluationResult);
@@ -145,91 +151,74 @@ describe('CopilotStepPerformer', () => {
 
   it('should perform an intent successfully with snapshot image support', async () => {
     setupMocks();
-
-    const screenCapture: ScreenCapturerResult = {
-      snapshot: SNAPSHOT_DATA,
-      viewHierarchy: VIEW_HIERARCHY,
-      isSnapshotImageAttached: true,
-    };
-
-    const result = await copilotStepPerformer.perform(INTENT, [], screenCapture, 2);
+    const result = await copilotStepPerformer.perform(INTENT, [], {
+        snapshot: SNAPSHOT_DATA,
+        viewHierarchy: VIEW_HIERARCHY,
+        isSnapshotImageAttached: true
+    });
 
     expect(mockCacheHandler.loadCacheFromFile).toHaveBeenCalled();
     expect(result).toBe('success');
-    expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(INTENT, VIEW_HIERARCHY, true, []);
+    expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(INTENT, VIEW_HIERARCHY, true, [], '');
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', SNAPSHOT_DATA);
     expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
     expect(mockCacheHandler.getStepFromCache).toHaveBeenCalled();
-    expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalled();
   });
 
   it('should perform an intent successfully without snapshot image support', async () => {
-    setupMocks({ isSnapshotSupported: false });
-
-    const screenCapture: ScreenCapturerResult = {
-      snapshot: undefined,
-      viewHierarchy: VIEW_HIERARCHY,
-      isSnapshotImageAttached: false,
-    };
-
-    const result = await copilotStepPerformer.perform(INTENT, [], screenCapture, 2);
+    setupMocks();
+    mockPromptHandler.isSnapshotImageSupported.mockReturnValue(false);
+    const result = await copilotStepPerformer.perform(INTENT, [], {
+        snapshot: undefined,
+        viewHierarchy: VIEW_HIERARCHY,
+        isSnapshotImageAttached: false
+    });
 
     expect(mockCacheHandler.loadCacheFromFile).toHaveBeenCalled();
     expect(result).toBe('success');
-    expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(INTENT, VIEW_HIERARCHY, false, []);
+    expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(INTENT, VIEW_HIERARCHY, false, [], '');
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', undefined);
     expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
     expect(mockCacheHandler.getStepFromCache).toHaveBeenCalled();
-    expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalled();
   });
 
   it('should perform an intent with undefined snapshot', async () => {
-    setupMocks({ snapshotData: null });
-
-    const screenCapture: ScreenCapturerResult = {
-      snapshot: undefined,
-      viewHierarchy: VIEW_HIERARCHY,
-      isSnapshotImageAttached: false,
-    };
-
-    const result = await copilotStepPerformer.perform(INTENT, [], screenCapture, 2);
+    setupMocks();
+    const result = await copilotStepPerformer.perform(INTENT, [], {
+        snapshot: undefined,
+        viewHierarchy: VIEW_HIERARCHY,
+        isSnapshotImageAttached: false
+    });
 
     expect(mockCacheHandler.loadCacheFromFile).toHaveBeenCalled();
     expect(result).toBe('success');
-    expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(INTENT, VIEW_HIERARCHY, false, []);
+    expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(INTENT, VIEW_HIERARCHY, false, [], '');
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', undefined);
     expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
     expect(mockCacheHandler.getStepFromCache).toHaveBeenCalled();
-    expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalled();
   });
 
   it('should perform an intent successfully with previous intents', async () => {
+    setupMocks();
     const intent = 'current intent';
-    const previousIntents: PreviousStep[] = [
-      {
+    const previousIntents = [{
         step: 'previous intent',
         code: 'previous code',
-        result: 'previous result',
-      },
-    ];
+        result: 'previous result'
+    }];
 
-    setupMocks({ previous: previousIntents, intent });
-
-    const screenCapture: ScreenCapturerResult = {
-      snapshot: SNAPSHOT_DATA,
-      viewHierarchy: VIEW_HIERARCHY,
-      isSnapshotImageAttached: true,
-    };
-
-    const result = await copilotStepPerformer.perform(intent, previousIntents, screenCapture, 2);
+    const result = await copilotStepPerformer.perform(intent, previousIntents, {
+        snapshot: SNAPSHOT_DATA,
+        viewHierarchy: VIEW_HIERARCHY,
+        isSnapshotImageAttached: true
+    });
 
     expect(mockCacheHandler.loadCacheFromFile).toHaveBeenCalled();
     expect(result).toBe('success');
-    expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(intent, VIEW_HIERARCHY, true, previousIntents);
+    expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(intent, VIEW_HIERARCHY, true, previousIntents, '');
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', SNAPSHOT_DATA);
     expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
     expect(mockCacheHandler.getStepFromCache).toHaveBeenCalled();
-    expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalled();
   });
 
   it('should throw an error if code evaluation fails', async () => {
@@ -377,75 +366,160 @@ describe('CopilotStepPerformer', () => {
   });
   describe('cache modes', () => {
     const testCacheModes = async (cacheMode: CacheMode) => {
-        const generatedKeys: string[] = [];
-        mockCacheHandler.addToTemporaryCache.mockImplementation((key: string) => {
-            generatedKeys.push(key);
-        });
+      const generatedKeys: string[] = [];
+      mockCacheHandler.addToTemporaryCache.mockImplementation((key: string) => {
+        generatedKeys.push(key);
+      });
 
-        copilotStepPerformer = new CopilotStepPerformer(
-            mockContext,
-            mockPromptCreator,
-            mockCodeEvaluator,
-            mockSnapshotManager,
-            mockPromptHandler,
-            mockCacheHandler,
-            cacheMode
-        );
-        const screenCapture: ScreenCapturerResult = {
-            snapshot: SNAPSHOT_DATA,
-            viewHierarchy: VIEW_HIERARCHY,
-            isSnapshotImageAttached: true,
-          }; 
+      copilotStepPerformer = new CopilotStepPerformer(
+          mockContext,
+          mockPromptCreator,
+          mockApiSearchPromptCreator,
+          mockViewAnalysisPromptCreator,
+          mockCodeEvaluator,
+          mockPromptHandler,
+          mockCacheHandler,
+          cacheMode,
+          'fast'
+      );
+      const screenCapture: ScreenCapturerResult = {
+        snapshot: SNAPSHOT_DATA,
+        viewHierarchy: VIEW_HIERARCHY,
+        isSnapshotImageAttached: true,
+      };
 
-        setupMocks({
-            promptResult: '```\nconst code = true;\n```',
-            codeEvaluationResult: 'success'
-        });
-        await copilotStepPerformer.perform(INTENT, [], screenCapture, undefined);
-        return generatedKeys[0];
+      setupMocks({
+        promptResult: '```\nconst code = true;\n```',
+        codeEvaluationResult: 'success'
+      });
+      await copilotStepPerformer.perform(INTENT, [], screenCapture, undefined);
+      return generatedKeys[0];
     };
 
     it('should include view hierarchy hash in cache key when mode is full', async () => {
-        const cacheKey = await testCacheModes('full');
-        const parsedKey = JSON.parse(cacheKey);
-        expect(parsedKey).toHaveProperty('viewHierarchyHash');
-        expect(parsedKey.viewHierarchyHash).toBe('hash');
+      const cacheKey = await testCacheModes('full');
+      const parsedKey = JSON.parse(cacheKey);
+      expect(parsedKey).toHaveProperty('viewHierarchyHash');
+      expect(parsedKey.viewHierarchyHash).toBe('hash');
     });
 
     it('should not include view hierarchy hash in cache key when mode is lightweight', async () => {
-        const cacheKey = await testCacheModes('lightweight');
-        const parsedKey = JSON.parse(cacheKey);
-        expect(parsedKey).not.toHaveProperty('viewHierarchyHash');
+      const cacheKey = await testCacheModes('lightweight');
+      const parsedKey = JSON.parse(cacheKey);
+      expect(parsedKey).not.toHaveProperty('viewHierarchyHash');
     });
 
     it('should generate unique cache keys when mode is disabled', async () => {
-        const firstKey = await testCacheModes('disabled');
-        const secondKey = await testCacheModes('disabled');
-        expect(firstKey).not.toBe(secondKey);
+      const firstKey = await testCacheModes('disabled');
+      const secondKey = await testCacheModes('disabled');
+      expect(firstKey).not.toBe(secondKey);
     });
 
     it('should not use cache when mode is disabled', async () => {
 
-        const screenCapture: ScreenCapturerResult = {
-            snapshot: SNAPSHOT_DATA,
-            viewHierarchy: VIEW_HIERARCHY,
-            isSnapshotImageAttached: true,
-          }; 
+      const screenCapture: ScreenCapturerResult = {
+        snapshot: SNAPSHOT_DATA,
+        viewHierarchy: VIEW_HIERARCHY,
+        isSnapshotImageAttached: true,
+      };
 
-        copilotStepPerformer = new CopilotStepPerformer(
-            mockContext,
-            mockPromptCreator,
-            mockCodeEvaluator,
-            mockSnapshotManager,
-            mockPromptHandler,
-            mockCacheHandler,
-            'disabled'
-        );
+      copilotStepPerformer = new CopilotStepPerformer(
+          mockContext,
+          mockPromptCreator,
+          mockApiSearchPromptCreator,
+          mockViewAnalysisPromptCreator,
+          mockCodeEvaluator,
+          mockPromptHandler,
+          mockCacheHandler,
+          'disabled',
+          'fast'
+      );
 
-        setupMocks({ cacheExists: true });
-        await copilotStepPerformer.perform(INTENT, [], screenCapture, undefined);
+      setupMocks({ cacheExists: true });
+      await copilotStepPerformer.perform(INTENT, [], screenCapture, undefined);
 
-        expect(mockPromptHandler.runPrompt).toHaveBeenCalled();
+      expect(mockPromptHandler.runPrompt).toHaveBeenCalled();
     });
-});
+  });
+
+  describe('analysis modes', () => {
+    it('should perform full analysis in full mode', async () => {
+      setupMocks();
+      const viewAnalysisResult = 'view analysis result';
+      const apiSearchResult = 'api search result';
+
+      mockViewAnalysisPromptCreator.createPrompt.mockReturnValue('view analysis prompt');
+      mockApiSearchPromptCreator.createPrompt.mockReturnValue('api search prompt');
+      mockPromptHandler.runPrompt
+          .mockResolvedValueOnce(viewAnalysisResult)
+          .mockResolvedValueOnce(apiSearchResult)
+          .mockResolvedValueOnce(PROMPT_RESULT);
+
+      copilotStepPerformer = new CopilotStepPerformer(
+          mockContext,
+          mockPromptCreator,
+          mockApiSearchPromptCreator,
+          mockViewAnalysisPromptCreator,
+          mockCodeEvaluator,
+          mockPromptHandler,
+          mockCacheHandler,
+          'full',
+          'full'
+      );
+
+      const screenCapture: ScreenCapturerResult = {
+        snapshot: SNAPSHOT_DATA,
+        viewHierarchy: VIEW_HIERARCHY,
+        isSnapshotImageAttached: true
+      };
+
+      const result = await copilotStepPerformer.perform(INTENT, [], screenCapture);
+
+      expect(result).toBe(CODE_EVALUATION_RESULT);
+      expect(mockViewAnalysisPromptCreator.createPrompt).toHaveBeenCalledWith(INTENT, VIEW_HIERARCHY, []);
+      expect(mockApiSearchPromptCreator.createPrompt).toHaveBeenCalledWith(INTENT, viewAnalysisResult);
+      expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
+          INTENT,
+          VIEW_HIERARCHY,
+          true,
+          [],
+          apiSearchResult
+      );
+    });
+
+    it('should skip analysis in fast mode', async () => {
+      setupMocks();
+
+      copilotStepPerformer = new CopilotStepPerformer(
+          mockContext,
+          mockPromptCreator,
+          mockApiSearchPromptCreator,
+          mockViewAnalysisPromptCreator,
+          mockCodeEvaluator,
+          mockPromptHandler,
+          mockCacheHandler,
+          'full',
+          'fast'
+      );
+
+      const screenCapture: ScreenCapturerResult = {
+        snapshot: SNAPSHOT_DATA,
+        viewHierarchy: VIEW_HIERARCHY,
+        isSnapshotImageAttached: true
+      };
+
+      const result = await copilotStepPerformer.perform(INTENT, [], screenCapture);
+
+      expect(result).toBe(CODE_EVALUATION_RESULT);
+      expect(mockViewAnalysisPromptCreator.createPrompt).not.toHaveBeenCalled();
+      expect(mockApiSearchPromptCreator.createPrompt).not.toHaveBeenCalled();
+      expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
+          INTENT,
+          VIEW_HIERARCHY,
+          true,
+          [],
+          ''
+      );
+    });
+  });
 });
