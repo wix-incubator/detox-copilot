@@ -7,6 +7,14 @@ import { mockedCacheFile, mockCache } from '@/test-utils/cache';
 import { PromptCreator } from '@/utils/PromptCreator';
 import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
 import { bazCategory, barCategory1, dummyContext } from '@/test-utils/APICatalogTestUtils';
+import path from "path";
+
+const snapShotTestImagesFolder = path.resolve(
+    __dirname,
+    "..",
+    "utils",
+    "SnapshotComparatorTestImages"
+);
 
 jest.mock('crypto');
 jest.mock('fs');
@@ -19,7 +27,7 @@ describe('Copilot Integration Tests', () => {
     jest.clearAllMocks();
 
     mockFrameworkDriver = {
-      captureSnapshotImage: jest.fn().mockResolvedValue('mock_snapshot'),
+      captureSnapshotImage: jest.fn().mockResolvedValue(`${snapShotTestImagesFolder}/baseline.png`),
       captureViewHierarchyString: jest.fn().mockResolvedValue('<view><button>Login</button></view>'),
       apiCatalog: {
         context: {},
@@ -106,7 +114,7 @@ describe('Copilot Integration Tests', () => {
       expect(mockFrameworkDriver.captureViewHierarchyString).toHaveBeenCalled();
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(
         expect.stringContaining('The welcome message should be visible'),
-        'mock_snapshot'
+        "/Users/asafk/Development/DetoxCopilot/src/utils/SnapshotComparatorTestImages/baseline.png"
       );
     });
 
@@ -170,7 +178,7 @@ describe('Copilot Integration Tests', () => {
         )
       ).rejects.toThrow('Username field not found');
 
-      expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(3); 
+      expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(3);
       expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalledTimes(2);
       expect(mockFrameworkDriver.captureViewHierarchyString).toHaveBeenCalledTimes(2);
     });

@@ -1,20 +1,37 @@
-import { SnapshotHashing } from "@/utils/snapshotHashing/SnapshotHashing";
-import { imageHash } from "image-hash";
+import {SnapshotHashing} from "@/utils/snapshotHashing/SnapshotHashing";
+import {bmvbhash} from "blockhash-core";
+// @ts-ignore
+
+const { createCanvas, loadImage } = require('canvas');
 
 export class BlockHash implements SnapshotHashing {
   constructor(private bits: number = 16) {}
 
-  hashSnapshot(snapshot: any): Promise<string> {
-    return new Promise((resolve, reject) => {
-      imageHash(snapshot, this.bits, true, (error: any, data: any) => {
-        if (error) {
-          reject(`Error hashing snapshot: ${error}`);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+  async hashSnapshot(snapshot: any): Promise<string> {
+    const snapshotData = await this.getImageData(snapshot);
+    return bmvbhash(snapshotData, this.bits);
   }
+
+  private async getImageData(filePath: string): Promise<ImageData> {
+    try {
+      // Load the image using the local file path
+      const image = await loadImage(filePath);
+
+      // Create a canvas with the dimensions of the image
+      const canvas = createCanvas(image.width, image.height);
+      const ctx = canvas.getContext('2d');
+
+      // Draw the image onto the canvas
+      ctx.drawImage(image, 0, 0);
+
+      // Retrieve the ImageData from the canvas (x, y, width, height)
+      return ctx.getImageData(0, 0, canvas.width, canvas.height);
+    } catch (error) {
+      console.error('Error loading image:', error);
+      throw error;
+    }
+  }
+
 
   calculateSnapshotDistance(snapshot1: string, snapshot2: string): number {
     if (snapshot1.length !== snapshot2.length) {

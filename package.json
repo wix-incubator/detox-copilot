@@ -39,7 +39,11 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
+    "blockhash": "^0.2.0",
+    "blockhash-core": "^0.1.0",
+    "canvas": "^3.0.1",
     "image-hash": "^5.3.2",
+    "png-js": "^1.0.0",
     "sharp": "^0.33.5",
     "sharp-phash": "^2.2.0"
   }
