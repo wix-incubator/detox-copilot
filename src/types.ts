@@ -251,3 +251,14 @@ export type ScreenCapturerResult = {
     viewHierarchy: string;
     isSnapshotImageAttached: boolean;
 }
+
+
+export type HashingAlgorithm = "BlockHash" | "PHash";
+
+export type CacheValueElement = {
+    snapshotHash?: Record<HashingAlgorithm, string>;
+    viewHierarchy?: string;
+    code: string;
+}
+
+export type CacheValue = CacheValueElement[];
