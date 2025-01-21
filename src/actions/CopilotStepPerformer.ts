@@ -59,7 +59,7 @@ export class CopilotStepPerformer {
     private async generateCode(
         step: string,
         previous: PreviousStep[],
-        snapshot: any,
+        snapshot: string | undefined,
         viewHierarchy: string,
         isSnapshotImageAttached: boolean,
     ): Promise<string> {
