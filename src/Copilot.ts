@@ -8,6 +8,7 @@ import {CacheHandler} from "@/utils/CacheHandler";
 import {PilotPerformer} from "@/actions/PilotPerformer";
 import {PilotPromptCreator} from "@/utils/PilotPromptCreator";
 import {ScreenCapturer} from "@/utils/ScreenCapturer";
+import {SnapshotComparator} from "@/utils/SnapshotComparator";
 
 /**
  * The main Copilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
@@ -42,6 +43,7 @@ export class Copilot {
             this.snapshotManager,
             config.promptHandler,
             this.cacheHandler,
+            new SnapshotComparator(),
             config.options?.cacheMode
         );
         this.pilotPerformer = new PilotPerformer(this.pilotPromptCreator, this.copilotStepPerformer, config.promptHandler, this.screenCapturer);

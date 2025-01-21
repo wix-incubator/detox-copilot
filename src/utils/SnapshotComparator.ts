@@ -12,7 +12,7 @@ export class SnapshotComparator {
     }
 
     public async generateHashes(snapshot: any): Promise<Record<HashingAlgorithm, string>> {
-        const hashes:Record<HashingAlgorithm, string> = {
+        const hashes: Record<HashingAlgorithm, string> = {
             BlockHash: '',
             PHash: '',
         };
@@ -22,7 +22,7 @@ export class SnapshotComparator {
         return hashes;
     }
 
-    public async compareSnapshot(snapshot: any , hashes:Record<HashingAlgorithm, string>, trashload:number): Promise<Boolean> {
+    public async compareSnapshot(snapshot: any , hashes: Record<HashingAlgorithm, string>, trashload:number): Promise<Boolean> {
         for (const [algorithm, hash] of Object.entries(hashes)) {
             // @ts-ignore
             const comparator = this.hashingComparators.get(algorithm);

@@ -38,7 +38,6 @@ export class BlockHash implements SnapshotHashing {
   ): boolean {
     const diff = this.calculateSnapshotDistance(snapshot1, snapshot2);
     const distance = diff / snapshot1.length;
-    console.log("yohai - blockhash - distance:", distance);
 
     return distance <= threshold;
   }

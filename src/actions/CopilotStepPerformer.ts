@@ -2,7 +2,8 @@ import {PromptCreator} from '@/utils/PromptCreator';
 import {CodeEvaluator} from '@/utils/CodeEvaluator';
 import {SnapshotManager} from '@/utils/SnapshotManager';
 import {CacheHandler} from '@/utils/CacheHandler';
-import {CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult} from '@/types';
+import {SnapshotComparator} from '@/utils/SnapshotComparator';
+import {CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult, CacheValue} from '@/types';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -19,6 +20,7 @@ export class CopilotStepPerformer {
         private snapshotManager: SnapshotManager,
         private promptHandler: PromptHandler,
         private cacheHandler: CacheHandler,
+        private snapshotComparator: SnapshotComparator,
         cacheMode: CacheMode = 'full',
     ) {
         this.cacheMode = cacheMode;
@@ -34,7 +36,7 @@ export class CopilotStepPerformer {
         this.context = {...this.context, ...newContext};
     }
 
-    private generateCacheKey(step: string, previous: PreviousStep[], viewHierarchy: string): string {
+    private generateCacheKey(step: string, previous: PreviousStep[]): string {
         if (this.cacheMode === 'disabled') {
             // Return a unique key that won't match any cached value
             return crypto.randomUUID();
@@ -42,12 +44,38 @@ export class CopilotStepPerformer {
 
         const cacheKeyData: any = {step, previous};
         
-        if (this.cacheMode === 'full') {
-            const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
-            cacheKeyData.viewHierarchyHash = viewHierarchyHash;
-        }
+        // if (this.cacheMode === 'full') {
+        //     const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
+        //     cacheKeyData.viewHierarchyHash = viewHierarchyHash;
+        // }
 
         return JSON.stringify(cacheKeyData);
+    }
+
+    private async generateCacheValue(code: string ,viewHierarchy: string, snapshot:any) : Promise<CacheValue> {
+        if (this.cacheMode === 'disabled') {
+            return [];
+        }
+
+        if(this.cacheMode === 'lightweight') {
+            return [{code}];
+        }
+
+        const snapshotHashes = await this.snapshotComparator.generateHashes(snapshot);
+        return [{
+            code,
+            viewHierarchy: crypto.createHash('md5').update(viewHierarchy).digest('hex'), 
+            snapshotHash: snapshotHashes
+        }];
+    }
+
+    private findCodeInCacheValue(cacheValue: CacheValue, viewHierarchy: string, snapshot: any): string | undefined {
+        for (const cachedCode of cacheValue) {
+            if (cachedCode.viewHierarchy === crypto.createHash('md5').update(viewHierarchy).digest('hex')) {
+                return cachedCode.code;
+            }
+        }
+        return undefined;
     }
 
     private shouldOverrideCache() {
@@ -61,20 +89,23 @@ export class CopilotStepPerformer {
         viewHierarchy: string,
         isSnapshotImageAttached: boolean,
     ): Promise<string> {
-        const cacheKey = this.generateCacheKey(step, previous, viewHierarchy);
+        const cacheKey = this.generateCacheKey(step, previous);
 
-        const cachedCode = this.cacheHandler.getStepFromCache(cacheKey);
-        if (!this.shouldOverrideCache() && cachedCode) {
-            return cachedCode;
-        } else {
-            const prompt = this.promptCreator.createPrompt(step, viewHierarchy, isSnapshotImageAttached, previous);
-            const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
-            const code = extractCodeBlock(promptResult);
+        const cachedValue = this.cacheHandler.getStepFromCache(cacheKey);
+        if (!this.shouldOverrideCache() && cachedValue) {
+            const code = this.findCodeInCacheValue(cachedValue, viewHierarchy, snapshot);
+            if (code) {
+                return code;
+            }
+        } 
+        const prompt = this.promptCreator.createPrompt(step, viewHierarchy, isSnapshotImageAttached, previous);
+        const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
+        const code = extractCodeBlock(promptResult);
+        const newCacheValue = await this.generateCacheValue(code, viewHierarchy, snapshot)
 
-            this.cacheHandler.addToTemporaryCache(cacheKey, code);
+        newCacheValue && this.cacheHandler.addToTemporaryCache(cacheKey, newCacheValue);
 
-            return code;
-        }
+        return code;
     }
 
     async perform(step: string, previous: PreviousStep[] = [], screenCapture : ScreenCapturerResult, attempts: number = 2): Promise<CodeEvaluationResult> {

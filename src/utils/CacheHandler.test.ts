@@ -28,7 +28,7 @@ describe('CacheHandler', () => {
             cacheHandler.addToTemporaryCache('cacheKey', 'value');
             cacheHandler.flushTemporaryCache();
 
-            expect(mockedCacheFile).toEqual({'cacheKey': 'value'});
+            expect(mockedCacheFile).toEqual({'cacheKey': ['value']});
         });
     });
 
@@ -50,7 +50,7 @@ describe('CacheHandler', () => {
 
             const result = cacheHandler.getStepFromCache('some_key');
 
-            expect(result).toBe('value');
+            expect(result).toEqual(['value']);
         });
 
         it('should return undefined if the key does not exist in cache', () => {
@@ -70,8 +70,8 @@ describe('CacheHandler', () => {
 
             cacheHandler.flushTemporaryCache()
 
-            expect(cacheHandler.getStepFromCache('cacheKey1')).toBe('value1');
-            expect(cacheHandler.getStepFromCache('cacheKey3')).toBe('value3');
+            expect(cacheHandler.getStepFromCache('cacheKey1')).toEqual(['value1']);
+            expect(cacheHandler.getStepFromCache('cacheKey3')).toEqual(['value3']);
             expect(cacheHandler.getStepFromCache('cacheKey2')).not.toBe('value3');
         });
 
@@ -83,7 +83,7 @@ describe('CacheHandler', () => {
 
             cacheHandler.flushTemporaryCache()
 
-            expect(cacheHandler.getStepFromCache('cacheKey1')).toBe('value2');
+            expect(cacheHandler.getStepFromCache('cacheKey1')).toEqual(['value1', 'value2']);
         });
     });
 

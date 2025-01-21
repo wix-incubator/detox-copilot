@@ -12,8 +12,6 @@ describe("SnapshotComparator", () => {
     it("should hash a snapshot", async () => {
         const snapshot = `${snapShotTestImagesFolder}/baseline.png`;
         const hash = await snapshotComparator.generateHashes(snapshot);
-        console.log('yohai - hash:', hash);
-        
 
         expect(hash).toBeDefined();
     });
@@ -31,8 +29,7 @@ describe("SnapshotComparator", () => {
         const hash1 = await snapshotComparator.generateHashes(snapshot1);
         const hash2 = await snapshotComparator.generateHashes(snapshot2);
         const isSimilar = await snapshotComparator.compareSnapshot(snapshot2, hash1, 0.1);
-        console.log('yohai - hash1:', hash1);
-        console.log('yohai - hash2:', hash2);
+        
         expect(hash2).not.toEqual(hash1);
         expect(isSimilar).toBeFalsy();
     });

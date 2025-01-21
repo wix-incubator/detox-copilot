@@ -13,7 +13,6 @@ export class pHash implements SnapshotHashing{
     areSnapshotsSimilar(snapshot1: string, snapshot2: string, threshold: number): boolean {
         const diff = this.calculateSnapshotDistance(snapshot1, snapshot2);
         const distance = diff / snapshot1.length;
-        console.log('yohai - phash - distance:', distance);
         
         return distance <= threshold;
     }
