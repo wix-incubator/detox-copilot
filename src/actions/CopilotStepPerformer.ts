@@ -4,7 +4,7 @@ import {CopilotAPISearchPromptCreator} from '@/utils/CopilotAPISearchPromptCreat
 import {ViewAnalysisPromptCreator} from '@/utils/ViewAnalysisPromptCreator';
 import {CacheHandler} from '@/utils/CacheHandler';
 import {SnapshotComparator} from '@/utils/SnapshotComparator';
-import {AnalysisMode, CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult, type CacheValue, type CacheValueElement} from '@/types';
+import {AnalysisMode, CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult, type CacheValues, type SingleCacheValue} from '@/types';
 import * as crypto from 'crypto';
 import {extractCodeBlock} from '@/utils/extractCodeBlock';
 
@@ -49,7 +49,7 @@ export class CopilotStepPerformer {
         return JSON.stringify(cacheKeyData);
     }
 
-    private async generateCacheValue(code: string ,viewHierarchy: string, snapshot:any) : Promise<CacheValueElement | undefined> {
+    private async generateCacheValue(code: string ,viewHierarchy: string, snapshot:any) : Promise<SingleCacheValue | undefined> {
         if (this.cacheMode === 'disabled') {
             throw new Error('Cache is disabled');
         }
@@ -67,7 +67,7 @@ export class CopilotStepPerformer {
         };
     }
 
-    private findCodeInCacheValue(cacheValue: CacheValue, viewHierarchy: string, snapshot: any): string | undefined {
+    private findCodeInCacheValue(cacheValue: CacheValues, viewHierarchy: string, snapshot: any): string | undefined {
         if (this.cacheMode === 'lightweight') {
             return cacheValue[0].code;
         }
