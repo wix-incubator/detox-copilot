@@ -3,7 +3,8 @@ import {CodeEvaluator} from '@/utils/CodeEvaluator';
 import {CopilotAPISearchPromptCreator} from '@/utils/CopilotAPISearchPromptCreator';
 import {ViewAnalysisPromptCreator} from '@/utils/ViewAnalysisPromptCreator';
 import {CacheHandler} from '@/utils/CacheHandler';
-import {AnalysisMode, CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult} from '@/types';
+import {SnapshotComparator} from '@/utils/SnapshotComparator';
+import {AnalysisMode, CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult, type CacheValues, type SingleCacheValue} from '@/types';
 import * as crypto from 'crypto';
 import {extractCodeBlock} from '@/utils/extractCodeBlock';
 
@@ -19,6 +20,7 @@ export class CopilotStepPerformer {
         private codeEvaluator: CodeEvaluator,
         private promptHandler: PromptHandler,
         private cacheHandler: CacheHandler,
+        private snapshotComparator: SnapshotComparator,
         cacheMode: CacheMode = 'full',
         analysisMode: AnalysisMode = 'fast',
     ) {
@@ -36,20 +38,46 @@ export class CopilotStepPerformer {
         this.context = {...this.context, ...newContext};
     }
 
-    private generateCacheKey(step: string, previous: PreviousStep[], viewHierarchy: string): string {
+    private generateCacheKey(step: string, previous: PreviousStep[]): string | undefined {
         if (this.cacheMode === 'disabled') {
             // Return a unique key that won't match any cached value
-            return crypto.randomUUID();
+            return undefined;
         }
 
         const cacheKeyData: any = {step, previous};
 
-        if (this.cacheMode === 'full') {
-            const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
-            cacheKeyData.viewHierarchyHash = viewHierarchyHash;
+        return JSON.stringify(cacheKeyData);
+    }
+
+    private async generateCacheValue(code: string ,viewHierarchy: string, snapshot:any) : Promise<SingleCacheValue | undefined> {
+        if (this.cacheMode === 'disabled') {
+            throw new Error('Cache is disabled');
         }
 
-        return JSON.stringify(cacheKeyData);
+        if(this.cacheMode === 'lightweight') {
+            return {code};
+        }
+
+        const snapshotHashes = snapshot && await this.snapshotComparator.generateHashes(snapshot);
+
+        return {
+            code,
+            viewHierarchy: crypto.createHash('md5').update(viewHierarchy).digest('hex'), 
+            snapshotHash: snapshotHashes
+        };
+    }
+
+    private findCodeInCacheValue(cacheValue: CacheValues, viewHierarchy: string, snapshot: any): string | undefined {
+        if (this.cacheMode === 'lightweight') {
+            return cacheValue[0].code;
+        }
+
+        const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
+        return cacheValue.find((cachedCode) => {
+                if (cachedCode.viewHierarchy === viewHierarchyHash) {
+                return cachedCode.code;
+            }
+        })?.code;
     }
 
     private shouldOverrideCache() {
@@ -63,43 +91,47 @@ export class CopilotStepPerformer {
         viewHierarchy: string,
         isSnapshotImageAttached: boolean,
     ): Promise<string> {
-        const cacheKey = this.generateCacheKey(step, previous, viewHierarchy);
+        const cacheKey = this.generateCacheKey(step, previous);
 
-        const cachedCode = this.cacheHandler.getStepFromCache(cacheKey);
-        if (!this.shouldOverrideCache() && cachedCode) {
-            return cachedCode;
-        } else {
-            let viewAnalysisResult = '';
-            let apiSearchResult = '';
-
-            if (this.analysisMode === 'full') {
-                // Perform view hierarchy analysis and API search only in full mode
-                viewAnalysisResult = await this.promptHandler.runPrompt(
-                    this.viewAnalysisPromptCreator.createPrompt(step, viewHierarchy, previous),
-                    undefined
-                );
-
-                apiSearchResult = await this.promptHandler.runPrompt(
-                    this.apiSearchPromptCreator.createPrompt(step, viewAnalysisResult),
-                    undefined
-                );
+        const cachedValue = cacheKey && this.cacheHandler.getStepFromCache(cacheKey);
+        if (!this.shouldOverrideCache() && cachedValue) {
+            const code = this.findCodeInCacheValue(cachedValue, viewHierarchy, snapshot);
+            if (code) {
+                return code;
             }
+        }  
+        let viewAnalysisResult = '';
+        let apiSearchResult = '';
 
-            const prompt = this.promptCreator.createPrompt(
-                step,
-                viewHierarchy,
-                isSnapshotImageAttached,
-                previous,
-                apiSearchResult
+        if (this.analysisMode === 'full') {
+            // Perform view hierarchy analysis and API search only in full mode
+            viewAnalysisResult = await this.promptHandler.runPrompt(
+                this.viewAnalysisPromptCreator.createPrompt(step, viewHierarchy, previous),
+                undefined
             );
 
-            const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
-            const code = extractCodeBlock(promptResult);
-
-            this.cacheHandler.addToTemporaryCache(cacheKey, code);
-
-            return code;
+            apiSearchResult = await this.promptHandler.runPrompt(
+                this.apiSearchPromptCreator.createPrompt(step, viewAnalysisResult),
+                undefined
+            );
         }
+
+        const prompt = this.promptCreator.createPrompt(
+            step,
+            viewHierarchy,
+            isSnapshotImageAttached,
+            previous,
+            apiSearchResult
+        );
+
+        const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
+        const code = extractCodeBlock(promptResult);
+        if (this.cacheMode !== 'disabled') {
+            const newCacheValue = await this.generateCacheValue(code, viewHierarchy, snapshot)
+            this.cacheHandler.addToTemporaryCache(cacheKey!, newCacheValue);
+        }
+
+        return code;
     }
 
     async perform(step: string, previous: PreviousStep[] = [], screenCapture : ScreenCapturerResult, attempts: number = 2): Promise<CodeEvaluationResult> {

@@ -40,7 +40,7 @@ export class CacheHandler {
     }
 
     public addToTemporaryCache(key: string, value: any): void {
-        this.temporaryCache.set(key, value);
+        this.temporaryCache.set(key, [...this.temporaryCache.get(key) ?? [], value]);
     }
 
     public flushTemporaryCache(): void {
