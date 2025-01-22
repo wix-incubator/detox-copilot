@@ -54,14 +54,15 @@ export class CopilotStepPerformer {
 
     private async generateCacheValue(code: string ,viewHierarchy: string, snapshot:any) : Promise<CacheValue> {
         if (this.cacheMode === 'disabled') {
-            return [];
+            return [{code}];
         }
 
         if(this.cacheMode === 'lightweight') {
             return [{code}];
         }
 
-        const snapshotHashes = await this.snapshotComparator.generateHashes(snapshot);
+        const snapshotHashes = snapshot && await this.snapshotComparator.generateHashes(snapshot);
+
         return [{
             code,
             viewHierarchy: crypto.createHash('md5').update(viewHierarchy).digest('hex'), 
@@ -70,12 +71,15 @@ export class CopilotStepPerformer {
     }
 
     private findCodeInCacheValue(cacheValue: CacheValue, viewHierarchy: string, snapshot: any): string | undefined {
-        for (const cachedCode of cacheValue) {
-            if (cachedCode.viewHierarchy === crypto.createHash('md5').update(viewHierarchy).digest('hex')) {
+        if (this.cacheMode === 'lightweight') {
+            return cacheValue[0].code;
+        }
+
+        return cacheValue.find((cachedCode) => {
+                if (cachedCode.viewHierarchy === crypto.createHash('md5').update(viewHierarchy).digest('hex')) {
                 return cachedCode.code;
             }
-        }
-        return undefined;
+        })?.code;
     }
 
     private shouldOverrideCache() {
@@ -103,7 +107,7 @@ export class CopilotStepPerformer {
         const code = extractCodeBlock(promptResult);
         const newCacheValue = await this.generateCacheValue(code, viewHierarchy, snapshot)
 
-        newCacheValue && this.cacheHandler.addToTemporaryCache(cacheKey, newCacheValue);
+        newCacheValue[0] && this.cacheHandler.addToTemporaryCache(cacheKey, newCacheValue[0]);
 
         return code;
     }

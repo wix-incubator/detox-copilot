@@ -1,22 +1,18 @@
-import path from "path";
-import { pHash } from "./pHash";
 
-const snapShotTestImagesFolder = path.resolve(
-  __dirname,
-  "../SnapshotComparatorTestImages"
-);
+import { pHash } from "./pHash";
+import {getSnapshotImage} from "@/test-utils/SnapshotComparatorTestImages/SnapshotImageGetter";
 
 describe("pHash algorithm", () => {
     const snapshotComparator = new pHash();
     it("should hash a snapshot", async () => {
-        const snapshot = `${snapShotTestImagesFolder}/baseline.png`;
+        const snapshot = getSnapshotImage("baseline");
         const hash = await snapshotComparator.hashSnapshot(snapshot);
   
         expect(hash).toBeDefined();
       });
   
       it("should return similar for the same image", async () => {
-        const snapshot = `${snapShotTestImagesFolder}/baseline.png`;
+        const snapshot = getSnapshotImage("baseline");
         const hash = await snapshotComparator.hashSnapshot(snapshot);
         const hash2 = await snapshotComparator.hashSnapshot(snapshot);
         const similar = await snapshotComparator.areSnapshotsSimilar(
@@ -28,8 +24,8 @@ describe("pHash algorithm", () => {
       });
   
       it("should return not similar for different images and low threshold", async () => {
-        const snapshot1 = `${snapShotTestImagesFolder}/baseline.png`;
-        const snapshot2 = `${snapShotTestImagesFolder}/very_different.webp`;
+        const snapshot1 = getSnapshotImage("baseline");
+        const snapshot2 = getSnapshotImage("very_different");
         const hash1 = await snapshotComparator.hashSnapshot(snapshot1);
         const hash2 = await snapshotComparator.hashSnapshot(snapshot2);
         const similar = await snapshotComparator.areSnapshotsSimilar(
@@ -41,8 +37,8 @@ describe("pHash algorithm", () => {
       });
   
       it("should return not similar for different images and medium threshold", async () => {
-        const snapshot1 = `${snapShotTestImagesFolder}/baseline.png`;
-        const snapshot2 = `${snapShotTestImagesFolder}/very_different.webp`;
+        const snapshot1 = getSnapshotImage("baseline");
+        const snapshot2 = getSnapshotImage("very_different");
         const hash1 = await snapshotComparator.hashSnapshot(snapshot1);
         const hash2 = await snapshotComparator.hashSnapshot(snapshot2);
         const similar = await snapshotComparator.areSnapshotsSimilar(

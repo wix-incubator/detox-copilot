@@ -431,7 +431,8 @@ describe('CopilotStepPerformer', () => {
     it('should generate unique cache keys when mode is disabled', async () => {
         const firstKey = await testCacheModes('disabled');
         const secondKey = await testCacheModes('disabled');
-        expect(firstKey).not.toBe(secondKey);
+        
+        expect(firstKey).not.toEqual(secondKey);
     });
 
     it('should not use cache when mode is disabled', async () => {
