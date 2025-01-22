@@ -299,6 +299,8 @@ export type PilotReviewSection = {
 /**
  * Represents a previous step of pilot.
  * @property step The description of the step.
+ * @property code generated from the step
+ * @property code run result
  * @property pilot's reviews for the different kind of reviews the user ask
  */
 export type PilotPreviousStep = {
@@ -306,6 +308,7 @@ export type PilotPreviousStep = {
     code: string;
     result: any;
     review?: PilotReview;
+}
 
 /**
  * Represents the types of hashing algorithms that are used for snapshot hashing.
