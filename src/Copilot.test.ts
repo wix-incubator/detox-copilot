@@ -316,6 +316,7 @@ describe('Copilot', () => {
       const goal = 'test goal';
 
       const mockPilotResult = {
+        goal,
         steps: [
           {
             plan: {
