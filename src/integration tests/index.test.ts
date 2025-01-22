@@ -1,7 +1,7 @@
 import copilot from '@/index';
 import fs from 'fs';
 import { Copilot } from '@/Copilot';
-import { PromptHandler, TestingFrameworkDriver, PilotReport } from '@/types';
+import { PromptHandler, TestingFrameworkDriver, PilotReport, CacheValue } from '@/types';
 import * as crypto from 'crypto';
 import { mockedCacheFile, mockCache } from '@/test-utils/cache';
 import { PromptCreator } from '@/utils/PromptCreator';
@@ -452,7 +452,9 @@ describe('Copilot Integration Tests', () => {
       await copilot.perform('Tap on the login button');
       copilot.end();
 
-      expect(Object.values(mockedCacheFile || {})[0][0]).toHaveProperty('viewHierarchy');
+      const firstCacheValue = Object.values((mockedCacheFile as Record<string, CacheValue>) || {})[0][0];
+
+      expect(firstCacheValue).toHaveProperty('viewHierarchy');
     });
 
     it('should not include view hierarchy in cache key when using lightweight mode', async () => {

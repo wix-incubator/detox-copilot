@@ -144,7 +144,6 @@ describe('CopilotStepPerformer', () => {
     const cacheKey = JSON.stringify({
       step: intent,
       previous: previous,
-      // viewHierarchyHash: viewHierarchyHash,
     });
 
     if (cacheExists) {
@@ -377,8 +376,10 @@ describe('CopilotStepPerformer', () => {
   describe('cache modes', () => {
     const testCacheModes = async (cacheMode: CacheMode) => {
       const generatedKeys: string[] = [];
-      mockCacheHandler.addToTemporaryCache.mockImplementation((key: string) => {
+      const generatedValues: any[] = [];
+      mockCacheHandler.addToTemporaryCache.mockImplementation((key: string, newVal: any) => {
         generatedKeys.push(key);
+        generatedValues.push(newVal);
       });
 
       copilotStepPerformer = new CopilotStepPerformer(
@@ -404,26 +405,27 @@ describe('CopilotStepPerformer', () => {
         codeEvaluationResult: 'success'
       });
       await copilotStepPerformer.perform(INTENT, [], screenCapture, undefined);
-      return generatedKeys[0];
+      return {key: generatedKeys[0], value: generatedValues};
     };
 
-    // it('should include view hierarchy hash in cache key when mode is full', async () => {
-    //     const cacheKey = await testCacheModes('full');
-    //     const parsedKey = JSON.parse(cacheKey);
-    //     expect(parsedKey).toHaveProperty('viewHierarchyHash');
-    //     expect(parsedKey.viewHierarchyHash).toBe('hash');
-    // });
-
-    it('should not include view hierarchy hash in cache key when mode is lightweight', async () => {
-      const cacheKey = await testCacheModes('lightweight');
-      const parsedKey = JSON.parse(cacheKey);
-      expect(parsedKey).not.toHaveProperty('viewHierarchyHash');
+    it('should include view hierarchy hash in cache value when mode is full', async () => {
+        const cache = await testCacheModes('full');
+        expect(cache.value[0]).toHaveProperty('viewHierarchy');
+        expect(cache.value[0].viewHierarchy).toBe('hash');
     });
 
-    it('should generate unique cache keys when mode is disabled', async () => {
+    it('should not include view hierarchy hash in cache value when mode is lightweight', async () => {
+      const cache = await testCacheModes('lightweight');
+      const parsedKey = JSON.parse(cache.key);
+      expect(parsedKey).not.toHaveProperty('viewHierarchy');
+      expect(cache.value[0]).not.toHaveProperty('viewHierarchy');
+    });
+
+    it('should not generate cache key when mode is disabled', async () => {
       const firstKey = await testCacheModes('disabled');
       const secondKey = await testCacheModes('disabled');
-      expect(firstKey).not.toBe(secondKey);
+      expect(firstKey.key).toBeUndefined();
+      expect(secondKey.key).toBeUndefined();
     });
 
     it('should not use cache when mode is disabled', async () => {

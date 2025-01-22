@@ -4,7 +4,7 @@ import {CopilotAPISearchPromptCreator} from '@/utils/CopilotAPISearchPromptCreat
 import {ViewAnalysisPromptCreator} from '@/utils/ViewAnalysisPromptCreator';
 import {CacheHandler} from '@/utils/CacheHandler';
 import {SnapshotComparator} from '@/utils/SnapshotComparator';
-import {AnalysisMode, CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult, type CacheValue} from '@/types';
+import {AnalysisMode, CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult, type CacheValue, type CacheValueElement} from '@/types';
 import * as crypto from 'crypto';
 import {extractCodeBlock} from '@/utils/extractCodeBlock';
 
@@ -38,38 +38,33 @@ export class CopilotStepPerformer {
         this.context = {...this.context, ...newContext};
     }
 
-    private generateCacheKey(step: string, previous: PreviousStep[]): string {
+    private generateCacheKey(step: string, previous: PreviousStep[]): string | undefined {
         if (this.cacheMode === 'disabled') {
             // Return a unique key that won't match any cached value
-            return crypto.randomUUID();
+            return undefined;
         }
 
         const cacheKeyData: any = {step, previous};
-        
-        // if (this.cacheMode === 'full') {
-        //     const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
-        //     cacheKeyData.viewHierarchyHash = viewHierarchyHash;
-        // }
 
         return JSON.stringify(cacheKeyData);
     }
 
-    private async generateCacheValue(code: string ,viewHierarchy: string, snapshot:any) : Promise<CacheValue> {
+    private async generateCacheValue(code: string ,viewHierarchy: string, snapshot:any) : Promise<CacheValueElement | undefined> {
         if (this.cacheMode === 'disabled') {
-            return [{code}];
+            throw new Error('Cache is disabled');
         }
 
         if(this.cacheMode === 'lightweight') {
-            return [{code}];
+            return {code};
         }
 
         const snapshotHashes = snapshot && await this.snapshotComparator.generateHashes(snapshot);
 
-        return [{
+        return {
             code,
             viewHierarchy: crypto.createHash('md5').update(viewHierarchy).digest('hex'), 
             snapshotHash: snapshotHashes
-        }];
+        };
     }
 
     private findCodeInCacheValue(cacheValue: CacheValue, viewHierarchy: string, snapshot: any): string | undefined {
@@ -77,8 +72,9 @@ export class CopilotStepPerformer {
             return cacheValue[0].code;
         }
 
+        const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
         return cacheValue.find((cachedCode) => {
-                if (cachedCode.viewHierarchy === crypto.createHash('md5').update(viewHierarchy).digest('hex')) {
+                if (cachedCode.viewHierarchy === viewHierarchyHash) {
                 return cachedCode.code;
             }
         })?.code;
@@ -97,7 +93,7 @@ export class CopilotStepPerformer {
     ): Promise<string> {
         const cacheKey = this.generateCacheKey(step, previous);
 
-        const cachedValue = this.cacheHandler.getStepFromCache(cacheKey);
+        const cachedValue = cacheKey && this.cacheHandler.getStepFromCache(cacheKey);
         if (!this.shouldOverrideCache() && cachedValue) {
             const code = this.findCodeInCacheValue(cachedValue, viewHierarchy, snapshot);
             if (code) {
@@ -130,11 +126,12 @@ export class CopilotStepPerformer {
 
         const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
         const code = extractCodeBlock(promptResult);
-        const newCacheValue = await this.generateCacheValue(code, viewHierarchy, snapshot)
-        newCacheValue[0] && this.cacheHandler.addToTemporaryCache(cacheKey, newCacheValue[0]);
+        if (this.cacheMode !== 'disabled') {
+            const newCacheValue = await this.generateCacheValue(code, viewHierarchy, snapshot)
+            this.cacheHandler.addToTemporaryCache(cacheKey!, newCacheValue);
+        }
 
         return code;
-        
     }
 
     async perform(step: string, previous: PreviousStep[] = [], screenCapture : ScreenCapturerResult, attempts: number = 2): Promise<CodeEvaluationResult> {

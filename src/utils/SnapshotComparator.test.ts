@@ -20,7 +20,7 @@ describe("SnapshotComparator", () => {
 
     it("should not be similar for different images and low threshold", async () => {
         const snapshot1 = getSnapshotImage("baseline");
-        const snapshot2 = getSnapshotImage("very_different");
+        const snapshot2 = getSnapshotImage("different");
         
         const hash1 = await snapshotComparator.generateHashes(snapshot1);
         const hash2 = await snapshotComparator.generateHashes(snapshot2);

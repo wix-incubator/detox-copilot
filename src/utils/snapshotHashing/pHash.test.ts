@@ -25,7 +25,7 @@ describe("pHash algorithm", () => {
   
       it("should return not similar for different images and low threshold", async () => {
         const snapshot1 = getSnapshotImage("baseline");
-        const snapshot2 = getSnapshotImage("very_different");
+        const snapshot2 = getSnapshotImage("different");
         const hash1 = await snapshotComparator.hashSnapshot(snapshot1);
         const hash2 = await snapshotComparator.hashSnapshot(snapshot2);
         const similar = await snapshotComparator.areSnapshotsSimilar(
@@ -38,7 +38,7 @@ describe("pHash algorithm", () => {
   
       it("should return not similar for different images and medium threshold", async () => {
         const snapshot1 = getSnapshotImage("baseline");
-        const snapshot2 = getSnapshotImage("very_different");
+        const snapshot2 = getSnapshotImage("different");
         const hash1 = await snapshotComparator.hashSnapshot(snapshot1);
         const hash2 = await snapshotComparator.hashSnapshot(snapshot2);
         const similar = await snapshotComparator.areSnapshotsSimilar(

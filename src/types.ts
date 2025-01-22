@@ -266,13 +266,53 @@ export type ScreenCapturerResult = {
     isSnapshotImageAttached: boolean;
 }
 
-
+/**
+ * Represents the types of hashing algorithms that are used for snapshot hashing.
+ */
 export type HashingAlgorithm = "BlockHash" | "PHash";
 
+export type SnapShotHashObject = Record<HashingAlgorithm, string>;
+
+/**
+ * Represents a single cache value for the Copilot cache.
+ * if multiple values are stored in the cache for the same key, they are stored as an array of CacheValueElement
+ */
 export type CacheValueElement = {
-    snapshotHash?: Record<HashingAlgorithm, string>;
+    snapshotHash?: SnapShotHashObject;
     viewHierarchy?: string;
     code: string;
 }
 
+/**
+ * Represents a single cache value for the Copilot cache.
+ */
 export type CacheValue = CacheValueElement[];
+
+/**
+ * Represents a list of methods to implements different hashing algorithms.
+ */
+export interface SnapshotHashing {
+    /**
+     * Hashes the given snapshot.
+     * @param snapshot The snapshot to hash.
+     * @returns The hash of the snapshot.
+     */
+    hashSnapshot(snapshot: any): Promise<string>;
+
+    /**
+     * Calculates the distance between two snapshots.
+     * @param hash1 The hash of the first snapshot.
+     * @param hash2 The hash of the second snapshot.
+     * @returns The distance between the two snapshots.
+     */
+    calculateSnapshotDistance(hash1: string, hash2: string): number;
+
+    /**
+     * Checks if two snapshots are similar based on a threshold.
+     * @param hash1 The hash of the first snapshot.
+     * @param hash2 The hash of the second snapshot.
+     * @param threshold The threshold for similarity.
+     * @returns True if the snapshots are similar, false otherwise.
+     */
+    areSnapshotsSimilar(hash1: string, hash2: string, threshold?: number): boolean;
+}

@@ -39,7 +39,6 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "blockhash": "^0.2.0",
     "blockhash-core": "^0.1.0",
     "canvas": "^3.0.1",
     "png-js": "^1.0.0",

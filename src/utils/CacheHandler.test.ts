@@ -72,7 +72,7 @@ describe('CacheHandler', () => {
 
             expect(cacheHandler.getStepFromCache('cacheKey1')).toEqual(['value1']);
             expect(cacheHandler.getStepFromCache('cacheKey3')).toEqual(['value3']);
-            expect(cacheHandler.getStepFromCache('cacheKey2')).not.toBe('value3');
+            expect(cacheHandler.getStepFromCache('cacheKey2')).not.toEqual(['value3']);
         });
 
         it('should get the updated value from cache', () => {

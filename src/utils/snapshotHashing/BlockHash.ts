@@ -1,6 +1,5 @@
-import {SnapshotHashing} from "@/utils/snapshotHashing/SnapshotHashing";
+import {SnapshotHashing} from "@/types";
 import {bmvbhash} from "blockhash-core";
-// @ts-ignore
 
 const { createCanvas, loadImage } = require('canvas');
 
@@ -51,7 +50,7 @@ export class BlockHash implements SnapshotHashing {
   areSnapshotsSimilar(
     snapshot1: string,
     snapshot2: string,
-    threshold: number
+    threshold: number = 0.1
   ): boolean {
     const diff = this.calculateSnapshotDistance(snapshot1, snapshot2);
     const distance = diff / snapshot1.length;

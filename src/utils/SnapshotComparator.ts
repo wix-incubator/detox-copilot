@@ -1,7 +1,6 @@
-import type { HashingAlgorithm } from "@/types";
+import type { HashingAlgorithm, SnapshotHashing, SnapShotHashObject } from "@/types";
 import { BlockHash } from "@/utils/snapshotHashing/BlockHash";
 import { pHash } from "@/utils/snapshotHashing/pHash";
-import {type SnapshotHashing } from "@/utils/snapshotHashing/SnapshotHashing";
 
 export class SnapshotComparator {
     private readonly hashingComparators: Map<HashingAlgorithm, SnapshotHashing> = new Map();
@@ -11,8 +10,8 @@ export class SnapshotComparator {
         this.hashingComparators.set('PHash', new pHash());
     }
 
-    public async generateHashes(snapshot: any): Promise<Record<HashingAlgorithm, string>> {
-        const hashes: Record<HashingAlgorithm, string> = {
+    public async generateHashes(snapshot: any): Promise<SnapShotHashObject> {
+        const hashes: SnapShotHashObject = {
             BlockHash: '',
             PHash: '',
         };
@@ -22,7 +21,7 @@ export class SnapshotComparator {
         return hashes;
     }
 
-    public async compareSnapshot(snapshot: any , hashes: Record<HashingAlgorithm, string>, trashload:number): Promise<Boolean> {
+    public async compareSnapshot(snapshot: any , hashes: SnapShotHashObject, trashload?: number): Promise<Boolean> {
         for (const [algorithm, hash] of Object.entries(hashes)) {
             // @ts-ignore
             const comparator = this.hashingComparators.get(algorithm);
