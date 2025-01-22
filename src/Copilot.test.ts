@@ -354,15 +354,17 @@ describe('Copilot', () => {
           thoughts: 'Step 1 thoughts',
           action: 'Tap on GREAT button',
         },
-        uxReview: {
-          review: 'UX review for step 1',
-          findings: [],
-          score: '7/10',
-        },
-        accessibilityReview: {
-          review: 'Accessibility review for step 1',
-          findings: [],
-          score: '8/10',
+        review: {
+          ux: {
+            summary: 'UX review for step 1',
+            findings: [],
+            score: '7/10',
+          },
+          a11y: {
+            summary: 'Accessibility review for step 1',
+            findings: [],
+            score: '8/10',
+          },
         },
       };
 
@@ -371,34 +373,32 @@ describe('Copilot', () => {
           thoughts: 'Completed successfully <SUMMARY> all was good </SUMMARY>',
           action: 'success',
         },
-        uxReview: {
-          review: 'Final UX review',
-          findings: [],
-          score: '9/10',
-        },
-        accessibilityReview: {
-          review: 'Final Accessibility review',
-          findings: [],
-          score: '9/10',
+        review: {
+          ux: {
+            summary: 'Final UX review',
+            findings: [],
+            score: '9/10',
+          },
+          a11y: {
+            summary: 'Final Accessibility review',
+            findings: [],
+            score: '9/10',
+          },
         },
       };
 
-      jest
-        .spyOn(instance['pilotPerformer'], 'perform')
-        .mockResolvedValue({
-          summary: 'all was good',
-          goal: goal,
-          steps: [
-            {
-              plan: pilotOutputStep1.plan,
-              code: 'code executed',
-              uxReview: pilotOutputStep1.uxReview,
-              accessibilityReview: pilotOutputStep1.accessibilityReview,
-            },
-          ],
-          uxReview: pilotOutputSuccess.uxReview,
-          accessibilityReview: pilotOutputSuccess.accessibilityReview,
-        });
+      jest.spyOn(instance['pilotPerformer'], 'perform').mockResolvedValue({
+        summary: 'all was good',
+        goal: goal,
+        steps: [
+          {
+            plan: pilotOutputStep1.plan,
+            code: 'code executed',
+            review: pilotOutputStep1.review,
+          },
+        ],
+        review: pilotOutputSuccess.review,
+      });
 
       const result = await instance.pilot(goal);
 
@@ -410,12 +410,10 @@ describe('Copilot', () => {
           {
             plan: pilotOutputStep1.plan,
             code: 'code executed',
-            uxReview: pilotOutputStep1.uxReview,
-            accessibilityReview: pilotOutputStep1.accessibilityReview,
+            review: pilotOutputStep1.review,
           },
         ],
-        uxReview: pilotOutputSuccess.uxReview,
-        accessibilityReview: pilotOutputSuccess.accessibilityReview,
+        review: pilotOutputSuccess.review,
       });
     });
   });

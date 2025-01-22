@@ -228,16 +228,24 @@ export type CodeEvaluationResult = {
 }
 
 /**
+ * The different types of reviews pilot can perform
+ */
+export type PilotReviewSectionType = 'ux' | 'a11y' | 'i18n';
+
+/**
+ * Represents the pilot's review object which contatins different review and other fields
+ */
+export type PilotReview = { [key in PilotReviewSectionType]?: PilotReviewSection; };
+
+/**
  * Represents the output of each iteration of pilot's perform.
  * @property contains the action and thoughts that were taken by the LLM 
- * @property accessability review of the current screen
- * @property ux review of the current screen
+ * @property pilot's reviews for the different kind of reviews the user ask
  * @property the code that were created by the LLM from pilot's action
  */
 export type PilotStepReport = {
     plan: PilotStepPlan;
-    accessibilityReview? : PilotStepReview;
-    uxReview? : PilotStepReview;
+    review?: PilotReview;
     code?: string;
 }
 
@@ -246,15 +254,13 @@ export type PilotStepReport = {
  * @property the goal pilot should achieve 
  * @property summary of the given steps 
  * @property steps report of pilot's actions (thoughts, actions, code ....)
- * @property accessability review of the current screen
- * @property ux review of the current screen
+ * @property pilot's reviews for the different kind of reviews the user ask
  */
 export type PilotReport = { 
     goal : string;
     summary ? : string;
     steps : PilotStepReport[];
-    accessibilityReview? : PilotStepReview;
-    uxReview? : PilotStepReview;
+    review?: PilotReview;
 }
 
 /**
@@ -283,8 +289,8 @@ export type ScreenCapturerResult = {
  * @property findings of the current step
  * @property score from 1-10 about the ux or accessability of the current step
  */
-export type PilotStepReview = {
-    review: string;
+export type PilotReviewSection = {
+    summary: string;
     findings? : string[];
     score: string;
 }
@@ -292,15 +298,11 @@ export type PilotStepReview = {
 /**
  * Represents a previous step of pilot.
  * @property step The description of the step.
- * @property code The generated test code for the step.
- * @property result The result of the step.
- * @property accessability review of the current screen
- * @property ux review of the current screen
+ * @property pilot's reviews for the different kind of reviews the user ask
  */
 export type PilotPreviousStep = {
     step: string;
     code: string;
     result: any;
-    accessibilityReview? : PilotStepReview;
-    uxReview? : PilotStepReview;
+    review?: PilotReview;
 }

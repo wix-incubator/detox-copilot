@@ -18,9 +18,9 @@ I think this is great
 Tap on GREAT button
 </ACTION>
 <UX>
-<REVIEW>
+<SUMMARY>
 The review of UX
-</REVIEW>
+</SUMMARY>
 <FINDINGS>
 - UX finding one
 - UX finding two
@@ -30,9 +30,9 @@ The review of UX
 </SCORE>
 </UX>
 <ACCESSIBILITY>
-<REVIEW>
+<SUMMARY>
 The review of accessibility
-</REVIEW>
+</SUMMARY>
 <FINDINGS>
 - ACC finding one
 - ACC finding two
@@ -120,15 +120,17 @@ describe('PilotPerformer', () => {
         thoughts: 'I think this is great',
         action: 'Tap on GREAT button',
       },
-      uxReview: {
-        review: 'The review of UX',
-        findings: ['- UX finding one', '- UX finding two'],
-        score: '7/10',
-      },
-      accessibilityReview: {
-        review: 'The review of accessibility',
-        findings: ['- ACC finding one', '- ACC finding two'],
-        score: '8/10',
+      review: {
+        ux: {
+          summary: 'The review of UX',
+          findings: ['- UX finding one', '- UX finding two'],
+          score: '7/10',
+        },
+        a11y: {
+          summary: 'The review of accessibility',
+          findings: ['- ACC finding one', '- ACC finding two'],
+          score: '8/10',
+        },
       },
     };
 
@@ -147,15 +149,17 @@ describe('PilotPerformer', () => {
         thoughts: 'I think this is great',
         action: 'Tap on GREAT button',
       },
-      uxReview: {
-        review: 'The review of UX',
-        findings: ['- UX finding one', '- UX finding two'],
-        score: '7/10',
-      },
-      accessibilityReview: {
-        review: 'The review of accessibility',
-        findings: ['- ACC finding one', '- ACC finding two'],
-        score: '8/10',
+      review: {
+        ux: {
+          summary: 'The review of UX',
+          findings: ['- UX finding one', '- UX finding two'],
+          score: '7/10',
+        },
+        a11y: {
+          summary: 'The review of accessibility',
+          findings: ['- ACC finding one', '- ACC finding two'],
+          score: '8/10',
+        },
       },
     };
 
@@ -174,15 +178,17 @@ describe('PilotPerformer', () => {
         thoughts: 'I think this is great',
         action: 'Tap on GREAT button',
       },
-      uxReview: {
-        review: 'The review of UX',
-        findings: ['- UX finding one', '- UX finding two'],
-        score: '7/10',
-      },
-      accessibilityReview: {
-        review: 'The review of accessibility',
-        findings: ['- ACC finding one', '- ACC finding two'],
-        score: '8/10',
+      review: {
+        ux: {
+          summary: 'The review of UX',
+          findings: ['- UX finding one', '- UX finding two'],
+          score: '7/10',
+        },
+        a11y: {
+          summary: 'The review of accessibility',
+          findings: ['- ACC finding one', '- ACC finding two'],
+          score: '8/10',
+        },
       },
     };
 
@@ -210,25 +216,22 @@ describe('PilotPerformer', () => {
         thoughts: 'I think this is great',
         action: 'Tap on GREAT button',
       },
-      uxReview: {
-        review: 'The review of UX',
-        findings: ['- UX finding one', '- UX finding two'],
-        score: '7/10',
-      },
-      accessibilityReview: {
-        review: 'The review of accessibility',
-        findings: ['- ACC finding one', '- ACC finding two'],
-        score: '8/10',
+      review: {
+        ux: {
+          summary: 'The review of UX',
+          findings: ['- UX finding one', '- UX finding two'],
+          score: '7/10',
+        },
+        a11y: {
+          summary: 'The review of accessibility',
+          findings: ['- ACC finding one', '- ACC finding two'],
+          score: '8/10',
+        },
       },
     };
 
     expect(result).toEqual(expectedResult);
-    expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
-      intent,
-      VIEW_HIERARCHY,
-      true,
-      previousIntents,
-    );
+    expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(intent, VIEW_HIERARCHY, true, previousIntents);
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(GENERATED_PROMPT, SNAPSHOT_DATA);
   });
 
@@ -239,15 +242,17 @@ describe('PilotPerformer', () => {
           thoughts: 'Step 1 thoughts',
           action: 'Tap on GREAT button',
         },
-        uxReview: {
-          review: 'UX review for step 1',
-          findings: [],
-          score: '7/10',
-        },
-        accessibilityReview: {
-          review: 'Accessibility review for step 1',
-          findings: [],
-          score: '8/10',
+        review: {
+          ux: {
+            summary: 'UX review for step 1',
+            findings: [],
+            score: '7/10',
+          },
+          a11y: {
+            summary: 'Accessibility review for step 1',
+            findings: [],
+            score: '8/10',
+          },
         },
       };
 
@@ -256,15 +261,17 @@ describe('PilotPerformer', () => {
           thoughts: 'Completed successfully <SUMMARY> all was good </SUMMARY>',
           action: 'success',
         },
-        uxReview: {
-          review: 'Final UX review',
-          findings: [],
-          score: '9/10',
-        },
-        accessibilityReview: {
-          review: 'Final Accessibility review',
-          findings: [],
-          score: '9/10',
+        review: {
+          ux: {
+            summary: 'Final UX review',
+            findings: [],
+            score: '9/10',
+          },
+          a11y: {
+            summary: 'Final Accessibility review',
+            findings: [],
+            score: '9/10',
+          },
         },
       };
 
@@ -278,11 +285,12 @@ describe('PilotPerformer', () => {
       mockScreenCapturer.capture.mockResolvedValue(screenCapturerResult);
 
       // Mock analyseScreenAndCreateCopilotStep to return pilotOutputStep1, then pilotOutputSuccess
-      const analyseScreenAndCreateCopilotStep = jest.spyOn(pilotPerformer, 'analyseScreenAndCreateCopilotStep')
+      const analyseScreenAndCreateCopilotStep = jest
+        .spyOn(pilotPerformer, 'analyseScreenAndCreateCopilotStep')
         .mockResolvedValueOnce(pilotOutputStep1)
         .mockResolvedValueOnce(pilotOutputSuccess);
 
-      const copilotPerformSpy = jest.spyOn(mockCopilotStepPerformer, 'perform').mockResolvedValue({
+      jest.spyOn(mockCopilotStepPerformer, 'perform').mockResolvedValue({
         code: 'code executed',
         result: 'result of execution',
       });
@@ -299,12 +307,10 @@ describe('PilotPerformer', () => {
           {
             plan: pilotOutputStep1.plan,
             code: 'code executed',
-            uxReview: pilotOutputStep1.uxReview,
-            accessibilityReview: pilotOutputStep1.accessibilityReview,
+            review: pilotOutputStep1.review,
           },
         ],
-        uxReview : pilotOutputSuccess.uxReview,
-        accessibilityReview : pilotOutputSuccess.accessibilityReview
+        review: pilotOutputSuccess.review,
       };
 
       expect(result).toEqual(expectedReport);

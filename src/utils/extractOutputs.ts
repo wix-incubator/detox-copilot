@@ -1,11 +1,23 @@
 export type OutputMapper = Record<string, string>;
 
-export const REVIEW_OUTPUTS_MAPPER: OutputMapper = { review: 'REVIEW', findings: 'FINDINGS', score: 'SCORE'};
-export const STEP_OUTPUTS_MAPPER: OutputMapper = { thoughts: 'THOUGHTS', action: 'ACTION', ux: 'UX', accessibility: 'ACCESSIBILITY'};
-export const SUMMARY_OUTPUTS_MAPPER: OutputMapper = { summary : 'SUMMARY' };
-
-
-export const extractOutputsGivenMapper  = (text: string, outputsMapper : OutputMapper)  => extractOutputs({text, outputsMapper});
+export namespace OUTPUT_MAPPERS {
+    export enum REVIEW {
+      summary = 'SUMMARY',
+      findings = 'FINDINGS',
+      score = 'SCORE',
+    }
+  
+    export enum STEP {
+      thoughts = 'THOUGHTS',
+      action = 'ACTION',
+      ux = 'UX',
+      a11y = 'ACCESSIBILITY',
+    }
+  
+    export enum SUMMARY {
+      summary = 'SUMMARY',
+    }
+}
 
 export function extractOutputs<M extends OutputMapper>(
   { text, outputsMapper }: { text: string; outputsMapper: M }
