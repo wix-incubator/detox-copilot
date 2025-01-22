@@ -5,6 +5,7 @@ import {SnapshotManager} from './utils/SnapshotManager';
 import {CopilotStepPerformer} from './actions/CopilotStepPerformer';
 import {Config, PreviousStep, TestingFrameworkAPICatalogCategory, PilotReport, ScreenCapturerResult} from './types';
 import {CacheHandler} from "@/utils/CacheHandler";
+import {SnapshotComparator} from "./utils/SnapshotComparator";
 import {PilotPerformer} from './actions/PilotPerformer';
 import {PilotPromptCreator} from './utils/PilotPromptCreator';
 import {ScreenCapturer} from './utils/ScreenCapturer';
@@ -47,6 +48,7 @@ export class Copilot {
             this.codeEvaluator,
             config.promptHandler,
             this.cacheHandler,
+            new SnapshotComparator(),
             config.options?.cacheMode,
             config.options?.analysisMode
         );

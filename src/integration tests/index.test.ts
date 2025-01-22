@@ -1,12 +1,13 @@
 import copilot from '@/index';
 import fs from 'fs';
 import { Copilot } from '@/Copilot';
-import { PromptHandler, TestingFrameworkDriver, PilotReport } from '@/types';
+import { PromptHandler, TestingFrameworkDriver, PilotReport, CacheValues } from '@/types';
 import * as crypto from 'crypto';
 import { mockedCacheFile, mockCache } from '@/test-utils/cache';
 import { PromptCreator } from '@/utils/PromptCreator';
 import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
 import { bazCategory, barCategory1, dummyContext } from '@/test-utils/APICatalogTestUtils';
+import { getSnapshotImage } from "@/test-utils/SnapshotComparatorTestImages/SnapshotImageGetter";
 
 jest.mock('crypto');
 jest.mock('fs');
@@ -19,7 +20,7 @@ describe('Copilot Integration Tests', () => {
     jest.clearAllMocks();
 
     mockFrameworkDriver = {
-      captureSnapshotImage: jest.fn().mockResolvedValue('mock_snapshot'),
+      captureSnapshotImage: jest.fn().mockResolvedValue(getSnapshotImage("baseline")),
       captureViewHierarchyString: jest.fn().mockResolvedValue('<view><button>Login</button></view>'),
       apiCatalog: {
         context: {},
@@ -92,8 +93,8 @@ describe('Copilot Integration Tests', () => {
       expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalled();
       expect(mockFrameworkDriver.captureViewHierarchyString).toHaveBeenCalled();
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(
-          expect.stringContaining('Tap on the login button'),
-          'mock_snapshot'
+        expect.stringContaining('Tap on the login button'),
+        getSnapshotImage("baseline")
       );
     });
 
@@ -105,8 +106,8 @@ describe('Copilot Integration Tests', () => {
       expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalled();
       expect(mockFrameworkDriver.captureViewHierarchyString).toHaveBeenCalled();
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(
-          expect.stringContaining('The welcome message should be visible'),
-          'mock_snapshot'
+        expect.stringContaining('The welcome message should be visible'),
+        getSnapshotImage("baseline")
       );
     });
 
@@ -268,13 +269,19 @@ describe('Copilot Integration Tests', () => {
       copilot.end(false);
 
       expect(mockedCacheFile).toEqual({
-        '{"step":"Perform action","previous":[],"viewHierarchyHash":"hash"}': '// Perform action',
+        '{"step":"Perform action","previous":[]}': expect.arrayContaining([
+          expect.objectContaining({ 
+            code: '// Perform action',
+            snapshotHash: expect.any(Object),
+            viewHierarchy: expect.any(String),
+            }),
+        ]),
       });
     });
 
     it('should read from existing cache file', async () => {
       mockCache({
-        '{"step":"Cached action","previous":[],"viewHierarchyHash":"hash"}': '// Cached action code',
+        '{"step":"Cached action","previous":[]}': [{code:'// Cached action code', viewHierarchy: 'hash'}],
       });
 
       await copilot.perform('Cached action');
@@ -289,7 +296,14 @@ describe('Copilot Integration Tests', () => {
       copilot.end();
 
       expect(mockedCacheFile).toEqual({
-        '{"step":"New action","previous":[],"viewHierarchyHash":"hash"}': '// New action code',
+        '{"step":"New action","previous":[]}': expect.arrayContaining([
+          expect.any(Object),
+          expect.objectContaining({ 
+            code: '// New action code',
+            snapshotHash: expect.any(Object),
+            viewHierarchy: expect.any(String),
+            }),
+        ]),
       });
     });
 
@@ -474,7 +488,9 @@ describe('Copilot Integration Tests', () => {
       await copilot.perform('Tap on the login button');
       copilot.end();
 
-      expect(Object.keys(mockedCacheFile || {})[0]).toContain('viewHierarchyHash');
+      const firstCacheValue = Object.values((mockedCacheFile as Record<string, CacheValues>) || {})[0][0];
+
+      expect(firstCacheValue).toHaveProperty('viewHierarchy');
     });
 
     it('should not include view hierarchy in cache key when using lightweight mode', async () => {

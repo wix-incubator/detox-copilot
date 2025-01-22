@@ -1,6 +1,6 @@
 {
   "name": "detox-copilot",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "description": "A flexible plugin that drives your tests with human-written commands, enhanced by the power of large language models (LLMs)",
   "keywords": [
     "detox",
@@ -37,5 +37,12 @@
     "ts-jest": "^29.2.4",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "blockhash-core": "^0.1.0",
+    "canvas": "^3.0.1",
+    "png-js": "^1.0.0",
+    "sharp": "^0.33.5",
+    "sharp-phash": "^2.2.0"
   }
 }

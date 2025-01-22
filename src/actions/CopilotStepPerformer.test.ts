@@ -2,6 +2,7 @@ import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
 import { PromptCreator } from '@/utils/PromptCreator';
 import { CodeEvaluator } from '@/utils/CodeEvaluator';
 import { CacheHandler } from '@/utils/CacheHandler';
+import { SnapshotComparator } from '@/utils/SnapshotComparator';
 import { PromptHandler, TestingFrameworkAPICatalog, ScreenCapturerResult, PreviousStep, CacheMode } from '@/types';
 import * as crypto from 'crypto';
 import {dummyContext, dummyBarContext1, dummyBarContext2} from '../test-utils/APICatalogTestUtils';
@@ -16,6 +17,8 @@ const VIEW_HIERARCHY = '<view></view>';
 const PROMPT_RESULT = 'generated code';
 const CODE_EVALUATION_RESULT = 'success';
 const SNAPSHOT_DATA = 'snapshot_data';
+const VIEW_HIERARCHY_HASH = 'hash';
+const CACHE_VALUE = [{code: PROMPT_RESULT, viewHierarchy: VIEW_HIERARCHY_HASH}];
 
 describe('CopilotStepPerformer', () => {
   let copilotStepPerformer: CopilotStepPerformer;
@@ -26,6 +29,7 @@ describe('CopilotStepPerformer', () => {
   let mockCodeEvaluator: jest.Mocked<CodeEvaluator>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
   let mockCacheHandler: jest.Mocked<CacheHandler>;
+  let mockSnapshotComparator: jest.Mocked<SnapshotComparator>;
   let uuidCounter = 0;
 
   beforeEach(() => {
@@ -77,6 +81,11 @@ describe('CopilotStepPerformer', () => {
       getFromTemporaryCache: jest.fn(),
     } as unknown as jest.Mocked<CacheHandler>;
 
+    mockSnapshotComparator = {
+      generateHashes: jest.fn(),
+      compareSnapshot: jest.fn(),
+    } as unknown as jest.Mocked<SnapshotComparator>;
+
     copilotStepPerformer = new CopilotStepPerformer(
         mockContext,
         mockPromptCreator,
@@ -85,6 +94,7 @@ describe('CopilotStepPerformer', () => {
         mockCodeEvaluator,
         mockPromptHandler,
         mockCacheHandler,
+        mockSnapshotComparator,
         'full',
         'fast'
     );
@@ -134,12 +144,11 @@ describe('CopilotStepPerformer', () => {
     const cacheKey = JSON.stringify({
       step: intent,
       previous: previous,
-      viewHierarchyHash: viewHierarchyHash,
     });
 
     if (cacheExists) {
       const cacheData: Map<string, any> = new Map();
-      cacheData.set(cacheKey, PROMPT_RESULT);
+      cacheData.set(cacheKey, CACHE_VALUE);
 
       mockCacheHandler.getStepFromCache.mockImplementation((key: string) => {
         return cacheData.get(key);
@@ -367,8 +376,10 @@ describe('CopilotStepPerformer', () => {
   describe('cache modes', () => {
     const testCacheModes = async (cacheMode: CacheMode) => {
       const generatedKeys: string[] = [];
-      mockCacheHandler.addToTemporaryCache.mockImplementation((key: string) => {
+      const generatedValues: any[] = [];
+      mockCacheHandler.addToTemporaryCache.mockImplementation((key: string, newVal: any) => {
         generatedKeys.push(key);
+        generatedValues.push(newVal);
       });
 
       copilotStepPerformer = new CopilotStepPerformer(
@@ -379,6 +390,7 @@ describe('CopilotStepPerformer', () => {
           mockCodeEvaluator,
           mockPromptHandler,
           mockCacheHandler,
+          mockSnapshotComparator,
           cacheMode,
           'fast'
       );
@@ -393,26 +405,27 @@ describe('CopilotStepPerformer', () => {
         codeEvaluationResult: 'success'
       });
       await copilotStepPerformer.perform(INTENT, [], screenCapture, undefined);
-      return generatedKeys[0];
+      return {key: generatedKeys[0], value: generatedValues};
     };
 
-    it('should include view hierarchy hash in cache key when mode is full', async () => {
-      const cacheKey = await testCacheModes('full');
-      const parsedKey = JSON.parse(cacheKey);
-      expect(parsedKey).toHaveProperty('viewHierarchyHash');
-      expect(parsedKey.viewHierarchyHash).toBe('hash');
+    it('should include view hierarchy hash in cache value when mode is full', async () => {
+        const cache = await testCacheModes('full');
+        expect(cache.value[0]).toHaveProperty('viewHierarchy');
+        expect(cache.value[0].viewHierarchy).toBe('hash');
     });
 
-    it('should not include view hierarchy hash in cache key when mode is lightweight', async () => {
-      const cacheKey = await testCacheModes('lightweight');
-      const parsedKey = JSON.parse(cacheKey);
-      expect(parsedKey).not.toHaveProperty('viewHierarchyHash');
+    it('should not include view hierarchy hash in cache value when mode is lightweight', async () => {
+      const cache = await testCacheModes('lightweight');
+      const parsedKey = JSON.parse(cache.key);
+      expect(parsedKey).not.toHaveProperty('viewHierarchy');
+      expect(cache.value[0]).not.toHaveProperty('viewHierarchy');
     });
 
-    it('should generate unique cache keys when mode is disabled', async () => {
+    it('should not generate cache key when mode is disabled', async () => {
       const firstKey = await testCacheModes('disabled');
       const secondKey = await testCacheModes('disabled');
-      expect(firstKey).not.toBe(secondKey);
+      expect(firstKey.key).toBeUndefined();
+      expect(secondKey.key).toBeUndefined();
     });
 
     it('should not use cache when mode is disabled', async () => {
@@ -431,6 +444,7 @@ describe('CopilotStepPerformer', () => {
           mockCodeEvaluator,
           mockPromptHandler,
           mockCacheHandler,
+          mockSnapshotComparator,
           'disabled',
           'fast'
       );
@@ -463,6 +477,7 @@ describe('CopilotStepPerformer', () => {
           mockCodeEvaluator,
           mockPromptHandler,
           mockCacheHandler,
+          mockSnapshotComparator,
           'full',
           'full'
       );
@@ -498,6 +513,7 @@ describe('CopilotStepPerformer', () => {
           mockCodeEvaluator,
           mockPromptHandler,
           mockCacheHandler,
+          mockSnapshotComparator,
           'full',
           'fast'
       );
