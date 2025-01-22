@@ -230,7 +230,7 @@ export type CodeEvaluationResult = {
 /**
  * The different types of reviews pilot can perform
  */
-export type PilotReviewSectionType = 'ux' | 'a11y' | 'i18n';
+export type PilotReviewSectionType = 'ux' | 'a11y';
 
 /**
  * Represents the pilot's review object which contatins different review and other fields
