@@ -11,6 +11,7 @@ import {extractCodeBlock} from '@/utils/extractCodeBlock';
 export class CopilotStepPerformer {
     private readonly cacheMode: CacheMode;
     private readonly analysisMode: AnalysisMode;
+    private sharedContext: Record<string, any> = {};
 
     constructor(
         private context: any,
@@ -167,7 +168,9 @@ export class CopilotStepPerformer {
                     throw new Error('Failed to generate code from intent');
                 }
 
-                return await this.codeEvaluator.evaluate(code, this.context);
+                const result = await this.codeEvaluator.evaluate(code, this.context, this.sharedContext);
+                this.sharedContext = result.sharedContext || this.sharedContext;
+                return result;
             } catch (error) {
                 lastError = error;
                 console.log('\x1b[33m%s\x1b[0m', `Attempt ${attempt} failed for step "${step}": ${error instanceof Error ? error.message : error}`);

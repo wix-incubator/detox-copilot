@@ -221,10 +221,12 @@ export type PreviousStep = {
  * Represents the result of a code evaluation operation.
  * @property code The generated test code for the operation.
  * @property result The result of the operation.
+ * @property sharedContext The shared context that can be used in the next iteration.
  */
 export type CodeEvaluationResult = {
     code: string;
     result: any;
+    sharedContext?: Record<string, any>;
 }
 
 /**
@@ -274,7 +276,7 @@ export type PilotStepPlan = {
 
 /**
  * Represents the output of screen capturer createStepPlan method.
- * @property snapshot of the currnet screen or undeifned 
+ * @property snapshot of the currnet screen or undeifned
  * @property view hierarchy of the current screen
  * @property boolean indicating if snapshot is supported or not
  */

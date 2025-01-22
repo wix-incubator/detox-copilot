@@ -170,7 +170,7 @@ describe('CopilotStepPerformer', () => {
     expect(result).toBe('success');
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(INTENT, VIEW_HIERARCHY, true, [], '');
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', SNAPSHOT_DATA);
-    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
+    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext, {});
     expect(mockCacheHandler.getStepFromCache).toHaveBeenCalled();
   });
 
@@ -187,7 +187,7 @@ describe('CopilotStepPerformer', () => {
     expect(result).toBe('success');
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(INTENT, VIEW_HIERARCHY, false, [], '');
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', undefined);
-    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
+    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext, {});
     expect(mockCacheHandler.getStepFromCache).toHaveBeenCalled();
   });
 
@@ -203,7 +203,7 @@ describe('CopilotStepPerformer', () => {
     expect(result).toBe('success');
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(INTENT, VIEW_HIERARCHY, false, [], '');
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', undefined);
-    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
+    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext, {});
     expect(mockCacheHandler.getStepFromCache).toHaveBeenCalled();
   });
 
@@ -226,7 +226,7 @@ describe('CopilotStepPerformer', () => {
     expect(result).toBe('success');
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(intent, VIEW_HIERARCHY, true, previousIntents, '');
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith('generated prompt', SNAPSHOT_DATA);
-    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
+    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext, {});
     expect(mockCacheHandler.getStepFromCache).toHaveBeenCalled();
   });
 
@@ -260,7 +260,7 @@ describe('CopilotStepPerformer', () => {
     // Should not call runPrompt or createPrompt since result is cached
     expect(mockPromptCreator.createPrompt).not.toHaveBeenCalled();
     expect(mockPromptHandler.runPrompt).not.toHaveBeenCalled();
-    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
+    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext, {});
     expect(mockCacheHandler.addToTemporaryCache).not.toHaveBeenCalled(); // No need to save cache again
   });
 
@@ -283,7 +283,7 @@ describe('CopilotStepPerformer', () => {
     expect(mockCacheHandler.loadCacheFromFile).toHaveBeenCalled();
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledTimes(2);
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(2);
-    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('retry generated code', mockContext);
+    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith('retry generated code', mockContext, {});
     expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalledTimes(1); // Cache should be saved after success
   });
 
@@ -324,7 +324,7 @@ describe('CopilotStepPerformer', () => {
     // Should call runPrompt and createPrompt. Shouldn't use current cache but override it
     expect(mockPromptCreator.createPrompt).toHaveBeenCalled();
     expect(mockPromptHandler.runPrompt).toHaveBeenCalled();
-    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext);
+    expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, mockContext, {});
     expect(mockCacheHandler.addToTemporaryCache).toHaveBeenCalled();
   });
 
@@ -341,14 +341,14 @@ describe('CopilotStepPerformer', () => {
       };
 
       await copilotStepPerformer.perform(INTENT, [], screenCapture, 2);
-      expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, dummyBarContext1);
+      expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, dummyBarContext1, {});
 
       // Extended context
       const extendedContext = { ...dummyBarContext1, ...dummyContext };
       copilotStepPerformer.extendJSContext(dummyContext);
 
       await copilotStepPerformer.perform(INTENT, [], screenCapture, 2);
-      expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, extendedContext);
+      expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, extendedContext, {});
     });
 
     it('should log when a context key is overridden', async () => {
@@ -364,13 +364,13 @@ describe('CopilotStepPerformer', () => {
       };
 
       await copilotStepPerformer.perform(INTENT, [], screenCapture, 2);
-      expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, dummyBarContext1);
+      expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, dummyBarContext1, {});
 
       copilotStepPerformer.extendJSContext(dummyBarContext2);
       expect(console.log).toHaveBeenCalledWith('Notice: Context bar is overridden by the new context value');
 
       await copilotStepPerformer.perform(INTENT, [], screenCapture, 2);
-      expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, dummyBarContext2);
+      expect(mockCodeEvaluator.evaluate).toHaveBeenCalledWith(PROMPT_RESULT, dummyBarContext2, {});
     });
   });
   describe('cache modes', () => {
