@@ -1,29 +1,31 @@
 import {PromptCreator} from '@/utils/PromptCreator';
 import {CodeEvaluator} from '@/utils/CodeEvaluator';
-import {SnapshotManager} from '@/utils/SnapshotManager';
+import {CopilotAPISearchPromptCreator} from '@/utils/CopilotAPISearchPromptCreator';
+import {ViewAnalysisPromptCreator} from '@/utils/ViewAnalysisPromptCreator';
 import {CacheHandler} from '@/utils/CacheHandler';
 import {SnapshotComparator} from '@/utils/SnapshotComparator';
-import {CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult, CacheValue} from '@/types';
-import * as fs from 'fs';
-import * as path from 'path';
+import {AnalysisMode, CacheMode, CodeEvaluationResult, PreviousStep, PromptHandler, ScreenCapturerResult, type CacheValue} from '@/types';
 import * as crypto from 'crypto';
 import {extractCodeBlock} from '@/utils/extractCodeBlock';
 
 export class CopilotStepPerformer {
     private readonly cacheMode: CacheMode;
-    
+    private readonly analysisMode: AnalysisMode;
 
     constructor(
         private context: any,
         private promptCreator: PromptCreator,
+        private apiSearchPromptCreator: CopilotAPISearchPromptCreator,
+        private viewAnalysisPromptCreator: ViewAnalysisPromptCreator,
         private codeEvaluator: CodeEvaluator,
-        private snapshotManager: SnapshotManager,
         private promptHandler: PromptHandler,
         private cacheHandler: CacheHandler,
         private snapshotComparator: SnapshotComparator,
         cacheMode: CacheMode = 'full',
+        analysisMode: AnalysisMode = 'fast',
     ) {
         this.cacheMode = cacheMode;
+        this.analysisMode = analysisMode;
     }
 
     extendJSContext(newContext: any): void {
@@ -89,7 +91,7 @@ export class CopilotStepPerformer {
     private async generateCode(
         step: string,
         previous: PreviousStep[],
-        snapshot: any,
+        snapshot: string | undefined,
         viewHierarchy: string,
         isSnapshotImageAttached: boolean,
     ): Promise<string> {
@@ -101,15 +103,38 @@ export class CopilotStepPerformer {
             if (code) {
                 return code;
             }
-        } 
-        const prompt = this.promptCreator.createPrompt(step, viewHierarchy, isSnapshotImageAttached, previous);
+        }  
+        let viewAnalysisResult = '';
+        let apiSearchResult = '';
+
+        if (this.analysisMode === 'full') {
+            // Perform view hierarchy analysis and API search only in full mode
+            viewAnalysisResult = await this.promptHandler.runPrompt(
+                this.viewAnalysisPromptCreator.createPrompt(step, viewHierarchy, previous),
+                undefined
+            );
+
+            apiSearchResult = await this.promptHandler.runPrompt(
+                this.apiSearchPromptCreator.createPrompt(step, viewAnalysisResult),
+                undefined
+            );
+        }
+
+        const prompt = this.promptCreator.createPrompt(
+            step,
+            viewHierarchy,
+            isSnapshotImageAttached,
+            previous,
+            apiSearchResult
+        );
+
         const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
         const code = extractCodeBlock(promptResult);
         const newCacheValue = await this.generateCacheValue(code, viewHierarchy, snapshot)
-
         newCacheValue[0] && this.cacheHandler.addToTemporaryCache(cacheKey, newCacheValue[0]);
 
         return code;
+        
     }
 
     async perform(step: string, previous: PreviousStep[] = [], screenCapture : ScreenCapturerResult, attempts: number = 2): Promise<CodeEvaluationResult> {

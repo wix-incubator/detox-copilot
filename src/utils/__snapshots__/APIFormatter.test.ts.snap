@@ -1,0 +1,136 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`APIFormatter formatAPICategory should format category with all its methods 1`] = `
+"### Actions
+
+#### tap(element: Element)
+
+Taps on the specified element.
+
+##### Example
+
+\`\`\`
+await element(by.id("button")).tap();
+\`\`\`
+
+##### Guidelines
+
+- Ensure the element is tappable before using this method.
+
+#### typeText(element: Element, text: string)
+
+Types the specified text into the element.
+
+##### Example
+
+\`\`\`
+await element(by.id("input")).typeText("Hello, World!");
+\`\`\`
+
+##### Guidelines
+
+- Use this method only on text input elements.
+"
+`;
+
+exports[`APIFormatter formatAPICategory should format empty category 1`] = `
+"### Empty Category
+"
+`;
+
+exports[`APIFormatter formatAPIInfo should format all methods grouped by categories 1`] = `
+"### Actions
+
+#### tap(element: Element)
+
+Taps on the specified element.
+
+##### Example
+
+\`\`\`
+await element(by.id("button")).tap();
+\`\`\`
+
+##### Guidelines
+
+- Ensure the element is tappable before using this method.
+
+#### typeText(element: Element, text: string)
+
+Types the specified text into the element.
+
+##### Example
+
+\`\`\`
+await element(by.id("input")).typeText("Hello, World!");
+\`\`\`
+
+##### Guidelines
+
+- Use this method only on text input elements.
+
+### Assertions
+
+#### toBeVisible()
+
+Asserts that the element is visible on the screen.
+
+##### Example
+
+\`\`\`
+await expect(element(by.id("title"))).toBeVisible();
+\`\`\`
+
+##### Guidelines
+
+- Consider scroll position when using this assertion.
+
+### Matchers
+
+#### by.id(id: string)
+
+Matches elements by their ID attribute.
+
+##### Example
+
+\`\`\`
+element(by.id("uniqueId"))
+\`\`\`
+
+##### Guidelines
+
+- Use unique IDs for elements to avoid conflicts.
+"
+`;
+
+exports[`APIFormatter formatAPIInfo should format empty API catalog 1`] = `""`;
+
+exports[`APIFormatter formatAPIMethod should format method with guidelines 1`] = `
+"#### tap(element: Element)
+
+Taps on the specified element.
+
+##### Example
+
+\`\`\`
+await element(by.id("button")).tap();
+\`\`\`
+
+##### Guidelines
+
+- Ensure the element is tappable before using this method.
+"
+`;
+
+exports[`APIFormatter formatAPIMethod should format method without guidelines 1`] = `
+"#### tap(element: Element)
+
+Taps on the specified element.
+
+##### Example
+
+\`\`\`
+await element(by.id("button")).tap();
+\`\`\`
+"
+`;

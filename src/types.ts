@@ -158,6 +158,14 @@ export interface PromptHandler {
  */
 export type CacheMode = 'full' | 'lightweight' | 'disabled';
 /**
+ * The analysis mode for the Copilot.
+ *  - 'fast': Skip API search and view hierarchy analysis preprocessing (default)
+ *  - 'full': Perform complete analysis including API search and view hierarchy preprocessing
+ * @default 'fast'
+ */
+export type AnalysisMode = 'fast' | 'full';
+
+/**
  * Configuration options for the Copilot behavior.
  */
 export interface CopilotOptions {
@@ -166,6 +174,12 @@ export interface CopilotOptions {
      * @default 'full'
      */
     cacheMode?: CacheMode;
+
+    /**
+     * The analysis mode to use.
+     * @default 'fast'
+     */
+    analysisMode?: AnalysisMode;
 }
 /**
  * Configuration options for Copilot.

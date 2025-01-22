@@ -1,14 +1,16 @@
 import {CopilotError} from "@/errors/CopilotError";
-import {PromptCreator} from "@/utils/PromptCreator";
-import {CodeEvaluator} from "@/utils/CodeEvaluator";
-import {SnapshotManager} from "@/utils/SnapshotManager";
-import {CopilotStepPerformer} from "@/actions/CopilotStepPerformer";
-import {Config, PreviousStep, TestingFrameworkAPICatalogCategory, PilotReport, ScreenCapturerResult} from "@/types";
+import {PromptCreator} from './utils/PromptCreator';
+import {CodeEvaluator} from './utils/CodeEvaluator';
+import {SnapshotManager} from './utils/SnapshotManager';
+import {CopilotStepPerformer} from './actions/CopilotStepPerformer';
+import {Config, PreviousStep, TestingFrameworkAPICatalogCategory, PilotReport, ScreenCapturerResult} from './types';
 import {CacheHandler} from "@/utils/CacheHandler";
-import {PilotPerformer} from "@/actions/PilotPerformer";
-import {PilotPromptCreator} from "@/utils/PilotPromptCreator";
-import {ScreenCapturer} from "@/utils/ScreenCapturer";
-import {SnapshotComparator} from "@/utils/SnapshotComparator";
+import {SnapshotComparator} from "./utils/SnapshotComparator";
+import {PilotPerformer} from './actions/PilotPerformer';
+import {PilotPromptCreator} from './utils/PilotPromptCreator';
+import {ScreenCapturer} from './utils/ScreenCapturer';
+import {CopilotAPISearchPromptCreator} from './utils/CopilotAPISearchPromptCreator';
+import {ViewAnalysisPromptCreator} from './utils/ViewAnalysisPromptCreator';
 
 /**
  * The main Copilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
@@ -19,6 +21,7 @@ export class Copilot {
     static instance?: Copilot;
 
     private readonly promptCreator: PromptCreator;
+    private readonly apiSearchPromptCreator: CopilotAPISearchPromptCreator;
     private readonly codeEvaluator: CodeEvaluator;
     private readonly snapshotManager: SnapshotManager;
     private previousSteps: PreviousStep[] = [];
@@ -31,6 +34,7 @@ export class Copilot {
 
     private constructor(config: Config) {
         this.promptCreator = new PromptCreator(config.frameworkDriver.apiCatalog);
+        this.apiSearchPromptCreator = new CopilotAPISearchPromptCreator(config.frameworkDriver.apiCatalog);
         this.codeEvaluator = new CodeEvaluator();
         this.snapshotManager = new SnapshotManager(config.frameworkDriver);
         this.pilotPromptCreator = new PilotPromptCreator();
@@ -39,12 +43,14 @@ export class Copilot {
         this.copilotStepPerformer = new CopilotStepPerformer(
             config.frameworkDriver.apiCatalog.context,
             this.promptCreator,
+            this.apiSearchPromptCreator,
+            new ViewAnalysisPromptCreator(config.frameworkDriver.apiCatalog),
             this.codeEvaluator,
-            this.snapshotManager,
             config.promptHandler,
             this.cacheHandler,
             new SnapshotComparator(),
-            config.options?.cacheMode
+            config.options?.cacheMode,
+            config.options?.analysisMode
         );
         this.pilotPerformer = new PilotPerformer(this.pilotPromptCreator, this.copilotStepPerformer, config.promptHandler, this.screenCapturer);
     }
@@ -141,7 +147,7 @@ export class Copilot {
      /**
      * Performs an entire test flow using the provided goal.
      * @param goal A string which describes the flow should be executed.
-     * @returns pilot report with info about the actions thoughts ect ... 
+     * @returns pilot report with info about the actions thoughts ect ...
      */
      async pilot(goal :string) : Promise<PilotReport> {
         return await this.pilotPerformer.perform(goal);
