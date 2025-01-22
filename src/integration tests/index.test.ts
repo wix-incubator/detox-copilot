@@ -376,24 +376,34 @@ describe('Copilot Integration Tests', () => {
     it('should perform pilot flow and return a pilot report', async () => {
       const goal = 'Complete the login flow';
       const mockPilotReport: PilotReport = {
+        summary: 'All steps completed successfully',
+        goal: goal,
         steps: [
           {
             plan: { thoughts: 'First step thoughts', action: 'Tap on login button' },
             code: 'First step code output',
-          },
-          {
-            plan: { thoughts: 'Second step thoughts', action: 'Enter username' },
-            code: 'Second step code output',
-          },
-          {
-            plan: { thoughts: 'Third step thoughts', action: 'Enter password' },
-            code: 'Third step code output',
-          },
-          {
-            plan: { thoughts: 'Fourth step thoughts', action: 'success' },
-            code: '',
+            uxReview: {
+              review: 'UX review for first step',
+              findings: [],
+              score: '7/10',
+            },
+            accessibilityReview: {
+              review: 'Accessibility review for first step',
+              findings: [],
+              score: '8/10',
+            },
           },
         ],
+        uxReview: {
+          review: 'Overall UX review',
+          findings: [],
+          score: '9/10',
+        },
+        accessibilityReview: {
+          review: 'Overall Accessibility review',
+          findings: [],
+          score: '9/10',
+        },
       };
       const copilotInstance = Copilot.getInstance();
       const spyPilotPerformerPerform = jest
@@ -422,6 +432,7 @@ describe('Copilot Integration Tests', () => {
       expect(spyPilotPerformerPerform).toHaveBeenCalledWith(goal);
     });
   });
+  
     describe('Cache Modes', () => {
         beforeEach(() => {
             mockPromptHandler.runPrompt.mockResolvedValue('// No operation');

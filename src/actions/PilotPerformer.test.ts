@@ -1,25 +1,48 @@
 import { PilotPerformer } from '@/actions/PilotPerformer';
 import { PilotPromptCreator } from '@/utils/PilotPromptCreator';
-import {ScreenCapturer} from '@/utils/ScreenCapturer'
-import { PreviousStep, PromptHandler, ScreenCapturerResult } from '@/types';
+import { ScreenCapturer } from '@/utils/ScreenCapturer';
+import { PreviousStep, PromptHandler, ScreenCapturerResult, PilotStepReport, PilotReport, PilotPreviousStep } from '@/types';
 import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
+import { extractOutputs } from '@/utils/extractOutputs';
 
 const GOAL = 'tap button';
 const VIEW_HIERARCHY = '<view></view>';
+const GENERATED_PROMPT = 'generated prompt';
+
+// Updated PROMPT_RESULT to include UX and Accessibility sections
 const PROMPT_RESULT = `
-These are my thoughts:
 <THOUGHTS>
 I think this is great
 </THOUGHTS>
-This is the action the copilot should perform:
 <ACTION>
 Tap on GREAT button
 </ACTION>
-<ACTION>
-Tap on WOW button
-</ACTION>`;
+<UX>
+<REVIEW>
+The review of UX
+</REVIEW>
+<FINDINGS>
+- UX finding one
+- UX finding two
+</FINDINGS>
+<SCORE>
+7/10
+</SCORE>
+</UX>
+<ACCESSIBILITY>
+<REVIEW>
+The review of accessibility
+</REVIEW>
+<FINDINGS>
+- ACC finding one
+- ACC finding two
+</FINDINGS>
+<SCORE>
+8/10
+</SCORE>
+</ACCESSIBILITY>`;
+
 const SNAPSHOT_DATA = 'snapshot_data';
-const GENERATED_PROMPT = 'generated prompt';
 
 describe('PilotPerformer', () => {
   let pilotPerformer: PilotPerformer;
@@ -35,9 +58,6 @@ describe('PilotPerformer', () => {
     // Create mock instances of dependencies
     mockPromptCreator = {
       createPrompt: jest.fn(),
-      createBasePrompt: jest.fn(),
-      createContext: jest.fn(),
-      createAPIInfo: jest.fn(),
     } as unknown as jest.Mocked<PilotPromptCreator>;
 
     mockPromptHandler = {
@@ -51,8 +71,8 @@ describe('PilotPerformer', () => {
 
     // Create mock for capture function
     mockScreenCapturer = {
-        capture: jest.fn(),
-      } as unknown as jest.Mocked<ScreenCapturer>;
+      capture: jest.fn(),
+    } as unknown as jest.Mocked<ScreenCapturer>;
 
     // Instantiate PilotPerformer with the mocks, including the capture function
     pilotPerformer = new PilotPerformer(
@@ -93,20 +113,53 @@ describe('PilotPerformer', () => {
   it('should perform an intent successfully with snapshot image support', async () => {
     setupMocks();
 
-    const result = await pilotPerformer.createStepPlan(GOAL, [], mockCaptureResult);
+    const result = await pilotPerformer.analyseScreenAndCreateCopilotStep(GOAL, [], mockCaptureResult);
 
-    expect(result).toEqual({ thoughts: 'I think this is great', action: 'Tap on GREAT button' });
+    const expectedResult = {
+      plan: {
+        thoughts: 'I think this is great',
+        action: 'Tap on GREAT button',
+      },
+      uxReview: {
+        review: 'The review of UX',
+        findings: ['- UX finding one', '- UX finding two'],
+        score: '7/10',
+      },
+      accessibilityReview: {
+        review: 'The review of accessibility',
+        findings: ['- ACC finding one', '- ACC finding two'],
+        score: '8/10',
+      },
+    };
+
+    expect(result).toEqual(expectedResult);
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(GOAL, VIEW_HIERARCHY, true, []);
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(GENERATED_PROMPT, SNAPSHOT_DATA);
-    // No need to check mockCapture in createStepPlan, since we passed in the ScreenCapturerResult directly
   });
 
   it('should perform an intent successfully without snapshot image support', async () => {
     setupMocks({ isSnapshotSupported: false });
 
-    const result = await pilotPerformer.createStepPlan(GOAL, [], mockCaptureResult);
+    const result = await pilotPerformer.analyseScreenAndCreateCopilotStep(GOAL, [], mockCaptureResult);
 
-    expect(result).toEqual({ thoughts: 'I think this is great', action: 'Tap on GREAT button' });
+    const expectedResult = {
+      plan: {
+        thoughts: 'I think this is great',
+        action: 'Tap on GREAT button',
+      },
+      uxReview: {
+        review: 'The review of UX',
+        findings: ['- UX finding one', '- UX finding two'],
+        score: '7/10',
+      },
+      accessibilityReview: {
+        review: 'The review of accessibility',
+        findings: ['- ACC finding one', '- ACC finding two'],
+        score: '8/10',
+      },
+    };
+
+    expect(result).toEqual(expectedResult);
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(GOAL, VIEW_HIERARCHY, false, []);
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(GENERATED_PROMPT, SNAPSHOT_DATA);
   });
@@ -114,9 +167,26 @@ describe('PilotPerformer', () => {
   it('should perform an intent with undefined snapshot', async () => {
     setupMocks({ snapshotData: null });
 
-    const result = await pilotPerformer.createStepPlan(GOAL, [], mockCaptureResult);
+    const result = await pilotPerformer.analyseScreenAndCreateCopilotStep(GOAL, [], mockCaptureResult);
 
-    expect(result).toEqual({ thoughts: 'I think this is great', action: 'Tap on GREAT button' });
+    const expectedResult = {
+      plan: {
+        thoughts: 'I think this is great',
+        action: 'Tap on GREAT button',
+      },
+      uxReview: {
+        review: 'The review of UX',
+        findings: ['- UX finding one', '- UX finding two'],
+        score: '7/10',
+      },
+      accessibilityReview: {
+        review: 'The review of accessibility',
+        findings: ['- ACC finding one', '- ACC finding two'],
+        score: '8/10',
+      },
+    };
+
+    expect(result).toEqual(expectedResult);
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(GOAL, VIEW_HIERARCHY, false, []);
     expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(GENERATED_PROMPT, undefined);
   });
@@ -133,9 +203,26 @@ describe('PilotPerformer', () => {
 
     setupMocks();
 
-    const result = await pilotPerformer.createStepPlan(intent, previousIntents, mockCaptureResult);
+    const result = await pilotPerformer.analyseScreenAndCreateCopilotStep(intent, previousIntents, mockCaptureResult);
 
-    expect(result).toEqual({ thoughts: 'I think this is great', action: 'Tap on GREAT button' });
+    const expectedResult = {
+      plan: {
+        thoughts: 'I think this is great',
+        action: 'Tap on GREAT button',
+      },
+      uxReview: {
+        review: 'The review of UX',
+        findings: ['- UX finding one', '- UX finding two'],
+        score: '7/10',
+      },
+      accessibilityReview: {
+        review: 'The review of accessibility',
+        findings: ['- ACC finding one', '- ACC finding two'],
+        score: '8/10',
+      },
+    };
+
+    expect(result).toEqual(expectedResult);
     expect(mockPromptCreator.createPrompt).toHaveBeenCalledWith(
       intent,
       VIEW_HIERARCHY,
@@ -146,52 +233,81 @@ describe('PilotPerformer', () => {
   });
 
   describe('perform', () => {
-    
     it('should perform multiple steps until success is returned', async () => {
-      const pilotOutputStep1 = {
-        thoughts: 'Step 1 thoughts',
-        action: 'Tap on GREAT button',
+      const pilotOutputStep1: PilotStepReport = {
+        plan: {
+          thoughts: 'Step 1 thoughts',
+          action: 'Tap on GREAT button',
+        },
+        uxReview: {
+          review: 'UX review for step 1',
+          findings: [],
+          score: '7/10',
+        },
+        accessibilityReview: {
+          review: 'Accessibility review for step 1',
+          findings: [],
+          score: '8/10',
+        },
       };
 
-      const pilotOutputSuccess = {
-        thoughts: 'Completed successfully',
-        action: 'success',
+      const pilotOutputSuccess: PilotStepReport = {
+        plan: {
+          thoughts: 'Completed successfully <SUMMARY> all was good </SUMMARY>',
+          action: 'success',
+        },
+        uxReview: {
+          review: 'Final UX review',
+          findings: [],
+          score: '9/10',
+        },
+        accessibilityReview: {
+          review: 'Final Accessibility review',
+          findings: [],
+          score: '9/10',
+        },
       };
 
-      const ScreenCapturerResult = {
+      const screenCapturerResult: ScreenCapturerResult = {
         snapshot: SNAPSHOT_DATA,
         viewHierarchy: VIEW_HIERARCHY,
         isSnapshotImageAttached: true,
       };
-      const performSpy = jest.spyOn(mockCopilotStepPerformer, 'perform').mockResolvedValue({
-        code: 'code executed',
-        result: 'result of execution',
-      });
-      
-      // Mock capture to return ScreenCapturerResult on each call
-      mockScreenCapturer.capture.mockResolvedValue(ScreenCapturerResult);
 
-      // Mock createStepPlan to return pilotOutputStep1, then pilotOutputSuccess
-      const createStepPlanSpy = jest.spyOn(pilotPerformer, 'createStepPlan')
+      // Mock capture to return ScreenCapturerResult on each call
+      mockScreenCapturer.capture.mockResolvedValue(screenCapturerResult);
+
+      // Mock analyseScreenAndCreateCopilotStep to return pilotOutputStep1, then pilotOutputSuccess
+      const analyseScreenAndCreateCopilotStep = jest.spyOn(pilotPerformer, 'analyseScreenAndCreateCopilotStep')
         .mockResolvedValueOnce(pilotOutputStep1)
         .mockResolvedValueOnce(pilotOutputSuccess);
 
+      const copilotPerformSpy = jest.spyOn(mockCopilotStepPerformer, 'perform').mockResolvedValue({
+        code: 'code executed',
+        result: 'result of execution',
+      });
+
       const result = await pilotPerformer.perform(GOAL);
 
-    
       expect(mockScreenCapturer.capture).toHaveBeenCalledTimes(2);
-      expect(createStepPlanSpy).toHaveBeenCalledTimes(2);
-      const performCallArgs = performSpy.mock.calls[0].slice(); 
-      expect(performCallArgs[0]).toBe('Tap on GREAT button');
-      expect(performCallArgs[1]).toEqual([]);
-      expect(performCallArgs[2]).toBe(ScreenCapturerResult);
+      expect(analyseScreenAndCreateCopilotStep).toHaveBeenCalledTimes(2);
 
-      expect(result).toEqual({
+      const expectedReport: PilotReport = {
+        summary: 'all was good',
+        goal: GOAL,
         steps: [
-          { plan: pilotOutputStep1, code: 'code executed' },
-          { plan: pilotOutputSuccess },
+          {
+            plan: pilotOutputStep1.plan,
+            code: 'code executed',
+            uxReview: pilotOutputStep1.uxReview,
+            accessibilityReview: pilotOutputStep1.accessibilityReview,
+          },
         ],
-      });
+        uxReview : pilotOutputSuccess.uxReview,
+        accessibilityReview : pilotOutputSuccess.accessibilityReview
+      };
+
+      expect(result).toEqual(expectedReport);
     });
   });
 });

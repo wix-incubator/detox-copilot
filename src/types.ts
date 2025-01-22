@@ -216,19 +216,31 @@ export type CodeEvaluationResult = {
 /**
  * Represents the output of each iteration of pilot's perform.
  * @property contains the action and thoughts that were taken by the LLM 
+ * @property accessability review of the current screen
+ * @property ux review of the current screen
  * @property the code that were created by the LLM from pilot's action
  */
 export type PilotStepReport = {
     plan: PilotStepPlan;
+    accessibilityReview? : PilotStepReview;
+    uxReview? : PilotStepReview;
     code?: string;
 }
 
 /**
  * Represents the output of pilot.
+ * @property the goal pilot should achieve 
+ * @property summary of the given steps 
  * @property steps report of pilot's actions (thoughts, actions, code ....)
+ * @property accessability review of the current screen
+ * @property ux review of the current screen
  */
-export type PilotReport = {
+export type PilotReport = { 
+    goal : string;
+    summary ? : string;
     steps : PilotStepReport[];
+    accessibilityReview? : PilotStepReview;
+    uxReview? : PilotStepReview;
 }
 
 /**
@@ -250,4 +262,31 @@ export type ScreenCapturerResult = {
     snapshot: string | undefined;
     viewHierarchy: string;
     isSnapshotImageAttached: boolean;
+}
+/**
+ * Pilots review of the currnet screen
+ * @property review of the current screen (accessability or ux)
+ * @property findings of the current step
+ * @property score from 1-10 about the ux or accessability of the current step
+ */
+export type PilotStepReview = {
+    review: string;
+    findings? : string[];
+    score: string;
+}
+
+/**
+ * Represents a previous step of pilot.
+ * @property step The description of the step.
+ * @property code The generated test code for the step.
+ * @property result The result of the step.
+ * @property accessability review of the current screen
+ * @property ux review of the current screen
+ */
+export type PilotPreviousStep = {
+    step: string;
+    code: string;
+    result: any;
+    accessibilityReview? : PilotStepReview;
+    uxReview? : PilotStepReview;
 }

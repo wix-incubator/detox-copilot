@@ -1,7 +1,7 @@
 import { Copilot } from '@/Copilot';
 import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
 import { CopilotError } from '@/errors/CopilotError';
-import { Config, ScreenCapturerResult } from '@/types';
+import { Config, ScreenCapturerResult, PilotStepReport } from '@/types';
 import { mockCache, mockedCacheFile } from './test-utils/cache';
 import { ScreenCapturer } from '@/utils/ScreenCapturer';
 import {
@@ -305,32 +305,74 @@ describe('Copilot', () => {
       Copilot.init(mockConfig);
       const instance = Copilot.getInstance();
       const goal = 'Test the login flow';
-      const pilotOutputStep1 = {
-        thoughts: 'Step 1 thoughts',
-        action: 'Tap on GREAT button',
+
+      const pilotOutputStep1: PilotStepReport = {
+        plan: {
+          thoughts: 'Step 1 thoughts',
+          action: 'Tap on GREAT button',
+        },
+        uxReview: {
+          review: 'UX review for step 1',
+          findings: [],
+          score: '7/10',
+        },
+        accessibilityReview: {
+          review: 'Accessibility review for step 1',
+          findings: [],
+          score: '8/10',
+        },
       };
 
-      const pilotOutputSuccess = {
-        thoughts: 'Completed successfully',
-        action: 'success',
+      const pilotOutputSuccess: PilotStepReport = {
+        plan: {
+          thoughts: 'Completed successfully <SUMMARY> all was good </SUMMARY>',
+          action: 'success',
+        },
+        uxReview: {
+          review: 'Final UX review',
+          findings: [],
+          score: '9/10',
+        },
+        accessibilityReview: {
+          review: 'Final Accessibility review',
+          findings: [],
+          score: '9/10',
+        },
       };
+
       jest
         .spyOn(instance['pilotPerformer'], 'perform')
         .mockResolvedValue({
-            steps: [
-                { plan: pilotOutputStep1, code: 'code executed' },
-                { plan: pilotOutputSuccess },
-              ],
+          summary: 'all was good',
+          goal: goal,
+          steps: [
+            {
+              plan: pilotOutputStep1.plan,
+              code: 'code executed',
+              uxReview: pilotOutputStep1.uxReview,
+              accessibilityReview: pilotOutputStep1.accessibilityReview,
+            },
+          ],
+          uxReview: pilotOutputSuccess.uxReview,
+          accessibilityReview: pilotOutputSuccess.accessibilityReview,
         });
 
       const result = await instance.pilot(goal);
 
       expect(instance['pilotPerformer'].perform).toHaveBeenCalledWith(goal);
       expect(result).toEqual({
+        summary: 'all was good',
+        goal: goal,
         steps: [
-            { plan: pilotOutputStep1, code: 'code executed' },
-            { plan: pilotOutputSuccess },
-          ],
+          {
+            plan: pilotOutputStep1.plan,
+            code: 'code executed',
+            uxReview: pilotOutputStep1.uxReview,
+            accessibilityReview: pilotOutputStep1.accessibilityReview,
+          },
+        ],
+        uxReview: pilotOutputSuccess.uxReview,
+        accessibilityReview: pilotOutputSuccess.accessibilityReview,
       });
     });
   });
