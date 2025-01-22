@@ -114,7 +114,6 @@ export class PilotPromptCreator {
         switch (sectionType) {
             case 'ux': return 'UX';
             case 'a11y': return 'Accessibility';
-            case 'i18n': return 'Internationalization';
             default: return sectionType.toUpperCase();
         }
     }
