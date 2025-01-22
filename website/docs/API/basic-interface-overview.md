@@ -167,6 +167,7 @@ interface Config {
 
 interface CopilotOptions {
   cacheMode?: 'full' | 'lightweight' | 'disabled';
+  analysisMode?: 'fast' | 'full';
 }
 ```
 
@@ -178,6 +179,14 @@ Default cache mode is `full`.
 - **full**: Cache is used with the screen state (default)
 - **lightweight**: Cache is used but only based on steps (without screen state)
 - **disabled**: No caching is used
+
+#### Analysis Modes
+
+Analysis mode determines how the Copilot analyzes each step before generating code.
+Default analysis mode is `fast`.
+
+- **fast**: Skip API search and view hierarchy analysis preprocessing (default)
+- **full**: Perform complete analysis including API search and view hierarchy preprocessing
 
 ### Framework Drivers
 

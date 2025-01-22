@@ -92,8 +92,8 @@ describe('Copilot Integration Tests', () => {
       expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalled();
       expect(mockFrameworkDriver.captureViewHierarchyString).toHaveBeenCalled();
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(
-        expect.stringContaining('Tap on the login button'),
-        'mock_snapshot'
+          expect.stringContaining('Tap on the login button'),
+          'mock_snapshot'
       );
     });
 
@@ -105,8 +105,8 @@ describe('Copilot Integration Tests', () => {
       expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalled();
       expect(mockFrameworkDriver.captureViewHierarchyString).toHaveBeenCalled();
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(
-        expect.stringContaining('The welcome message should be visible'),
-        'mock_snapshot'
+          expect.stringContaining('The welcome message should be visible'),
+          'mock_snapshot'
       );
     });
 
@@ -140,14 +140,14 @@ describe('Copilot Integration Tests', () => {
 
     it('should perform multiple steps using spread operator', async () => {
       mockPromptHandler.runPrompt
-        .mockResolvedValueOnce('// Tap login button')
-        .mockResolvedValueOnce('// Enter username')
-        .mockResolvedValueOnce('// Enter password');
+          .mockResolvedValueOnce('// Tap login button')
+          .mockResolvedValueOnce('// Enter username')
+          .mockResolvedValueOnce('// Enter password');
 
       await copilot.perform(
-        'Tap on the login button',
-        'Enter username "testuser"',
-        'Enter password "password123"'
+          'Tap on the login button',
+          'Enter username "testuser"',
+          'Enter password "password123"'
       );
 
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(3);
@@ -157,20 +157,20 @@ describe('Copilot Integration Tests', () => {
 
     it('should handle errors in multiple steps and stop execution', async () => {
       mockPromptHandler.runPrompt
-        .mockResolvedValueOnce('// Tap login button')
-        .mockResolvedValueOnce('throw new Error("Username field not found");')
-        .mockResolvedValueOnce('throw new Error("Username field not found - second");')
-        .mockResolvedValueOnce('// Enter password');
+          .mockResolvedValueOnce('// Tap login button')
+          .mockResolvedValueOnce('throw new Error("Username field not found");')
+          .mockResolvedValueOnce('throw new Error("Username field not found - second");')
+          .mockResolvedValueOnce('// Enter password');
 
       await expect(
-        copilot.perform(
-          'Tap on the login button',
-          'Enter username "testuser"',
-          'Enter password "password123"'
-        )
+          copilot.perform(
+              'Tap on the login button',
+              'Enter username "testuser"',
+              'Enter password "password123"'
+          )
       ).rejects.toThrow('Username field not found');
 
-      expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(3); 
+      expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(3);
       expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalledTimes(2);
       expect(mockFrameworkDriver.captureViewHierarchyString).toHaveBeenCalledTimes(2);
     });
@@ -229,8 +229,8 @@ describe('Copilot Integration Tests', () => {
 
     it('should clear conversation history on reset', async () => {
       mockPromptHandler.runPrompt
-        .mockResolvedValueOnce('// Action 1')
-        .mockResolvedValueOnce('// Action 2');
+          .mockResolvedValueOnce('// Action 1')
+          .mockResolvedValueOnce('// Action 2');
 
       await copilot.perform('Action 1');
       await copilot.perform('Action 2');
@@ -334,8 +334,8 @@ describe('Copilot Integration Tests', () => {
       expect(mockFrameworkDriver.captureSnapshotImage).not.toHaveBeenCalled();
       expect(mockFrameworkDriver.captureViewHierarchyString).toHaveBeenCalled();
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledWith(
-        expect.stringContaining('Perform action without snapshot support'),
-        undefined
+          expect.stringContaining('Perform action without snapshot support'),
+          undefined
       );
     });
   });
@@ -351,8 +351,8 @@ describe('Copilot Integration Tests', () => {
     });
 
     it('should call relevant functions to extend the catalog', () => {
-     const spyPromptCreator = jest.spyOn(PromptCreator.prototype, 'extendAPICategories');
-     const spyCopilotStepPerformer = jest.spyOn(CopilotStepPerformer.prototype, 'extendJSContext');
+      const spyPromptCreator = jest.spyOn(PromptCreator.prototype, 'extendAPICategories');
+      const spyCopilotStepPerformer = jest.spyOn(CopilotStepPerformer.prototype, 'extendJSContext');
 
       copilot.extendAPICatalog([bazCategory]);
       expect(spyPromptCreator).toHaveBeenCalledTimes(1);
@@ -407,8 +407,8 @@ describe('Copilot Integration Tests', () => {
       };
       const copilotInstance = Copilot.getInstance();
       const spyPilotPerformerPerform = jest
-        .spyOn(copilotInstance['pilotPerformer'], 'perform')
-        .mockResolvedValue(mockPilotReport);
+          .spyOn(copilotInstance['pilotPerformer'], 'perform')
+          .mockResolvedValue(mockPilotReport);
 
       const result = await copilot.pilot(goal);
 
@@ -423,8 +423,8 @@ describe('Copilot Integration Tests', () => {
       const errorMessage = 'Error during pilot execution';
       const copilotInstance = Copilot.getInstance();
       const spyPilotPerformerPerform = jest
-        .spyOn(copilotInstance['pilotPerformer'], 'perform')
-        .mockRejectedValue(new Error(errorMessage));
+          .spyOn(copilotInstance['pilotPerformer'], 'perform')
+          .mockRejectedValue(new Error(errorMessage));
 
       await expect(copilot.pilot(goal)).rejects.toThrow(errorMessage);
 
@@ -432,63 +432,115 @@ describe('Copilot Integration Tests', () => {
       expect(spyPilotPerformerPerform).toHaveBeenCalledWith(goal);
     });
   });
-  
-    describe('Cache Modes', () => {
-        beforeEach(() => {
-            mockPromptHandler.runPrompt.mockResolvedValue('// No operation');
-        });
 
-        it('should use full cache mode by default', async () => {
-            copilot.init({
-                frameworkDriver: mockFrameworkDriver,
-                promptHandler: mockPromptHandler
-            });
-            copilot.start();
-
-            await copilot.perform('Tap on the login button');
-            copilot.end();
-
-            expect(Object.keys(mockedCacheFile || {})[0]).toContain('viewHierarchyHash');
-        });
-
-        it('should not include view hierarchy in cache key when using lightweight mode', async () => {
-            copilot.init({
-                frameworkDriver: mockFrameworkDriver,
-                promptHandler: mockPromptHandler,
-                options: {
-                    cacheMode: 'lightweight'
-                }
-            });
-            copilot.start();
-
-            await copilot.perform('Tap on the login button');
-            copilot.end();
-
-            const cacheKeys = Object.keys(mockedCacheFile || {});
-            expect(cacheKeys[0]).not.toContain('viewHierarchyHash');
-        });
-
-        it('should not use cache when cache mode is disabled', async () => {
-            copilot.init({
-                frameworkDriver: mockFrameworkDriver,
-                promptHandler: mockPromptHandler,
-                options: {
-                    cacheMode: 'disabled'
-                }
-            });
-            copilot.start();
-
-            // First call
-            await copilot.perform('Tap on the login button');
-            copilot.end();
-
-            // Second call with same intent
-            copilot.start();
-            await copilot.perform('Tap on the login button');
-            copilot.end();
-
-            // Should call runPrompt twice since cache is disabled
-            expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(2);
-        });
+  describe('Cache Modes', () => {
+    beforeEach(() => {
+      mockPromptHandler.runPrompt.mockResolvedValue('// No operation');
     });
+
+    it('should use full cache mode by default', async () => {
+      copilot.init({
+        frameworkDriver: mockFrameworkDriver,
+        promptHandler: mockPromptHandler
+      });
+      copilot.start();
+
+      await copilot.perform('Tap on the login button');
+      copilot.end();
+
+      expect(Object.keys(mockedCacheFile || {})[0]).toContain('viewHierarchyHash');
+    });
+
+    it('should not include view hierarchy in cache key when using lightweight mode', async () => {
+      copilot.init({
+        frameworkDriver: mockFrameworkDriver,
+        promptHandler: mockPromptHandler,
+        options: {
+          cacheMode: 'lightweight'
+        }
+      });
+      copilot.start();
+
+      await copilot.perform('Tap on the login button');
+      copilot.end();
+
+      const cacheKeys = Object.keys(mockedCacheFile || {});
+      expect(cacheKeys[0]).not.toContain('viewHierarchyHash');
+    });
+
+    it('should not use cache when cache mode is disabled', async () => {
+      copilot.init({
+        frameworkDriver: mockFrameworkDriver,
+        promptHandler: mockPromptHandler,
+        options: {
+          cacheMode: 'disabled'
+        }
+      });
+      copilot.start();
+
+      // First call
+      await copilot.perform('Tap on the login button');
+      copilot.end();
+
+      // Second call with same intent
+      copilot.start();
+      await copilot.perform('Tap on the login button');
+      copilot.end();
+
+      // Should call runPrompt twice since cache is disabled
+      expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('Analysis Modes', () => {
+    beforeEach(() => {
+        mockPromptHandler.runPrompt.mockResolvedValue('// No operation');
+    });
+
+    it('should perform fast analysis by default', async () => {
+      copilot.init({
+        frameworkDriver: mockFrameworkDriver,
+        promptHandler: mockPromptHandler
+      });
+
+      copilot.start();
+      await copilot.perform('Tap on the login button');
+      copilot.end();
+
+      expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(1);
+    });
+
+    it('should perform fast analysis when specified', async () => {
+      copilot.init({
+        frameworkDriver: mockFrameworkDriver,
+        promptHandler: mockPromptHandler,
+        options: {
+          analysisMode: 'fast'
+        }
+      });
+
+      copilot.start();
+      await copilot.perform('Tap on the login button');
+      copilot.end();
+
+      expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(1);
+    });
+
+    it('should perform full analysis when specified', async () => {
+      copilot.init({
+        frameworkDriver: mockFrameworkDriver,
+        promptHandler: mockPromptHandler,
+        options: {
+          analysisMode: 'full'
+        }
+      });
+
+      copilot.start();
+      await copilot.perform('Tap on the login button');
+      copilot.end();
+
+      // requires several prompts to be run
+      expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(3);
+    });
+  });
 });
