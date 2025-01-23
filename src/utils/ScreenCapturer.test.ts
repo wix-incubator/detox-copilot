@@ -1,14 +1,13 @@
-import { ScreenCapturer } from '@/utils/ScreenCapturer';
-import { SnapshotManager } from '@/utils/SnapshotManager';
-import { PromptHandler } from '@/types';
+import { ScreenCapturer } from "@/utils/ScreenCapturer";
+import { SnapshotManager } from "@/utils/SnapshotManager";
+import { PromptHandler } from "@/types";
 
-describe('ScreenCapturer', () => {
+describe("ScreenCapturer", () => {
   let mockSnapshotManager: jest.Mocked<SnapshotManager>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
   let screenCapturer: ScreenCapturer;
 
   beforeEach(() => {
-
     mockSnapshotManager = {
       captureSnapshotImage: jest.fn(),
       captureViewHierarchyString: jest.fn(),
@@ -18,15 +17,15 @@ describe('ScreenCapturer', () => {
       isSnapshotImageSupported: jest.fn(),
     } as any;
 
-  
     screenCapturer = new ScreenCapturer(mockSnapshotManager, mockPromptHandler);
   });
 
-  it('should capture snapshot and view hierarchy when snapshot images are supported', async () => {
-  
+  it("should capture snapshot and view hierarchy when snapshot images are supported", async () => {
     mockPromptHandler.isSnapshotImageSupported.mockReturnValue(true);
-    mockSnapshotManager.captureSnapshotImage.mockResolvedValue('snapshot_data');
-    mockSnapshotManager.captureViewHierarchyString.mockResolvedValue('view_hierarchy_data');
+    mockSnapshotManager.captureSnapshotImage.mockResolvedValue("snapshot_data");
+    mockSnapshotManager.captureViewHierarchyString.mockResolvedValue(
+      "view_hierarchy_data",
+    );
 
     const result = await screenCapturer.capture();
 
@@ -35,16 +34,17 @@ describe('ScreenCapturer', () => {
     expect(mockSnapshotManager.captureViewHierarchyString).toHaveBeenCalled();
 
     expect(result).toEqual({
-      snapshot: 'snapshot_data',
-      viewHierarchy: 'view_hierarchy_data',
+      snapshot: "snapshot_data",
+      viewHierarchy: "view_hierarchy_data",
       isSnapshotImageAttached: true,
     });
   });
 
-  it('should capture only view hierarchy when snapshot images are not supported', async () => {
-
+  it("should capture only view hierarchy when snapshot images are not supported", async () => {
     mockPromptHandler.isSnapshotImageSupported.mockReturnValue(false);
-    mockSnapshotManager.captureViewHierarchyString.mockResolvedValue('view_hierarchy_data');
+    mockSnapshotManager.captureViewHierarchyString.mockResolvedValue(
+      "view_hierarchy_data",
+    );
 
     const result = await screenCapturer.capture();
 
@@ -54,17 +54,18 @@ describe('ScreenCapturer', () => {
 
     expect(result).toEqual({
       snapshot: undefined,
-      viewHierarchy: 'view_hierarchy_data',
+      viewHierarchy: "view_hierarchy_data",
       isSnapshotImageAttached: false,
     });
   });
 
-  it('should handle when snapshot image capture returns null', async () => {
-   
+  it("should handle when snapshot image capture returns null", async () => {
     mockPromptHandler.isSnapshotImageSupported.mockReturnValue(true);
     mockSnapshotManager.captureSnapshotImage.mockResolvedValue(undefined);
-    mockSnapshotManager.captureViewHierarchyString.mockResolvedValue('view_hierarchy_data');
- 
+    mockSnapshotManager.captureViewHierarchyString.mockResolvedValue(
+      "view_hierarchy_data",
+    );
+
     const result = await screenCapturer.capture();
 
     expect(mockPromptHandler.isSnapshotImageSupported).toHaveBeenCalled();
@@ -73,17 +74,20 @@ describe('ScreenCapturer', () => {
 
     expect(result).toEqual({
       snapshot: undefined,
-      viewHierarchy: 'view_hierarchy_data',
+      viewHierarchy: "view_hierarchy_data",
       isSnapshotImageAttached: false,
     });
   });
 
-  it('should handle when captureViewHierarchyString throws an error', async () => {
-
+  it("should handle when captureViewHierarchyString throws an error", async () => {
     mockPromptHandler.isSnapshotImageSupported.mockReturnValue(true);
-    mockSnapshotManager.captureSnapshotImage.mockResolvedValue('snapshot_data');
-    mockSnapshotManager.captureViewHierarchyString.mockRejectedValue(new Error('Failed to capture view hierarchy'));
-    await expect(screenCapturer.capture()).rejects.toThrow('Failed to capture view hierarchy');
+    mockSnapshotManager.captureSnapshotImage.mockResolvedValue("snapshot_data");
+    mockSnapshotManager.captureViewHierarchyString.mockRejectedValue(
+      new Error("Failed to capture view hierarchy"),
+    );
+    await expect(screenCapturer.capture()).rejects.toThrow(
+      "Failed to capture view hierarchy",
+    );
 
     expect(mockPromptHandler.isSnapshotImageSupported).toHaveBeenCalled();
     expect(mockSnapshotManager.captureSnapshotImage).toHaveBeenCalled();

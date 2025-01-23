@@ -1,13 +1,13 @@
-import {TestingFrameworkDriver} from "@/types";
+import { TestingFrameworkDriver } from "@/types";
 
 export class SnapshotManager {
-    constructor(private driver: TestingFrameworkDriver) {}
+  constructor(private driver: TestingFrameworkDriver) {}
 
-    async captureSnapshotImage(): Promise<string | undefined> {
-        return this.driver.captureSnapshotImage();
-    }
+  async captureSnapshotImage(): Promise<string | undefined> {
+    return this.driver.captureSnapshotImage();
+  }
 
-    async captureViewHierarchyString(): Promise<string> {
-        return this.driver.captureViewHierarchyString();
-    }
+  async captureViewHierarchyString(): Promise<string> {
+    return this.driver.captureViewHierarchyString();
+  }
 }
