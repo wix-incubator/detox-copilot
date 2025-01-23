@@ -173,6 +173,16 @@ export class PromptCreator {
             "```typescript",
             'throw new Error("Unable to find the \'Submit\' button element in the current context.");',
             "```",
+            "",
+            "#### Example of using shared context between steps:",
+            "```typescript",
+            "// Step 1: Store the user ID",
+            "const userId = await getUserId();",
+            "sharedContext.userId = userId;",
+            "",
+            "// Step 2: Use the stored user ID",
+            "await element(by.id('user-' + sharedContext.userId)).tap();",
+            "```",
             ""
         ].concat(
             isSnapshotImageAttached
@@ -210,6 +220,7 @@ export class PromptCreator {
             "If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.",
             "Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.",
             "Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.",
+            "If you need to share data between steps, use the 'sharedContext' object. You can access and modify it directly like: sharedContext.myKey = 'myValue'",
             "Wrap the generated code with backticks, without any additional formatting.",
             "Do not provide any additional code beyond the minimal executable code required to perform the intent."
         );

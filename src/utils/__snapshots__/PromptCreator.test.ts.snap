@@ -131,8 +131,9 @@ Please follow these steps carefully:
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
 5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
-6. Wrap the generated code with backticks, without any additional formatting.
-7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+6. If you need to share data between steps, use the 'sharedContext' object. You can access and modify it directly like: sharedContext.myKey = 'myValue'
+7. Wrap the generated code with backticks, without any additional formatting.
+8. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -143,6 +144,16 @@ Before generating the code, please review the provided context and instructions 
 #### Example of throwing an informative error:
 \`\`\`typescript
 throw new Error("Unable to find the 'Submit' button element in the current context.");
+\`\`\`
+
+#### Example of using shared context between steps:
+\`\`\`typescript
+// Step 1: Store the user ID
+const userId = await getUserId();
+sharedContext.userId = userId;
+
+// Step 2: Use the stored user ID
+await element(by.id('user-' + sharedContext.userId)).tap();
 \`\`\`
 
 Please provide your response below:"
@@ -261,8 +272,9 @@ Please follow these steps carefully:
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
 5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
-6. Wrap the generated code with backticks, without any additional formatting.
-7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+6. If you need to share data between steps, use the 'sharedContext' object. You can access and modify it directly like: sharedContext.myKey = 'myValue'
+7. Wrap the generated code with backticks, without any additional formatting.
+8. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -273,6 +285,16 @@ Before generating the code, please review the provided context and instructions 
 #### Example of throwing an informative error:
 \`\`\`typescript
 throw new Error("Unable to find the 'Submit' button element in the current context.");
+\`\`\`
+
+#### Example of using shared context between steps:
+\`\`\`typescript
+// Step 1: Store the user ID
+const userId = await getUserId();
+sharedContext.userId = userId;
+
+// Step 2: Use the stored user ID
+await element(by.id('user-' + sharedContext.userId)).tap();
 \`\`\`
 
 Please provide your response below:"
@@ -405,8 +427,9 @@ Please follow these steps carefully:
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
 5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
-6. Wrap the generated code with backticks, without any additional formatting.
-7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+6. If you need to share data between steps, use the 'sharedContext' object. You can access and modify it directly like: sharedContext.myKey = 'myValue'
+7. Wrap the generated code with backticks, without any additional formatting.
+8. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -417,6 +440,16 @@ Before generating the code, please review the provided context and instructions 
 #### Example of throwing an informative error:
 \`\`\`typescript
 throw new Error("Unable to find the 'Submit' button element in the current context.");
+\`\`\`
+
+#### Example of using shared context between steps:
+\`\`\`typescript
+// Step 1: Store the user ID
+const userId = await getUserId();
+sharedContext.userId = userId;
+
+// Step 2: Use the stored user ID
+await element(by.id('user-' + sharedContext.userId)).tap();
 \`\`\`
 
 Please provide your response below:"
@@ -523,8 +556,9 @@ Please follow these steps carefully:
 7. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 8. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
 9. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
-10. Wrap the generated code with backticks, without any additional formatting.
-11. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+10. If you need to share data between steps, use the 'sharedContext' object. You can access and modify it directly like: sharedContext.myKey = 'myValue'
+11. Wrap the generated code with backticks, without any additional formatting.
+12. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -535,6 +569,16 @@ Before generating the code, please review the provided context and instructions 
 #### Example of throwing an informative error:
 \`\`\`typescript
 throw new Error("Unable to find the 'Submit' button element in the current context.");
+\`\`\`
+
+#### Example of using shared context between steps:
+\`\`\`typescript
+// Step 1: Store the user ID
+const userId = await getUserId();
+sharedContext.userId = userId;
+
+// Step 2: Use the stored user ID
+await element(by.id('user-' + sharedContext.userId)).tap();
 \`\`\`
 
 #### Example of returning a commented visual test if the visual assertion passes:
@@ -642,8 +686,9 @@ Please follow these steps carefully:
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
 5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
-6. Wrap the generated code with backticks, without any additional formatting.
-7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+6. If you need to share data between steps, use the 'sharedContext' object. You can access and modify it directly like: sharedContext.myKey = 'myValue'
+7. Wrap the generated code with backticks, without any additional formatting.
+8. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -654,6 +699,16 @@ Before generating the code, please review the provided context and instructions 
 #### Example of throwing an informative error:
 \`\`\`typescript
 throw new Error("Unable to find the 'Submit' button element in the current context.");
+\`\`\`
+
+#### Example of using shared context between steps:
+\`\`\`typescript
+// Step 1: Store the user ID
+const userId = await getUserId();
+sharedContext.userId = userId;
+
+// Step 2: Use the stored user ID
+await element(by.id('user-' + sharedContext.userId)).tap();
 \`\`\`
 
 Please provide your response below:"
@@ -771,8 +826,9 @@ Please follow these steps carefully:
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
 5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
-6. Wrap the generated code with backticks, without any additional formatting.
-7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+6. If you need to share data between steps, use the 'sharedContext' object. You can access and modify it directly like: sharedContext.myKey = 'myValue'
+7. Wrap the generated code with backticks, without any additional formatting.
+8. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -783,6 +839,16 @@ Before generating the code, please review the provided context and instructions 
 #### Example of throwing an informative error:
 \`\`\`typescript
 throw new Error("Unable to find the 'Submit' button element in the current context.");
+\`\`\`
+
+#### Example of using shared context between steps:
+\`\`\`typescript
+// Step 1: Store the user ID
+const userId = await getUserId();
+sharedContext.userId = userId;
+
+// Step 2: Use the stored user ID
+await element(by.id('user-' + sharedContext.userId)).tap();
 \`\`\`
 
 Please provide your response below:"
@@ -904,8 +970,9 @@ Please follow these steps carefully:
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
 5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
-6. Wrap the generated code with backticks, without any additional formatting.
-7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+6. If you need to share data between steps, use the 'sharedContext' object. You can access and modify it directly like: sharedContext.myKey = 'myValue'
+7. Wrap the generated code with backticks, without any additional formatting.
+8. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -916,6 +983,16 @@ Before generating the code, please review the provided context and instructions 
 #### Example of throwing an informative error:
 \`\`\`typescript
 throw new Error("Unable to find the 'Submit' button element in the current context.");
+\`\`\`
+
+#### Example of using shared context between steps:
+\`\`\`typescript
+// Step 1: Store the user ID
+const userId = await getUserId();
+sharedContext.userId = userId;
+
+// Step 2: Use the stored user ID
+await element(by.id('user-' + sharedContext.userId)).tap();
 \`\`\`
 
 Please provide your response below:"
@@ -1018,8 +1095,9 @@ Please follow these steps carefully:
 3. If you cannot generate the relevant code due to ambiguity or invalid intent, return code that throws an informative error explaining the problem in one sentence.
 4. Each step must be completely independent - do not rely on any variables or assignments from previous steps. Even if a variable was declared or assigned in a previous step, you must redeclare and reassign it in your current step.
 5. Use the provided framework APIs as much as possible - prefer using the documented API methods over creating custom implementations.
-6. Wrap the generated code with backticks, without any additional formatting.
-7. Do not provide any additional code beyond the minimal executable code required to perform the intent.
+6. If you need to share data between steps, use the 'sharedContext' object. You can access and modify it directly like: sharedContext.myKey = 'myValue'
+7. Wrap the generated code with backticks, without any additional formatting.
+8. Do not provide any additional code beyond the minimal executable code required to perform the intent.
 
 ### Verify the prompt
 
@@ -1030,6 +1108,16 @@ Before generating the code, please review the provided context and instructions 
 #### Example of throwing an informative error:
 \`\`\`typescript
 throw new Error("Unable to find the 'Submit' button element in the current context.");
+\`\`\`
+
+#### Example of using shared context between steps:
+\`\`\`typescript
+// Step 1: Store the user ID
+const userId = await getUserId();
+sharedContext.userId = userId;
+
+// Step 2: Use the stored user ID
+await element(by.id('user-' + sharedContext.userId)).tap();
 \`\`\`
 
 Please provide your response below:"
