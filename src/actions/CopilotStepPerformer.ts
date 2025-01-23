@@ -67,9 +67,20 @@ export class CopilotStepPerformer {
         };
     }
 
-    private findCodeInCacheValue(cacheValue: CacheValues, viewHierarchy: string, snapshot: any): string | undefined {
+    private async findCodeInCacheValue(cacheValue: CacheValues, viewHierarchy: string, snapshot?: string): Promise<string | undefined> {
         if (this.cacheMode === 'lightweight') {
             return cacheValue[0].code;
+        }
+
+        if (snapshot) {
+            const snapshotHash = await this.snapshotComparator.generateHashes(snapshot);
+            
+            const correctCachedValue = cacheValue.find(async (singleCachedValue) => {
+                return singleCachedValue.snapshotHash && await this.snapshotComparator.compareSnapshot(snapshotHash, singleCachedValue.snapshotHash);
+            });
+            if (correctCachedValue) {
+                return correctCachedValue?.code;
+            }
         }
 
         const viewHierarchyHash = crypto.createHash('md5').update(viewHierarchy).digest('hex');
@@ -94,8 +105,9 @@ export class CopilotStepPerformer {
         const cacheKey = this.generateCacheKey(step, previous);
 
         const cachedValue = cacheKey && this.cacheHandler.getStepFromCache(cacheKey);
+        
         if (!this.shouldOverrideCache() && cachedValue) {
-            const code = this.findCodeInCacheValue(cachedValue, viewHierarchy, snapshot);
+            const code = await this.findCodeInCacheValue(cachedValue, viewHierarchy, snapshot);
             if (code) {
                 return code;
             }

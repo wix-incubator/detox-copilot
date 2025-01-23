@@ -20,11 +20,10 @@ export class SnapshotComparator {
         return Object.fromEntries(hashEntries) as SnapshotHashObject;
     }
 
-    public async compareSnapshot(snapshot: any , hashes: SnapshotHashObject, trashload?: number): Promise<Boolean> {
+    public async compareSnapshot(snapshot: SnapshotHashObject , hashes: SnapshotHashObject, trashload?: number): Promise<Boolean> {
         const comparisonPromises = Object.entries(hashes).map(async ([algorithm, hash]) => {
-            
             const comparator = this.hashingComparators.get(algorithm as HashingAlgorithm);
-            return await comparator?.areSnapshotsSimilar(hash, await comparator.hashSnapshot(snapshot), trashload);
+            return await comparator?.areSnapshotsSimilar(hash, snapshot[algorithm as HashingAlgorithm], trashload);
         });
 
         const comparisonResults = await Promise.all(comparisonPromises);
