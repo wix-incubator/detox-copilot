@@ -1,13 +1,12 @@
 import type { HashingAlgorithm, SnapshotHashing, SnapshotHashObject } from "@/types";
 import { BlockHash } from "@/utils/snapshotHashing/BlockHash";
-import { pHash } from "@/utils/snapshotHashing/pHash";
+
 
 export class SnapshotComparator {
     private readonly hashingAlgorithms: Map<HashingAlgorithm, SnapshotHashing> = new Map();
 
     constructor() {
         this.hashingAlgorithms.set("BlockHash", new BlockHash(16));
-        this.hashingAlgorithms.set('PHash', new pHash());
     }
 
     public async generateHashes(snapshot: any): Promise<SnapshotHashObject> {

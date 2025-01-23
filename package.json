@@ -41,8 +41,6 @@
   "dependencies": {
     "blockhash-core": "^0.1.0",
     "canvas": "^3.0.1",
-    "png-js": "^1.0.0",
-    "sharp": "^0.33.5",
-    "sharp-phash": "^2.2.0"
+    "png-js": "^1.0.0"
   }
 }
