@@ -1,6 +1,25 @@
-export type OutputMapper = Record<string, string>;
+export type OutputsMapping = Record<string, string>;
 
-export function extractOutputs<M extends OutputMapper>(
+export namespace OUTPUTS_MAPPINGS {
+    export enum PILOT_REVIEW_SECTION {
+      summary = 'SUMMARY',
+      findings = 'FINDINGS',
+      score = 'SCORE',
+    }
+  
+    export enum PILOT_STEP {
+      thoughts = 'THOUGHTS',
+      action = 'ACTION',
+      ux = 'UX',
+      a11y = 'ACCESSIBILITY',
+    }
+  
+    export enum PILOT_SUMMARY {
+      summary = 'SUMMARY',
+    }
+}
+
+export function extractOutputs<M extends OutputsMapping>(
   { text, outputsMapper }: { text: string; outputsMapper: M }
 ): { [K in keyof M]: string } {
   const outputs: Partial<{ [K in keyof M]: string }> = {};

@@ -228,21 +228,39 @@ export type CodeEvaluationResult = {
 }
 
 /**
+ * The different types of reviews pilot can perform
+ */
+export type PilotReviewSectionType = 'ux' | 'a11y';
+
+/**
+ * Represents the pilot's review object which contatins different review and other fields
+ */
+export type PilotReview = { [key in PilotReviewSectionType]?: PilotReviewSection; };
+
+/**
  * Represents the output of each iteration of pilot's perform.
  * @property contains the action and thoughts that were taken by the LLM 
+ * @property pilot's reviews for the different kind of reviews the user ask
  * @property the code that were created by the LLM from pilot's action
  */
 export type PilotStepReport = {
     plan: PilotStepPlan;
+    review?: PilotReview;
     code?: string;
 }
 
 /**
  * Represents the output of pilot.
+ * @property the goal pilot should achieve 
+ * @property summary of the given steps 
  * @property steps report of pilot's actions (thoughts, actions, code ....)
+ * @property pilot's reviews for the different kind of reviews the user ask
  */
-export type PilotReport = {
+export type PilotReport = { 
+    goal : string;
+    summary ? : string;
     steps : PilotStepReport[];
+    review?: PilotReview;
 }
 
 /**
@@ -264,6 +282,28 @@ export type ScreenCapturerResult = {
     snapshot: string | undefined;
     viewHierarchy: string;
     isSnapshotImageAttached: boolean;
+}
+
+/**
+ * Pilots review of the currnet screen
+ * @property review of the current screen (accessability or ux)
+ * @property findings of the current step
+ * @property score from 1-10 about the ux or accessability of the current step
+ */
+export type PilotReviewSection = {
+    summary: string;
+    findings? : string[];
+    score: string;
+}
+
+/**
+ * Represents a previous step of pilot.
+ * @property step The description of the step.
+ * @property pilot's reviews for the different kind of reviews the user ask
+ */
+export type PilotPreviousStep = {
+    step: string;
+    review?: PilotReview;
 }
 
 /**

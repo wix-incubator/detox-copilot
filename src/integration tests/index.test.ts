@@ -396,65 +396,101 @@ describe('Copilot Integration Tests', () => {
   });
 
   describe('Pilot Method', () => {
+    let mockFrameworkDriver: any;
+    let mockPromptHandler: jest.Mocked<PromptHandler>;
+  
     beforeEach(() => {
       jest.clearAllMocks();
-      copilot.init({
+  
+      mockPromptHandler = {
+        runPrompt: jest.fn(),
+        isSnapshotImageSupported: jest.fn(),
+      } as any;
+  
+      mockFrameworkDriver = {
+        apiCatalog: {
+          context: {},
+          categories: [],
+        },
+        captureSnapshotImage: jest.fn(),
+        captureViewHierarchyString: jest.fn(),
+      };
+  
+      Copilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
-      copilot.start();
+      Copilot.getInstance().start();
     });
-
+  
+    afterEach(() => {
+      (Copilot as any)['instance'] = undefined;
+    });
+  
     it('should perform pilot flow and return a pilot report', async () => {
       const goal = 'Complete the login flow';
       const mockPilotReport: PilotReport = {
+        summary: 'All steps completed successfully',
+        goal: goal,
         steps: [
           {
             plan: { thoughts: 'First step thoughts', action: 'Tap on login button' },
             code: 'First step code output',
-          },
-          {
-            plan: { thoughts: 'Second step thoughts', action: 'Enter username' },
-            code: 'Second step code output',
-          },
-          {
-            plan: { thoughts: 'Third step thoughts', action: 'Enter password' },
-            code: 'Third step code output',
-          },
-          {
-            plan: { thoughts: 'Fourth step thoughts', action: 'success' },
-            code: '',
+            review: {
+              ux: {
+                summary: 'UX review for first step',
+                findings: [],
+                score: '7/10',
+              },
+              a11y: {
+                summary: 'Accessibility review for first step',
+                findings: [],
+                score: '8/10',
+              },
+            },
           },
         ],
+        review: {
+          ux: {
+            summary: 'Overall UX review',
+            findings: [],
+            score: '9/10',
+          },
+          a11y: {
+            summary: 'Overall Accessibility review',
+            findings: [],
+            score: '9/10',
+          },
+        },
       };
       const copilotInstance = Copilot.getInstance();
       const spyPilotPerformerPerform = jest
-          .spyOn(copilotInstance['pilotPerformer'], 'perform')
-          .mockResolvedValue(mockPilotReport);
-
-      const result = await copilot.pilot(goal);
-
+        .spyOn(copilotInstance['pilotPerformer'], 'perform')
+        .mockResolvedValue(mockPilotReport);
+  
+      const result = await copilotInstance.pilot(goal);
+  
       expect(spyPilotPerformerPerform).toHaveBeenCalledTimes(1);
       expect(spyPilotPerformerPerform).toHaveBeenCalledWith(goal);
       expect(result).toEqual(mockPilotReport);
     });
-
+  
     it('should handle errors from pilotPerformer.perform', async () => {
       const goal = 'Some goal that causes an error';
-
+  
       const errorMessage = 'Error during pilot execution';
       const copilotInstance = Copilot.getInstance();
       const spyPilotPerformerPerform = jest
-          .spyOn(copilotInstance['pilotPerformer'], 'perform')
-          .mockRejectedValue(new Error(errorMessage));
-
-      await expect(copilot.pilot(goal)).rejects.toThrow(errorMessage);
-
+        .spyOn(copilotInstance['pilotPerformer'], 'perform')
+        .mockRejectedValue(new Error(errorMessage));
+  
+      await expect(copilotInstance.pilot(goal)).rejects.toThrow(errorMessage);
+  
       expect(spyPilotPerformerPerform).toHaveBeenCalledTimes(1);
       expect(spyPilotPerformerPerform).toHaveBeenCalledWith(goal);
     });
   });
-
+  
   describe('Cache Modes', () => {
     beforeEach(() => {
       mockPromptHandler.runPrompt.mockResolvedValue('// No operation');
