@@ -75,9 +75,10 @@ export class CopilotStepPerformer {
         if (snapshot) {
             const snapshotHash = await this.snapshotComparator.generateHashes(snapshot);
             
-            const correctCachedValue = cacheValue.find(async (singleCachedValue) => {
-                return singleCachedValue.snapshotHash && await this.snapshotComparator.compareSnapshot(snapshotHash, singleCachedValue.snapshotHash);
+            const correctCachedValue = cacheValue.find((singleCachedValue) => {
+                return singleCachedValue.snapshotHash && this.snapshotComparator.compareSnapshot(snapshotHash, singleCachedValue.snapshotHash);
             });
+            
             if (correctCachedValue) {
                 return correctCachedValue?.code;
             }
