@@ -15,7 +15,7 @@ describe("SnapshotComparator", () => {
         const snapshot = getSnapshotImage("baseline");
         const hash = await snapshotComparator.generateHashes(snapshot);
         const hash2 = await snapshotComparator.generateHashes(snapshot);
-        const isSimilar = await snapshotComparator.compareSnapshot(hash2, hash, 0.1);
+        const isSimilar = snapshotComparator.compareSnapshot(hash2, hash, 0.1);
         expect(isSimilar).toBeTruthy();
     });
 
@@ -25,7 +25,7 @@ describe("SnapshotComparator", () => {
         
         const hash1 = await snapshotComparator.generateHashes(snapshot1);
         const hash2 = await snapshotComparator.generateHashes(snapshot2);
-        const isSimilar = await snapshotComparator.compareSnapshot(hash2, hash1, 0.1);
+        const isSimilar = snapshotComparator.compareSnapshot(hash2, hash1, 0.1);
 
         expect(hash2).not.toEqual(hash1);
         expect(isSimilar).toBeFalsy();

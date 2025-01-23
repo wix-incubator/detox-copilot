@@ -3,15 +3,15 @@ import { BlockHash } from "@/utils/snapshotHashing/BlockHash";
 import { pHash } from "@/utils/snapshotHashing/pHash";
 
 export class SnapshotComparator {
-    private readonly hashingComparators: Map<HashingAlgorithm, SnapshotHashing> = new Map();
+    private readonly hashingAlgorithms: Map<HashingAlgorithm, SnapshotHashing> = new Map();
 
     constructor() {
-        this.hashingComparators.set("BlockHash", new BlockHash(16));
-        this.hashingComparators.set('PHash', new pHash());
+        this.hashingAlgorithms.set("BlockHash", new BlockHash(16));
+        this.hashingAlgorithms.set('PHash', new pHash());
     }
 
     public async generateHashes(snapshot: any): Promise<SnapshotHashObject> {
-        const hashPromises = Array.from(this.hashingComparators.entries()).map(async ([algorithm, comparator]) => {
+        const hashPromises = Array.from(this.hashingAlgorithms.entries()).map(async ([algorithm, comparator]) => {
             const hash = await comparator.hashSnapshot(snapshot);
             return [algorithm, hash] as [HashingAlgorithm, string];
         });
@@ -20,13 +20,12 @@ export class SnapshotComparator {
         return Object.fromEntries(hashEntries) as SnapshotHashObject;
     }
 
-    public async compareSnapshot(snapshot: SnapshotHashObject , hashes: SnapshotHashObject, trashload?: number): Promise<Boolean> {
-        const comparisonPromises = Object.entries(hashes).map(async ([algorithm, hash]) => {
-            const comparator = this.hashingComparators.get(algorithm as HashingAlgorithm);
-            return await comparator?.areSnapshotsSimilar(hash, snapshot[algorithm as HashingAlgorithm], trashload);
+    public compareSnapshot(newSnapshot: SnapshotHashObject , cachedSnapshot: SnapshotHashObject, trashload?: number): Boolean {
+        const comparisonPromises = Object.entries(cachedSnapshot).map(([algorithmName, hash]) => {
+            const algorithm = this.hashingAlgorithms.get(algorithmName as HashingAlgorithm);
+            return algorithm?.areSnapshotsSimilar(hash, newSnapshot[algorithmName as HashingAlgorithm], trashload);
         });
 
-        const comparisonResults = await Promise.all(comparisonPromises);
-        return comparisonResults.every(isSimilar => isSimilar);
+        return comparisonPromises.every(isSimilar => isSimilar);
     }
 }
