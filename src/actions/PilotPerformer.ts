@@ -1,6 +1,6 @@
 import { PilotPromptCreator } from '@/utils/PilotPromptCreator';
-import { PromptHandler, PilotReport, PilotStepReport, PilotStepPlan, ScreenCapturerResult, PilotReviewSection, PilotPreviousStep, PilotReview } from '@/types';
-import { extractOutputs, OUTPUT_MAPPERS } from '@/utils/extractOutputs';
+import { PromptHandler, PilotReport, PilotStepReport, PilotStepPlan, ScreenCapturerResult, PilotReviewSection, PilotPreviousStep, PilotReview, PreviousStep } from '@/types';
+import { extractOutputs, OUTPUTS_MAPPINGS } from '@/utils/extractOutputs';
 import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
 import { ScreenCapturer } from '@/utils/ScreenCapturer';
 
@@ -18,7 +18,7 @@ export class PilotPerformer {
     private extractReviewOutput(text: string): PilotReviewSection {
         const { summary, findings, score } = extractOutputs({
             text,
-            outputsMapper: OUTPUT_MAPPERS.REVIEW,
+            outputsMapper: OUTPUTS_MAPPINGS.PILOT_REVIEW_SECTION,
         });
         return { summary, findings: findings?.split('\n'), score };
     }
@@ -29,7 +29,7 @@ export class PilotPerformer {
             const prompt = this.promptCreator.createPrompt(goal, viewHierarchy, isSnapshotImageAttached, previous);
             const generatedPilotTaskDetails: string = await this.promptHandler.runPrompt(prompt, snapshot);
 
-            const { thoughts, action, ux, a11y } = extractOutputs({ text: generatedPilotTaskDetails, outputsMapper: OUTPUT_MAPPERS.STEP });
+            const { thoughts, action, ux, a11y } = extractOutputs({ text: generatedPilotTaskDetails, outputsMapper: OUTPUTS_MAPPINGS.PILOT_STEP });
             const plan: PilotStepPlan = { action, thoughts };
             const review: PilotReview = { ux: this.extractReviewOutput(ux), a11y: this.extractReviewOutput(a11y) };
           
@@ -43,6 +43,7 @@ export class PilotPerformer {
     async perform(goal: string): Promise<PilotReport> {
         const maxSteps = 100;
         let previousSteps: PilotPreviousStep[] = [];
+        let copilotSteps : PreviousStep[] = [];
         let report: PilotReport = { goal, steps: [] };
 
         for (let step = 0; step < maxSteps; step++) {
@@ -50,14 +51,15 @@ export class PilotPerformer {
             const { plan, review } = await this.analyseScreenAndCreateCopilotStep(goal, previousSteps, screenCapture);
 
             if (plan.action === 'success') {
-                const { summary } = extractOutputs({ text: plan.thoughts, outputsMapper: OUTPUT_MAPPERS.SUMMARY});
+                const { summary } = extractOutputs({ text: plan.thoughts, outputsMapper: OUTPUTS_MAPPINGS.PILOT_SUMMARY});
                 report = { summary, goal, steps: [...report.steps], review };
                 console.log(JSON.stringify(report, null, 2));
                 return report;
             }
 
-            const { code, result } = await this.copilotStepPerformer.perform(plan.action, [...previousSteps], screenCapture);
-            previousSteps = [...previousSteps, { step: plan.action, code, result, review }];
+            const { code, result } = await this.copilotStepPerformer.perform(plan.action, [...copilotSteps], screenCapture);
+            copilotSteps = [...copilotSteps, { step: plan.action, code, result }];
+            previousSteps = [...previousSteps, { step: plan.action, review }];
 
             const stepReport: PilotStepReport = { plan, review, code };
             report.steps = [...report.steps, stepReport];

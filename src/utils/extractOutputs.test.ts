@@ -1,5 +1,5 @@
 import {extractOutputs} from "./extractOutputs";
-import {OutputMapper} from "./extractOutputs";
+import {OutputsMapping} from "./extractOutputs";
 
 describe('extractOutputs', () => {
     it('should extract outputs from text', () => {
@@ -12,7 +12,7 @@ describe('extractOutputs', () => {
          <ACTION>
          Tap on GREAT button
         </ACTION>`;
-        const outputsMapper: OutputMapper = {
+        const outputsMapper: OutputsMapping = {
             thoughts: 'THOUGHTS',
             action: 'ACTION',
         };
@@ -33,7 +33,7 @@ describe('extractOutputs', () => {
         <ACTION>
          Tap on WOW button
         </ACTION>`;
-        const outputsMapper: OutputMapper = {
+        const outputsMapper: OutputsMapping = {
             thoughts: 'THOUGHTS',
             action: 'ACTION',
         };

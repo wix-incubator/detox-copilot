@@ -1,5 +1,6 @@
 import {
     PilotPreviousStep,
+    PilotReviewSectionType
 } from "@/types";
 
 export class PilotPromptCreator {
@@ -83,7 +84,9 @@ export class PilotPromptCreator {
                     ];
 
                     if (previousStep.review) {
-                        for (const [sectionType, sectionReview] of Object.entries(previousStep.review)) {
+                        for (const sectionType of Object.keys(previousStep.review) as PilotReviewSectionType[]) {
+                            const sectionReview = previousStep.review[sectionType];
+                            if (sectionReview) {
                             stepDetails.push(
                                 `- ${this.getSectionName(sectionType)} Review:`,
                                 `  - Summary: ${sectionReview.summary}`
@@ -98,6 +101,7 @@ export class PilotPromptCreator {
                                 `  - Score: ${sectionReview.score}`
                             );
                         }
+                       }
                     }
 
                     stepDetails.push("");
@@ -110,11 +114,11 @@ export class PilotPromptCreator {
         return context;
     }
 
-    private getSectionName(sectionType: string): string {
+    private getSectionName(sectionType: PilotReviewSectionType): string {
         switch (sectionType) {
             case 'ux': return 'UX';
             case 'a11y': return 'Accessibility';
-            default: return sectionType.toUpperCase();
+            default: throw new Error(`Invalid review section: ${sectionType}`);;
         }
     }
 

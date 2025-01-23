@@ -299,14 +299,10 @@ export type PilotReviewSection = {
 /**
  * Represents a previous step of pilot.
  * @property step The description of the step.
- * @property code generated from the step
- * @property code run result
  * @property pilot's reviews for the different kind of reviews the user ask
  */
 export type PilotPreviousStep = {
     step: string;
-    code: string;
-    result: any;
     review?: PilotReview;
 }
 
