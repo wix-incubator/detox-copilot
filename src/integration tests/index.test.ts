@@ -1,22 +1,24 @@
 import copilot from '@/index';
 import fs from 'fs';
 import { Copilot } from '@/Copilot';
-import { PromptHandler, TestingFrameworkDriver, PilotReport, CacheValues } from '@/types';
+import { PromptHandler, TestingFrameworkDriver, PilotReport, CacheValues, SnapshotHashObject } from '@/types';
 import * as crypto from 'crypto';
 import { mockedCacheFile, mockCache } from '@/test-utils/cache';
 import { PromptCreator } from '@/utils/PromptCreator';
 import { CopilotStepPerformer } from '@/actions/CopilotStepPerformer';
 import { bazCategory, barCategory1, dummyContext } from '@/test-utils/APICatalogTestUtils';
 import { getSnapshotImage } from "@/test-utils/SnapshotComparatorTestImages/SnapshotImageGetter";
+import { SnapshotComparator } from '@/utils/SnapshotComparator';
 
 jest.mock('crypto');
 jest.mock('fs');
 
 describe('Copilot Integration Tests', () => {
+  let mockedCachedSnapshotHash: SnapshotHashObject;
   let mockFrameworkDriver: jest.Mocked<TestingFrameworkDriver>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
 
     mockFrameworkDriver = {
@@ -32,6 +34,8 @@ describe('Copilot Integration Tests', () => {
       runPrompt: jest.fn(),
       isSnapshotImageSupported: jest.fn().mockReturnValue(true)
     };
+
+    mockedCachedSnapshotHash = await new SnapshotComparator().generateHashes(getSnapshotImage("baseline"));
 
     mockCache();
 
@@ -289,6 +293,20 @@ describe('Copilot Integration Tests', () => {
       expect(mockPromptHandler.runPrompt).not.toHaveBeenCalled();
     });
 
+    it('should use snapshot cache if available', async () => {
+      mockCache({
+        '{"step":"Cached action","previous":[]}': [{
+            code:'// Cached action code',
+            viewHierarchy: 'WrongHash',
+            snapshotHash: mockedCachedSnapshotHash,
+          }],
+      });
+
+      await copilot.perform('Cached action');
+
+      expect(mockPromptHandler.runPrompt).not.toHaveBeenCalled();
+    });
+
     it('should update cache file after performing new action', async () => {
       mockPromptHandler.runPrompt.mockResolvedValue('// New action code');
 
@@ -491,9 +509,11 @@ describe('Copilot Integration Tests', () => {
       const firstCacheValue = Object.values((mockedCacheFile as Record<string, CacheValues>) || {})[0][0];
 
       expect(firstCacheValue).toHaveProperty('viewHierarchy');
+      expect(firstCacheValue).toHaveProperty('code');
+      expect(firstCacheValue).toHaveProperty('snapshotHash');
     });
 
-    it('should not include view hierarchy in cache key when using lightweight mode', async () => {
+    it('should not include view hierarchy in cache value when using lightweight mode', async () => {
       copilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
@@ -505,9 +525,10 @@ describe('Copilot Integration Tests', () => {
 
       await copilot.perform('Tap on the login button');
       copilot.end();
+      const firstCacheValue = Object.values((mockedCacheFile as Record<string, CacheValues>) || {})[0][0];
 
-      const cacheKeys = Object.keys(mockedCacheFile || {});
-      expect(cacheKeys[0]).not.toContain('viewHierarchyHash');
+      expect(firstCacheValue).not.toHaveProperty('viewHierarchy');
+      expect(firstCacheValue).toHaveProperty('code');
     });
 
     it('should not use cache when cache mode is disabled', async () => {
