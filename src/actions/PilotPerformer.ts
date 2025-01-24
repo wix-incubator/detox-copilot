@@ -9,10 +9,12 @@ import {
   PilotPreviousStep,
   PilotReview,
   PreviousStep,
+  LoggerMessageColor,
 } from "@/types";
 import { extractOutputs, OUTPUTS_MAPPINGS } from "@/utils/extractOutputs";
 import { CopilotStepPerformer } from "@/actions/CopilotStepPerformer";
 import { ScreenCapturer } from "@/utils/ScreenCapturer";
+import logger from "@/utils/logger";
 
 export class PilotPerformer {
   constructor(
@@ -27,7 +29,49 @@ export class PilotPerformer {
       text,
       outputsMapper: OUTPUTS_MAPPINGS.PILOT_REVIEW_SECTION,
     });
-    return { summary, findings: findings?.split("\n"), score };
+
+    return {
+      summary,
+      findings: findings
+        ?.split("\n")
+        .map((finding: string) => finding.replace(/^- /, "").trim()),
+      score,
+    };
+  }
+
+  private logReviewSection(review: PilotReviewSection, type: "ux" | "a11y") {
+    const config: {
+      [key: string]: {
+        emoji: string;
+        color: LoggerMessageColor;
+        findingColor: LoggerMessageColor;
+      };
+    } = {
+      ux: {
+        emoji: "🎨",
+        color: "magentaBright",
+        findingColor: "magenta",
+      },
+      a11y: {
+        emoji: "👁️ ",
+        color: "yellowBright",
+        findingColor: "yellow",
+      },
+    };
+
+    logger.info({
+      message: `📝${config[type].emoji} Pilot ${type.toUpperCase()} review: ${review?.summary} (Score: ${review?.score})`,
+      isBold: true,
+      color: config[type].color,
+    });
+
+    review.findings?.forEach((finding) => {
+      logger.info({
+        message: `🔍 ${finding}`,
+        isBold: false,
+        color: config[type].findingColor,
+      });
+    });
   }
 
   async analyseScreenAndCreateCopilotStep(
@@ -35,6 +79,10 @@ export class PilotPerformer {
     previous: PilotPreviousStep[] = [],
     screenCapture: ScreenCapturerResult,
   ): Promise<PilotStepReport> {
+    const analysisLoggerSpinner = logger.startSpinner(
+      "🤔 Thinking on next step",
+    );
+
     try {
       const { snapshot, viewHierarchy, isSnapshotImageAttached } =
         screenCapture;
@@ -44,6 +92,7 @@ export class PilotPerformer {
         isSnapshotImageAttached,
         previous,
       );
+
       const generatedPilotTaskDetails: string =
         await this.promptHandler.runPrompt(prompt, snapshot);
 
@@ -51,17 +100,27 @@ export class PilotPerformer {
         text: generatedPilotTaskDetails,
         outputsMapper: OUTPUTS_MAPPINGS.PILOT_STEP,
       });
+
+      analysisLoggerSpinner.stop("success", `💭 Thoughts:`, {
+        message: thoughts,
+        isBold: true,
+        color: "whiteBright",
+      });
+
       const plan: PilotStepPlan = { action, thoughts };
       const review: PilotReview = {
         ux: this.extractReviewOutput(ux),
         a11y: this.extractReviewOutput(a11y),
       };
 
+      review.ux && this.logReviewSection(review.ux, "ux");
+      review.a11y && this.logReviewSection(review.a11y, "a11y");
+
       return { plan, review };
     } catch (error) {
-      console.error(
-        "\x1b[33m%s\x1b[0m",
-        `pilot encountered an error: ${error instanceof Error ? error.message : error}`,
+      analysisLoggerSpinner.stop(
+        "failure",
+        `😓 Pilot encountered an error, ${error instanceof Error ? error.message : error}`,
       );
       throw error;
     }
@@ -71,7 +130,20 @@ export class PilotPerformer {
     const maxSteps = 100;
     let previousSteps: PilotPreviousStep[] = [];
     let copilotSteps: PreviousStep[] = [];
-    let report: PilotReport = { goal, steps: [] };
+    const report: PilotReport = { goal, steps: [] };
+
+    logger.info(
+      {
+        message: `🛫 Pilot is trying to reach goal:`,
+        isBold: false,
+        color: "cyan",
+      },
+      {
+        message: goal,
+        isBold: true,
+        color: "cyanBright",
+      },
+    );
 
     for (let step = 0; step < maxSteps; step++) {
       const screenCapture: ScreenCapturerResult =
@@ -87,9 +159,9 @@ export class PilotPerformer {
           text: plan.thoughts,
           outputsMapper: OUTPUTS_MAPPINGS.PILOT_SUMMARY,
         });
-        report = { summary, goal, steps: [...report.steps], review };
-        console.log(JSON.stringify(report, null, 2));
-        return report;
+
+        logger.info(`🛬 Pilot reached goal: "${goal}"! 🎉 Summary: ${summary}`);
+        return { goal, summary, steps: [...report.steps], review };
       }
 
       const { code, result } = await this.copilotStepPerformer.perform(
@@ -97,6 +169,7 @@ export class PilotPerformer {
         [...copilotSteps],
         screenCapture,
       );
+
       copilotSteps = [...copilotSteps, { step: plan.action, code, result }];
       previousSteps = [...previousSteps, { step: plan.action, review }];
 
@@ -104,10 +177,9 @@ export class PilotPerformer {
       report.steps = [...report.steps, stepReport];
     }
 
-    console.warn(
-      `pilot finished execution due to maxSteps limit of ${maxSteps} has been reached`,
+    logger.warn(
+      `🛬 Pilot finished execution due to limit of ${maxSteps} steps has been reached`,
     );
-    console.log(JSON.stringify(report, null, 2));
     return report;
   }
 }

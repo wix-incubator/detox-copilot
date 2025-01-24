@@ -212,7 +212,7 @@ success
 An overall UX review summary based on the previous steps' reviews.
 </SUMMARY>
 <FINDINGS>
-  
+Summary of UX findings from previous steps.
 </FINDINGS>
 <SCORE>
 6/10 - This is an overall score for the entire flow.
@@ -223,7 +223,7 @@ An overall UX review summary based on the previous steps' reviews.
 An overall accessibility review summary based on the previous steps' reviews.
 </SUMMARY>
 <FINDINGS>
-  
+  Summary of accessibility findings from previous steps.
 </FINDINGS>
 <SCORE>
 5/10 - This is an overall score for the entire flow.

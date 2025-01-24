@@ -1,5 +1,6 @@
 import { CodeEvaluationError } from "@/errors/CodeEvaluationError";
 import { CodeEvaluationResult } from "@/types";
+import logger from "@/utils/logger";
 
 export class CodeEvaluator {
   async evaluate(
@@ -7,14 +8,32 @@ export class CodeEvaluator {
     context: any,
     sharedContext: Record<string, any> = {},
   ): Promise<CodeEvaluationResult> {
+    const loggerSpinner = logger.startSpinner({
+      message: `Copilot evaluating code: \n\`\`\`\n${code}\n\`\`\``,
+      isBold: false,
+      color: "gray",
+    });
+
     const asyncFunction = this.createAsyncFunction(
       code,
       context,
       sharedContext,
     );
-    const result = await asyncFunction();
 
-    return { code, result, sharedContext };
+    try {
+      const result = await asyncFunction();
+      loggerSpinner.stop("success", `Copilot evaluated the code successfully`);
+
+      return { code, result, sharedContext };
+    } catch (error) {
+      loggerSpinner.stop("failure", {
+        message: `Copilot failed to evaluate the code: \n\`\`\`\n${code}\n\`\`\``,
+        isBold: false,
+        color: "gray",
+      });
+
+      throw error;
+    }
   }
 
   private createAsyncFunction(
@@ -22,13 +41,6 @@ export class CodeEvaluator {
     context: any,
     sharedContext: Record<string, any>,
   ): () => Promise<any> {
-    // todo: this is a temp log for debugging, we'll need to pass a logging mechanism from the framework.
-    console.log(
-      "\x1b[90m%s\x1b[0m\x1b[92m%s\x1b[0m",
-      "Copilot evaluating code block:\n",
-      `${code}\n`,
-    );
-
     try {
       const contextValues = Object.values(context);
 
