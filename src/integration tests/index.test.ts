@@ -186,10 +186,10 @@ describe("Copilot Integration Tests", () => {
       );
 
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(3);
-      expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalledTimes(3);
+      expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalledTimes(6);
       expect(
         mockFrameworkDriver.captureViewHierarchyString,
-      ).toHaveBeenCalledTimes(3);
+      ).toHaveBeenCalledTimes(6);
     });
 
     it("should handle errors in multiple steps and stop execution", async () => {
@@ -210,10 +210,10 @@ describe("Copilot Integration Tests", () => {
       ).rejects.toThrow("Username field not found");
 
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(3);
-      expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalledTimes(2);
+      expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalledTimes(4);
       expect(
         mockFrameworkDriver.captureViewHierarchyString,
-      ).toHaveBeenCalledTimes(2);
+      ).toHaveBeenCalledTimes(4);
     });
   });
 
