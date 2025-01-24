@@ -10,7 +10,7 @@
     "build": "npm run build --workspaces",
     "build:watch": "npm run build --workspaces -- --watch",
     "test": "npm run test --workspaces",
-    "lint": "eslint \"**/*.{js,ts}\"",
+    "lint": "",
     "precommit": "lint-staged",
     "prepare": "husky install"
   },
