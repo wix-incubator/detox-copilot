@@ -141,6 +141,7 @@ describe("PilotPerformer", () => {
           score: "8/10",
         },
       },
+      goalAchieved: false,
     };
 
     expect(result).toEqual(expectedResult);
@@ -182,6 +183,7 @@ describe("PilotPerformer", () => {
           score: "8/10",
         },
       },
+      goalAchieved: false,
     };
 
     expect(result).toEqual(expectedResult);
@@ -223,6 +225,7 @@ describe("PilotPerformer", () => {
           score: "8/10",
         },
       },
+      goalAchieved: false,
     };
 
     expect(result).toEqual(expectedResult);
@@ -273,6 +276,7 @@ describe("PilotPerformer", () => {
           score: "8/10",
         },
       },
+      goalAchieved: false,
     };
 
     expect(result).toEqual(expectedResult);
@@ -307,11 +311,12 @@ describe("PilotPerformer", () => {
             score: "8/10",
           },
         },
+        goalAchieved: false,
       };
 
       const pilotOutputSuccess: PilotStepReport = {
         plan: {
-          thoughts: "Completed successfully <SUMMARY> all was good </SUMMARY>",
+          thoughts: "Completed successfully",
           action: "success",
         },
         review: {
@@ -326,6 +331,8 @@ describe("PilotPerformer", () => {
             score: "9/10",
           },
         },
+        goalAchieved: true,
+        summary: "all was good",
       };
 
       const screenCapturerResult: ScreenCapturerResult = {
@@ -361,6 +368,7 @@ describe("PilotPerformer", () => {
             plan: pilotOutputStep1.plan,
             code: "code executed",
             review: pilotOutputStep1.review,
+            goalAchieved: false,
           },
         ],
         review: pilotOutputSuccess.review,

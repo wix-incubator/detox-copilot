@@ -28,6 +28,10 @@ export type PilotStepReport = {
   review?: PilotReview;
   /** Generated code */
   code?: string;
+  /** Indicates if the goal was achieved */
+  goalAchieved: boolean;
+  /** */
+  summary?: string;
 };
 
 /**

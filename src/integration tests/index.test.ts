@@ -517,6 +517,7 @@ describe("Copilot Integration Tests", () => {
                 score: "8/10",
               },
             },
+            goalAchieved: true,
           },
         ],
         review: {

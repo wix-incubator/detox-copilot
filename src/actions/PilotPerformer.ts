@@ -116,7 +116,16 @@ export class PilotPerformer {
       review.ux && this.logReviewSection(review.ux, "ux");
       review.a11y && this.logReviewSection(review.a11y, "a11y");
 
-      return { plan, review };
+      const goalAchieved = action === "success";
+
+      const summary = goalAchieved
+        ? extractOutputs({
+            text: thoughts,
+            outputsMapper: OUTPUTS_MAPPINGS.PILOT_SUMMARY,
+          }).summary
+        : undefined;
+
+      return { plan, review, goalAchieved, summary };
     } catch (error) {
       analysisLoggerSpinner.stop(
         "failure",
@@ -148,19 +157,19 @@ export class PilotPerformer {
     for (let step = 0; step < maxSteps; step++) {
       const screenCapture: ScreenCapturerResult =
         await this.screenCapturer.capture();
-      const { plan, review } = await this.analyseScreenAndCreateCopilotStep(
-        goal,
-        previousSteps,
-        screenCapture,
-      );
+      const { plan, review, goalAchieved, summary } =
+        await this.analyseScreenAndCreateCopilotStep(
+          goal,
+          previousSteps,
+          screenCapture,
+        );
 
-      if (plan.action === "success") {
-        const { summary } = extractOutputs({
-          text: plan.thoughts,
-          outputsMapper: OUTPUTS_MAPPINGS.PILOT_SUMMARY,
+      if (goalAchieved) {
+        logger.info('🛬 Pilot reached goal: "${goal}"! 🎉 Summary:', {
+          message: `${summary}`,
+          isBold: true,
+          color: "whiteBright",
         });
-
-        logger.info(`🛬 Pilot reached goal: "${goal}"! 🎉 Summary: ${summary}`);
         return { goal, summary, steps: [...report.steps], review };
       }
 
@@ -173,7 +182,13 @@ export class PilotPerformer {
       copilotSteps = [...copilotSteps, { step: plan.action, code, result }];
       previousSteps = [...previousSteps, { step: plan.action, review }];
 
-      const stepReport: PilotStepReport = { plan, review, code };
+      const stepReport: PilotStepReport = {
+        plan,
+        review,
+        code,
+        goalAchieved,
+        summary,
+      };
       report.steps = [...report.steps, stepReport];
     }
 
