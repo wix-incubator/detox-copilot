@@ -10,5 +10,8 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!(ora|chalk|strip-ansi|ansi-regex|cli-cursor|restore-cursor|onetime|mimic-fn|is-unicode-supported|is-interactive|get-east-asian-width)/)'
   ],
-  moduleDirectories: ['node_modules', 'src']
+  moduleDirectories: ['node_modules', 'src'],
+  setupFilesAfterEnv: ['<rootDir>/src/test-utils/setupTests.ts'],
+  silent: true,
+  verbose: false
 };
