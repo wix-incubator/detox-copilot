@@ -16,6 +16,7 @@ import {
 } from "@/types";
 import * as crypto from "crypto";
 import { extractCodeBlock } from "@/utils/extractCodeBlock";
+import logger from "@/utils/logger";
 
 export class CopilotStepPerformer {
   private readonly cacheMode: CacheMode;
@@ -41,8 +42,8 @@ export class CopilotStepPerformer {
   extendJSContext(newContext: any): void {
     for (const key in newContext) {
       if (key in this.context) {
-        console.log(
-          `Notice: Context ${key} is overridden by the new context value`,
+        logger.warn(
+          `Copilot's variable from context \`${key}\` is overridden by a new value from \`extendJSContext\``,
         );
         break;
       }
@@ -55,7 +56,6 @@ export class CopilotStepPerformer {
     previous: PreviousStep[],
   ): string | undefined {
     if (this.cacheMode === "disabled") {
-      // Return a unique key that won't match any cached value
       return undefined;
     }
 
@@ -204,17 +204,20 @@ export class CopilotStepPerformer {
     step: string,
     previous: PreviousStep[] = [],
     screenCapture: ScreenCapturerResult,
-    attempts: number = 2,
+    maxAttempts: number = 2,
   ): Promise<CodeEvaluationResult> {
-    // TODO: replace with the user's logger
-    console.log("\x1b[90m%s\x1b[0m%s", "Copilot performing:", `"${step}"`);
+    const loggerSpinner = logger.startSpinner(`🤖 Copilot performing step:`, {
+      message: step,
+      isBold: true,
+      color: "whiteBright",
+    });
 
     this.cacheHandler.loadCacheFromFile();
 
     let lastError: any = null;
     let lastCode: string | undefined;
 
-    for (let attempt = 1; attempt <= attempts; attempt++) {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         const { snapshot, viewHierarchy, isSnapshotImageAttached } =
           screenCapture;
@@ -229,7 +232,15 @@ export class CopilotStepPerformer {
         lastCode = code;
 
         if (!code) {
-          throw new Error("Failed to generate code from intent");
+          loggerSpinner.update(`🤖 Copilot retrying step:`, {
+            message: step,
+            isBold: true,
+            color: "whiteBright",
+          });
+
+          throw new Error(
+            "Failed to generate code from intent, please retry generating the code or provide a code that throws a descriptive error.",
+          );
         }
 
         const result = await this.codeEvaluator.evaluate(
@@ -238,16 +249,22 @@ export class CopilotStepPerformer {
           this.sharedContext,
         );
         this.sharedContext = result.sharedContext || this.sharedContext;
+
+        loggerSpinner.stop("success", `🦾 Copilot performed step:`, {
+          message: step,
+          isBold: true,
+          color: "greenBright",
+        });
+
         return result;
       } catch (error) {
         lastError = error;
-        console.log(
-          "\x1b[33m%s\x1b[0m",
-          `Attempt ${attempt} failed for step "${step}": ${error instanceof Error ? error.message : error}`,
+        logger.warn(
+          `💥 Attempt ${attempt}/${maxAttempts} failed for step "${step}": ${error instanceof Error ? error.message : error}`,
         );
 
-        if (attempt < attempts) {
-          console.log("\x1b[33m%s\x1b[0m", "Copilot is retrying...");
+        if (attempt < maxAttempts) {
+          loggerSpinner.update(`Retrying step: "${step}"`);
 
           const resultMessage = lastCode
             ? `Caught an error while evaluating "${step}", tried with generated code: "${lastCode}". Validate the code against the APIs and hierarchy and continue with a different approach. If can't, return a code that throws a descriptive error.`
@@ -265,6 +282,10 @@ export class CopilotStepPerformer {
       }
     }
 
+    loggerSpinner.stop(
+      "failure",
+      `😓 Failed to perform step: "${step}", max attempts exhausted! (${maxAttempts})`,
+    );
     throw lastError;
   }
 }

@@ -162,10 +162,10 @@ export class PilotPromptCreator {
       "#### Next Action with Thoughts:",
       "",
       `<THOUGHTS>
-To complete the registration process, tapping on the 'Submit' button (ID: btn_submit) is necessary.
+To complete the registration process, tapping on the 'Submit' button is necessary.
 </THOUGHTS>
 <ACTION>
-Tap on the 'Submit' button (ID: btn_submit)
+Tap on the 'Submit' button, which has the ID 'btn_submit' and is located at the bottom of the registration form.
 </ACTION>
 
 <UX>
@@ -212,7 +212,7 @@ success
 An overall UX review summary based on the previous steps' reviews.
 </SUMMARY>
 <FINDINGS>
-  
+Summary of UX findings from previous steps.
 </FINDINGS>
 <SCORE>
 6/10 - This is an overall score for the entire flow.
@@ -223,7 +223,7 @@ An overall UX review summary based on the previous steps' reviews.
 An overall accessibility review summary based on the previous steps' reviews.
 </SUMMARY>
 <FINDINGS>
-  
+  Summary of accessibility findings from previous steps.
 </FINDINGS>
 <SCORE>
 5/10 - This is an overall score for the entire flow.

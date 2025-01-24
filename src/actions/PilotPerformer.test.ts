@@ -132,12 +132,12 @@ describe("PilotPerformer", () => {
       review: {
         ux: {
           summary: "The review of UX",
-          findings: ["- UX finding one", "- UX finding two"],
+          findings: ["UX finding one", "UX finding two"],
           score: "7/10",
         },
         a11y: {
           summary: "The review of accessibility",
-          findings: ["- ACC finding one", "- ACC finding two"],
+          findings: ["ACC finding one", "ACC finding two"],
           score: "8/10",
         },
       },
@@ -173,12 +173,12 @@ describe("PilotPerformer", () => {
       review: {
         ux: {
           summary: "The review of UX",
-          findings: ["- UX finding one", "- UX finding two"],
+          findings: ["UX finding one", "UX finding two"],
           score: "7/10",
         },
         a11y: {
           summary: "The review of accessibility",
-          findings: ["- ACC finding one", "- ACC finding two"],
+          findings: ["ACC finding one", "ACC finding two"],
           score: "8/10",
         },
       },
@@ -214,12 +214,12 @@ describe("PilotPerformer", () => {
       review: {
         ux: {
           summary: "The review of UX",
-          findings: ["- UX finding one", "- UX finding two"],
+          findings: ["UX finding one", "UX finding two"],
           score: "7/10",
         },
         a11y: {
           summary: "The review of accessibility",
-          findings: ["- ACC finding one", "- ACC finding two"],
+          findings: ["ACC finding one", "ACC finding two"],
           score: "8/10",
         },
       },
@@ -264,12 +264,12 @@ describe("PilotPerformer", () => {
       review: {
         ux: {
           summary: "The review of UX",
-          findings: ["- UX finding one", "- UX finding two"],
+          findings: ["UX finding one", "UX finding two"],
           score: "7/10",
         },
         a11y: {
           summary: "The review of accessibility",
-          findings: ["- ACC finding one", "- ACC finding two"],
+          findings: ["ACC finding one", "ACC finding two"],
           score: "8/10",
         },
       },

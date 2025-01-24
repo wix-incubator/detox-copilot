@@ -18,6 +18,7 @@ import {
 } from "../test-utils/APICatalogTestUtils";
 import { CopilotAPISearchPromptCreator } from "@/utils/CopilotAPISearchPromptCreator";
 import { ViewAnalysisPromptCreator } from "@/utils/ViewAnalysisPromptCreator";
+import logger from "@/utils/logger";
 
 jest.mock("fs");
 jest.mock("crypto");
@@ -461,7 +462,7 @@ describe("CopilotStepPerformer", () => {
     });
 
     it("should log when a context key is overridden", async () => {
-      jest.spyOn(console, "log").mockImplementation(() => {});
+      jest.spyOn(logger, "warn").mockImplementation(() => {});
 
       copilotStepPerformer.extendJSContext(dummyBarContext1);
 
@@ -480,8 +481,8 @@ describe("CopilotStepPerformer", () => {
       );
 
       copilotStepPerformer.extendJSContext(dummyBarContext2);
-      expect(console.log).toHaveBeenCalledWith(
-        "Notice: Context bar is overridden by the new context value",
+      expect(logger.warn).toHaveBeenCalledWith(
+        "Copilot's variable from context `bar` is overridden by a new value from `extendJSContext`",
       );
 
       await copilotStepPerformer.perform(INTENT, [], screenCapture, 2);

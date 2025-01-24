@@ -7,4 +7,8 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(ora|chalk|strip-ansi|ansi-regex|cli-cursor|restore-cursor|onetime|mimic-fn|is-unicode-supported|is-interactive|get-east-asian-width)/)'
+  ],
+  moduleDirectories: ['node_modules', 'src']
 };
