@@ -162,10 +162,10 @@ export class PilotPromptCreator {
       "#### Next Action with Thoughts:",
       "",
       `<THOUGHTS>
-To complete the registration process, tapping on the 'Submit' button (ID: btn_submit) is necessary.
+To complete the registration process, tapping on the 'Submit' button is necessary.
 </THOUGHTS>
 <ACTION>
-Tap on the 'Submit' button (ID: btn_submit)
+Tap on the 'Submit' button, which has the ID 'btn_submit' and is located at the bottom of the registration form.
 </ACTION>
 
 <UX>
