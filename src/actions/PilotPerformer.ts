@@ -165,7 +165,7 @@ export class PilotPerformer {
         );
 
       if (goalAchieved) {
-        logger.info('🛬 Pilot reached goal: "${goal}"! 🎉 Summary:', {
+        logger.info(`🛬 Pilot reached goal: "${goal}"! 🎉 Summary:`, {
           message: `${summary}`,
           isBold: true,
           color: "whiteBright",
