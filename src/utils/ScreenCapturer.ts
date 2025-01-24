@@ -10,21 +10,24 @@ export class ScreenCapturer {
 
   async capture() {
     const loggerSpinner = logger.startSpinner(
-      `Capturing ${this.promptHandler.isSnapshotImageSupported() ? "snapshot image and " : ""}view hierarchy.`,
+      "Waiting for the screen to reach a stable state...",
     );
-    const snapshot = this.promptHandler.isSnapshotImageSupported()
-      ? await this.snapshotManager.captureSnapshotImage()
-      : undefined;
-    const viewHierarchy =
-      await this.snapshotManager.captureViewHierarchyString();
 
-    const isSnapshotImageAttached =
-      snapshot != null && this.promptHandler.isSnapshotImageSupported();
+    const shouldCaptureSnapshot = this.promptHandler.isSnapshotImageSupported();
+    const [snapshot, viewHierarchy] = await Promise.all([
+      shouldCaptureSnapshot
+        ? this.snapshotManager.captureSnapshotImage()
+        : Promise.resolve(undefined),
+      this.snapshotManager.captureViewHierarchyString(),
+    ]);
+
+    const isSnapshotImageAttached = snapshot != null && shouldCaptureSnapshot;
 
     loggerSpinner.stop(
       "success",
-      "Captured snapshot image and view hierarchy.",
+      "Screen has reached a stable state, captured the screen",
     );
+
     return { snapshot, viewHierarchy, isSnapshotImageAttached };
   }
 }

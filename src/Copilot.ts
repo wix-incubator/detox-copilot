@@ -44,7 +44,11 @@ export class Copilot {
       config.frameworkDriver.apiCatalog,
     );
     this.codeEvaluator = new CodeEvaluator();
-    this.snapshotManager = new SnapshotManager(config.frameworkDriver);
+    const snapshotComparator = new SnapshotComparator();
+    this.snapshotManager = new SnapshotManager(
+      config.frameworkDriver,
+      snapshotComparator,
+    );
     this.pilotPromptCreator = new PilotPromptCreator();
     this.cacheHandler = new CacheHandler();
     this.screenCapturer = new ScreenCapturer(
@@ -59,7 +63,7 @@ export class Copilot {
       this.codeEvaluator,
       config.promptHandler,
       this.cacheHandler,
-      new SnapshotComparator(),
+      snapshotComparator,
       config.options?.cacheMode,
       config.options?.analysisMode,
     );
