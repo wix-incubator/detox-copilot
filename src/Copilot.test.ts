@@ -334,12 +334,14 @@ describe("Copilot", () => {
               action: "Tap on GREAT button",
             },
             code: "code executed",
+            goalAchieved: false,
           },
           {
             plan: {
               thoughts: "Completed successfully",
               action: "success",
             },
+            goalAchieved: true,
           },
         ],
       };
@@ -376,6 +378,7 @@ describe("Copilot", () => {
             score: "8/10",
           },
         },
+        goalAchieved: false,
       };
 
       const pilotOutputSuccess: PilotStepReport = {
@@ -395,6 +398,7 @@ describe("Copilot", () => {
             score: "9/10",
           },
         },
+        goalAchieved: true,
       };
 
       jest.spyOn(instance["pilotPerformer"], "perform").mockResolvedValue({
@@ -405,6 +409,7 @@ describe("Copilot", () => {
             plan: pilotOutputStep1.plan,
             code: "code executed",
             review: pilotOutputStep1.review,
+            goalAchieved: true,
           },
         ],
         review: pilotOutputSuccess.review,
@@ -421,6 +426,7 @@ describe("Copilot", () => {
             plan: pilotOutputStep1.plan,
             code: "code executed",
             review: pilotOutputStep1.review,
+            goalAchieved: true,
           },
         ],
         review: pilotOutputSuccess.review,
