@@ -21,7 +21,7 @@ describe('Example Test Suite', () => {
         hover: p.hover.bind(p),
         page : p,
       };
-    copilot.init(promptHandler, PuppeteerPageApi(safeContext));
+    copilot.init({ promptHandler, frameworkDriver : PuppeteerPageApi(safeContext) });
     copilot.start();
     browser = b;
     page = p;
