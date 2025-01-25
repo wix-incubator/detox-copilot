@@ -7,18 +7,18 @@ export type OutputsMapping = Record<string, Output>;
 
 export const OUTPUTS_MAPPINGS: Record<string, OutputsMapping> = {
   PILOT_REVIEW_SECTION: {
-    summary: { "tag": "SUMMARY", "isRequired": false },
-    findings: { "tag": "FINDINGS", "isRequired": false },
-    score: { "tag": "SCORE", "isRequired": false },
+    summary: { tag: "SUMMARY", isRequired: false },
+    findings: { tag: "FINDINGS", isRequired: false },
+    score: { tag: "SCORE", isRequired: false },
   },
   PILOT_STEP: {
-    thoughts: { "tag": "THOUGHTS", "isRequired": true },
-    action: { "tag": "ACTION", "isRequired": true },
-    ux: { "tag": "UX", "isRequired": false },
-    a11y: { "tag": "ACCESSIBILITY", "isRequired": false },
+    thoughts: { tag: "THOUGHTS", isRequired: true },
+    action: { tag: "ACTION", isRequired: true },
+    ux: { tag: "UX", isRequired: false },
+    a11y: { tag: "ACCESSIBILITY", isRequired: false },
   },
   PILOT_SUMMARY: {
-    summary: { "tag": "SUMMARY", "isRequired": false },
+    summary: { tag: "SUMMARY", isRequired: false },
   },
 };
 

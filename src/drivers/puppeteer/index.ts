@@ -89,7 +89,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
                 "Options can specify `headless`, `slowMo`, `args`, etc.",
                 "Useful for running tests in a headless browser environment.",
                 'Prefer passing `headless: "new"` to `puppeteer.launch() unless mentioned that ' +
-                  'it is required not to (e.g. launching with GUI was mentioned).',
+                  "it is required not to (e.g. launching with GUI was mentioned).",
               ],
             },
             {
@@ -99,6 +99,15 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               guidelines: [
                 "Allows to close the browser after finishing a test flow.",
                 "Useful for cleaning up resources and freeing memory.",
+              ],
+            },
+            {
+              signature: "await getCurrentPage().setUserAgent(userAgent)",
+              description: "Overrides the default user agent string.",
+              example: 'await getCurrentPage().setUserAgent("UA-TEST");',
+              guidelines: [
+                "Affects the value of `navigator.userAgent`.",
+                "Useful for simulating different browsers or bots.",
               ],
             },
           ],
@@ -186,6 +195,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               example:
                 'await getCurrentPage().waitForFunction(() => document.querySelector("#status").innerText === "Loaded");',
               guidelines: [
+                "Useful as an alternative for using click, type, etc. to wait for a condition. Preferred practice.",
                 "Useful for waiting on dynamic content or conditions.",
                 "Avoid tight polling intervals to prevent excessive CPU usage.",
               ],
@@ -211,6 +221,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
                 "Simulates a mouse click on the element matched by the selector.",
               example: 'await getCurrentPage().click("#submit-button");',
               guidelines: [
+                "Prefer evaluated click instead of click when possible.",
                 "Waits for the element to be visible and enabled.",
                 "Throws an error if the element is not found or not interactable.",
                 "Avoid clicking on elements that change page state without proper synchronization.",
@@ -223,6 +234,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
                 "Types text into an element matched by the selector.",
               example: 'await getCurrentPage().type("#username", "myUser123");',
               guidelines: [
+                "Prefer evaluated type instead of type when possible.",
                 "Suitable for input and textarea elements.",
                 "Simulates individual key presses with optional delay.",
                 "Ensure the element is focusable before typing.",
@@ -233,6 +245,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               description: "Focuses on the element matched by the selector.",
               example: 'await getCurrentPage().focus("#search-input");',
               guidelines: [
+                "Prefer evaluated focus instead of focus when possible.",
                 "Useful before performing keyboard actions.",
                 "Waits for the element to be interactable.",
               ],
@@ -243,6 +256,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               example:
                 'await getCurrentPage().select("#country-select", "US");',
               guidelines: [
+                "Prefer evaluated select instead of select when possible.",
                 "Supports selecting multiple options if the `<select>` element allows it.",
                 "Values correspond to the `value` attribute of `<option>` elements.",
               ],
@@ -252,6 +266,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               description: "Simulates hovering the mouse over the element.",
               example: 'await getCurrentPage().hover(".dropdown-trigger");',
               guidelines: [
+                "Prefer evaluated hover instead of select when possible.",
                 "Triggers hover effects such as tooltips or menus.",
                 "Ensure the element is visible and within the viewport.",
               ],
@@ -411,11 +426,23 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               signature:
                 "await getCurrentPage().evaluate(pageFunction[, ...args])",
               description: "Executes a function in the page context.",
-              example:
-                "const dimensions = await getCurrentPage().evaluate(() => { return { width: document.documentElement.clientWidth, height: document.documentElement.clientHeight }; });",
+              example: `
+                # Example 1: Get the title of the page
+                const title = await getCurrentPage().evaluate(() => document.title);
+                
+                # Example 2: Get the text content of an element
+                const text = await getCurrentPage().evaluate(el => el.textContent, document.querySelector(".message"));
+                
+                # Example 3: Click on an element
+                await getCurrentPage().evaluate(() => document.querySelector("#submit").click());
+                
+                # Example 4: Type text into an input field
+                await getCurrentPage().evaluate((el, text) => el.value = text, document.querySelector("#username"), "john_doe");
+                `,
               guidelines: [
                 "Allows access to the DOM and JavaScript environment of the page.",
                 "Avoid exposing sensitive data or functions.",
+                "It's recommended to use RegExp to match the text content of an element (with partial substring) and not the exact text.",
               ],
             },
             {
