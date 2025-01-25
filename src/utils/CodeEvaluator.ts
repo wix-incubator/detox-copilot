@@ -9,7 +9,7 @@ export class CodeEvaluator {
     sharedContext: Record<string, any> = {},
   ): Promise<CodeEvaluationResult> {
     const loggerSpinner = logger.startSpinner({
-      message: `Copilot evaluating code: \n\`\`\`\n${code}\n\`\`\``,
+      message: `Copilot evaluating code: \n\`\`\`\n${code}\n\`\`\`\n`,
       isBold: false,
       color: "gray",
     });
