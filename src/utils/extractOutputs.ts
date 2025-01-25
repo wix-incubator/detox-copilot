@@ -18,7 +18,7 @@ export const OUTPUTS_MAPPINGS: Record<string, OutputsMapping> = {
     a11y: { tag: "ACCESSIBILITY", isRequired: false },
   },
   PILOT_SUMMARY: {
-    summary: { tag: "SUMMARY", isRequired: false },
+    summary: { tag: "SUMMARY", isRequired: true },
   },
 };
 
