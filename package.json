@@ -47,7 +47,9 @@
     "prettier": "^3.2.5",
     "ts-jest": "^29.2.4",
     "tsc-alias": "^1.8.10",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "puppeteer": "^20.8.0",
+    "axios": "^1.7.9"
   },
   "dependencies": {
     "blockhash-core": "^0.1.0",

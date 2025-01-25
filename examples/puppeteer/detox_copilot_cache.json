@@ -1,0 +1,83 @@
+{
+  "{\"step\":\"Enter \\\"https://www.n12.co.il/\\\" in the browser's address bar and press Enter\",\"previous\":[]}": [
+    {
+      "code": "await page.goto('https://www.n12.co.il/', { waitUntil: 'networkidle0' });",
+      "viewHierarchy": "086707e4369f60afedcafb16050a7618",
+      "snapshotHash": {
+        "BlockHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    }
+  ],
+  "{\"step\":\"Navigate to URL \\\"https://www.n12.co.il/\\\" in the web browser\",\"previous\":[]}": [
+    {
+      "code": "await page.goto('https://www.n12.co.il/', { waitUntil: 'networkidle0' });",
+      "viewHierarchy": "086707e4369f60afedcafb16050a7618",
+      "snapshotHash": {
+        "BlockHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    }
+  ],
+  "{\"step\":\"Navigate to https://www.n12.co.il/ by entering the URL in the browser's address bar\",\"previous\":[]}": [
+    {
+      "code": "await page.goto('https://www.n12.co.il/', { waitUntil: 'networkidle0' });",
+      "viewHierarchy": "086707e4369f60afedcafb16050a7618",
+      "snapshotHash": {
+        "BlockHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    }
+  ],
+  "{\"step\":\"Navigate to URL \\\"https://www.n12.co.il/\\\" in the browser's address bar\",\"previous\":[]}": [
+    {
+      "code": "await page.goto('https://www.n12.co.il/', { waitUntil: 'networkidle0' });",
+      "viewHierarchy": "086707e4369f60afedcafb16050a7618",
+      "snapshotHash": {
+        "BlockHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    }
+  ],
+  "{\"step\":\"Navigate to https://www.wix.com/ by entering the URL in the browser's address bar\",\"previous\":[]}": [
+    {
+      "code": "await page.goto('https://www.wix.com/', { waitUntil: 'networkidle0' });",
+      "viewHierarchy": "086707e4369f60afedcafb16050a7618",
+      "snapshotHash": {
+        "BlockHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    }
+  ],
+  "{\"step\":\"Click the \\\"Get Started\\\" button in the main banner with text \\\"Bring your vision to life with the website builder that gives you the tools you need to succeed.\\\"\",\"previous\":[{\"step\":\"Navigate to https://www.wix.com/ by entering the URL in the browser's address bar\",\"code\":\"await page.goto('https://www.wix.com/', { waitUntil: 'networkidle0' });\"}]}": [
+    {
+      "code": "// Wait for the banner text to ensure we're on the right section\nawait page.waitForSelector('text=\"Bring your vision to life with the website builder that gives you the tools you need to succeed.\"');\n\n// Click the Get Started button\nawait page.click('button:has-text(\"Get Started\")');",
+      "viewHierarchy": "4c0a63802a50cb1fc293147659b8eafb",
+      "snapshotHash": {
+        "BlockHash": "0930fffcdfe09c00f08d180f100f1fff1c319c30de71c7f10000ffffc079fffd"
+      }
+    }
+  ],
+  "{\"step\":\"Click the \\\"Get Started\\\" button in the main banner with text \\\"Bring your vision to life with the website builder that gives you the tools you need to succeed.\\\"\",\"previous\":[{\"step\":\"Navigate to https://www.wix.com/ by entering the URL in the browser's address bar\",\"code\":\"await page.goto('https://www.wix.com/', { waitUntil: 'networkidle0' });\"},{\"step\":\"Click the \\\"Get Started\\\" button in the main banner with text \\\"Bring your vision to life with the website builder that gives you the tools you need to succeed.\\\"\",\"code\":\"// Wait for the banner text to ensure we're on the right section\\nawait page.waitForSelector('text=\\\"Bring your vision to life with the website builder that gives you the tools you need to succeed.\\\"');\\n\\n// Click the Get Started button\\nawait page.click('button:has-text(\\\"Get Started\\\")');\",\"result\":\"Caught an error while evaluating \\\"Click the \\\"Get Started\\\" button in the main banner with text \\\"Bring your vision to life with the website builder that gives you the tools you need to succeed.\\\"\\\", tried with generated code: \\\"// Wait for the banner text to ensure we're on the right section\\nawait page.waitForSelector('text=\\\"Bring your vision to life with the website builder that gives you the tools you need to succeed.\\\"');\\n\\n// Click the Get Started button\\nawait page.click('button:has-text(\\\"Get Started\\\")');\\\". Validate the code against the APIs and hierarchy and continue with a different approach. If can't, return a code that throws a descriptive error.\"}]}": [
+    {
+      "code": "// Wait for the banner text to be visible\nawait page.waitForSelector('text/Bring your vision to life with the website builder that gives you the tools you need to succeed./');\n\n// Click the Get Started button that's a sibling of the banner text\nawait page.click('button.do3Ukt');\n\n// Note: Using the specific class 'do3Ukt' as it uniquely identifies the Get Started button in the banner",
+      "viewHierarchy": "4c0a63802a50cb1fc293147659b8eafb",
+      "snapshotHash": {
+        "BlockHash": "0930fffcdfe09c00f08d180f100f1fff1c319c30de71c7f10000ffffc079fffd"
+      }
+    }
+  ],
+  "{\"step\":\"Click the \\\"Get Started\\\" button located in the center of the page\",\"previous\":[{\"step\":\"Navigate to https://www.wix.com/ by entering the URL in the browser's address bar\",\"code\":\"await page.goto('https://www.wix.com/', { waitUntil: 'networkidle0' });\"}]}": [
+    {
+      "code": "await page.click('[data-text=\"Get Started\"]');",
+      "viewHierarchy": "4c0a63802a50cb1fc293147659b8eafb",
+      "snapshotHash": {
+        "BlockHash": "0130fffcdff09c00f08d180f100f1fff1e719c30de70c7f00000ffffc079fffd"
+      }
+    }
+  ],
+  "{\"step\":\"Click the \\\"Get Started\\\" button located in the center of the page\",\"previous\":[{\"step\":\"Navigate to https://www.wix.com/ by entering the URL in the browser's address bar\",\"code\":\"await page.goto('https://www.wix.com/', { waitUntil: 'networkidle0' });\"},{\"step\":\"Click the \\\"Get Started\\\" button located in the center of the page\",\"code\":\"await page.click('[data-text=\\\"Get Started\\\"]');\",\"result\":\"Caught an error while evaluating \\\"Click the \\\"Get Started\\\" button located in the center of the page\\\", tried with generated code: \\\"await page.click('[data-text=\\\"Get Started\\\"]');\\\". Validate the code against the APIs and hierarchy and continue with a different approach. If can't, return a code that throws a descriptive error.\"}]}": [
+    {
+      "code": "await page.click('a.B6f7ik[data-testid=\"button\"]');",
+      "viewHierarchy": "4c0a63802a50cb1fc293147659b8eafb",
+      "snapshotHash": {
+        "BlockHash": "0130fffcdff09c00f08d180f100f1fff1e719c30de70c7f00000ffffc079fffd"
+      }
+    }
+  ]
+}
