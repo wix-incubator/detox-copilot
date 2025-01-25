@@ -58,13 +58,36 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
     return {
       name: "Puppeteer",
       description:
-        "Puppeteer is a Node library which provides a high-level API to control Chrome or Chromium over the DevTools Protocol.",
+        "Puppeteer is a Node library which provides a high-level API to control Chrome or Chromium over the DevTools Protocol.\nYou can assume that puppeteer is already imported (as `puppeteer`).",
       context: {
         getCurrentPage: this.getCurrentPage,
         setCurrentPage: this.setCurrentPage,
         puppeteer,
       },
       categories: [
+        {
+          title: "Browser",
+            items: [
+                {
+                signature: "const browser = await puppeteer.launch([options])",
+                description: "Launches a new browser instance.",
+                example: "const browser = await puppeteer.launch();",
+                guidelines: [
+                    "Options can specify `headless`, `slowMo`, `args`, etc.",
+                    "Useful for running tests in a headless browser environment."
+                ],
+                },
+                {
+                signature: "await browser.close()",
+                description: "Closes the browser instance.",
+                example: "await browser.close();",
+                guidelines: [
+                    "Always close the browser after finishing the tests.",
+                    "Useful for cleaning up resources and freeing memory.",
+                ],
+                },
+            ],
+        },
         {
           title: "Current page management",
           items: [

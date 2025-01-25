@@ -25,12 +25,12 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "test": "jest",
+    "test:examples:puppeteer": "cd examples/puppeteer && jest",
     "bump-version": "npm version patch && git push && git push --tags",
     "release": "npm run test && npm run bump-version && npm run build && npm publish",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "type-check": "tsc --noEmit",
-    "test:puppeteer": "cd examples/puppeteer && jest"
+    "type-check": "tsc --noEmit"
   },
   "bugs": {
     "url": "https://github.com/wix-incubator/detox-copilot/issues"
