@@ -8,12 +8,6 @@ export class CodeEvaluator {
     context: any,
     sharedContext: Record<string, any> = {},
   ): Promise<CodeEvaluationResult> {
-    const loggerSpinner = logger.startSpinner({
-      message: `Copilot evaluating code: \n\`\`\`\n${code}\n\`\`\`\n`,
-      isBold: false,
-      color: "gray",
-    });
-
     const asyncFunction = this.createAsyncFunction(
       code,
       context,
@@ -22,12 +16,11 @@ export class CodeEvaluator {
 
     try {
       const result = await asyncFunction();
-      loggerSpinner.stop("success", `Copilot evaluated the code successfully`);
 
       return { code, result, sharedContext };
     } catch (error) {
-      loggerSpinner.stop("failure", {
-        message: `Copilot failed to evaluate the code: \n\`\`\`\n${code}\n\`\`\``,
+      logger.error({
+        message: `\nCopilot failed to evaluate the code: \n\`\`\`\n${code}\n\`\`\``,
         isBold: false,
         color: "gray",
       });

@@ -1,19 +1,24 @@
-export type OutputsMapping = Record<string, string>;
+export type Output = {
+  tag: string;
+  isRequired: boolean;
+};
+
+export type OutputsMapping = Record<string, Output>;
 
 export const OUTPUTS_MAPPINGS: Record<string, OutputsMapping> = {
   PILOT_REVIEW_SECTION: {
-    summary: "SUMMARY",
-    findings: "FINDINGS",
-    score: "SCORE",
+    summary: { tag: "SUMMARY", isRequired: false },
+    findings: { tag: "FINDINGS", isRequired: false },
+    score: { tag: "SCORE", isRequired: false },
   },
   PILOT_STEP: {
-    thoughts: "THOUGHTS",
-    action: "ACTION",
-    ux: "UX",
-    a11y: "ACCESSIBILITY",
+    thoughts: { tag: "THOUGHTS", isRequired: true },
+    action: { tag: "ACTION", isRequired: true },
+    ux: { tag: "UX", isRequired: false },
+    a11y: { tag: "ACCESSIBILITY", isRequired: false },
   },
   PILOT_SUMMARY: {
-    summary: "SUMMARY",
+    summary: { tag: "SUMMARY", isRequired: true },
   },
 };
 
@@ -27,13 +32,15 @@ export function extractOutputs<M extends OutputsMapping>({
   const outputs: Partial<{ [K in keyof M]: string }> = {};
 
   for (const fieldName in outputsMapper) {
-    const tag = outputsMapper[fieldName];
+    const tag = outputsMapper[fieldName].tag;
     const regex = new RegExp(`<${tag}>(.*?)</${tag}>`, "s");
     const match = text.match(regex);
     if (match) {
       outputs[fieldName] = match[1].trim();
+    } else if (!outputsMapper[fieldName].isRequired) {
+      outputs[fieldName] = "N/A";
     } else {
-      throw new Error(`Missing field for tag <${tag}>`);
+      throw new Error(`Missing field for required tag <${tag}>`);
     }
   }
 

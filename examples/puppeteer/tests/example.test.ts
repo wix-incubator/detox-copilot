@@ -32,9 +32,9 @@ describe("Example Test Suite", () => {
 
   it("perform test with pilot", async () => {
     await copilot.pilot(
-      "Enter https://example.com/, press on more information, " +
-        "expect to be redirected to IANA site, summarize the findings. " +
-        "Open in non-headless mode.",
+      "On `https://github.com/wix-incubator/detox-copilot`, " +
+        "open the Commits page and summarize the latest commits. " +
+        "Open the browser with GUI.",
     );
   });
 });
