@@ -143,7 +143,7 @@ export class PilotPerformer {
 
     logger.info(
       {
-        message: `🛫 Pilot is trying to reach goal:`,
+        message: `🛫 Pilot is about to reach goal:\n`,
         isBold: false,
         color: "cyan",
       },

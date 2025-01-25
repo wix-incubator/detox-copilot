@@ -32,7 +32,9 @@ describe("Example Test Suite", () => {
 
   it("perform test with pilot", async () => {
     await copilot.pilot(
-      "open https://example.com/ and press on more information, expect to be redirected to IANA website",
+      "Enter https://example.com/, press on more information, " +
+        "expect to be redirected to IANA site, summarize the findings. " +
+        "Open in non-headless mode.",
     );
   });
 });
