@@ -12,7 +12,9 @@
     "types": ["jest", "node"],
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@copilot": ["src/index"],
+      "@copilot/*": ["src/*"]
     },
     "resolveJsonModule": true
   },
