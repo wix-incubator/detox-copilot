@@ -22,5 +22,80 @@
       "code": "const browser = await puppeteer.launch({ headless: false });\nconst page = await browser.newPage();\nawait page.goto('https://example.com');\nsetCurrentPage(page);",
       "viewHierarchy": "3fec3b8808ef6d176aca23d3ad4e312a"
     }
+  ],
+  "{\"step\":\"Navigate to https://example.com in the web browser\",\"previous\":[]}": [
+    {
+      "code": "const browser = await puppeteer.launch();\nconst page = await browser.newPage();\nawait page.goto('https://example.com');\nsetCurrentPage(page);",
+      "viewHierarchy": "3fec3b8808ef6d176aca23d3ad4e312a"
+    }
+  ],
+  "{\"step\":\"Navigate to https://example.com in the web browser\",\"previous\":[{\"step\":\"Navigate to https://example.com in the web browser\",\"code\":\"const browser = await puppeteer.launch();\\nconst page = await browser.newPage();\\nawait page.goto('https://example.com');\\nsetCurrentPage(page);\",\"result\":\"Caught an error while evaluating \\\"Navigate to https://example.com in the web browser\\\", tried with generated code: \\\"const browser = await puppeteer.launch();\\nconst page = await browser.newPage();\\nawait page.goto('https://example.com');\\nsetCurrentPage(page);\\\". Validate the code against the APIs and hierarchy and continue with a different approach. If can't, return a code that throws a descriptive error.\"}]}": [
+    {
+      "code": "const browser = await puppeteer.launch();\nconst page = await browser.newPage();\nawait page.goto('https://example.com');\nsetCurrentPage(page);",
+      "viewHierarchy": "3fec3b8808ef6d176aca23d3ad4e312a"
+    }
+  ],
+  "{\"step\":\"Open URL \\\"https://example.com\\\" in the browser\",\"previous\":[]}": [
+    {
+      "code": "const browser = await puppeteer.launch();\nconst page = await browser.newPage();\nawait page.goto('https://example.com', { waitUntil: 'networkidle0' });\nsetCurrentPage(page);",
+      "viewHierarchy": "3fec3b8808ef6d176aca23d3ad4e312a"
+    }
+  ],
+  "{\"step\":\"Click on the link with text \\\"More information...\\\" that leads to https://www.iana.org/domains/example\",\"previous\":[{\"step\":\"Open URL \\\"https://example.com\\\" in the browser\",\"code\":\"const browser = await puppeteer.launch();\\nconst page = await browser.newPage();\\nawait page.goto('https://example.com', { waitUntil: 'networkidle0' });\\nsetCurrentPage(page);\"}]}": [
+    {
+      "code": "await page.click('a[href=\"https://www.iana.org/domains/example\"]');",
+      "viewHierarchy": "eb277cdd0593c51d9dc2b5631b5beb3f",
+      "snapshotHash": {
+        "BlockHash": "ffffffffffffc1ff41fc400447fc7ffcffffffffffffffffffffffffffffffff"
+      }
+    }
+  ],
+  "{\"step\":\"Click on the link with text \\\"More information...\\\" that leads to https://www.iana.org/domains/example\",\"previous\":[{\"step\":\"Open URL \\\"https://example.com\\\" in the browser\",\"code\":\"const browser = await puppeteer.launch();\\nconst page = await browser.newPage();\\nawait page.goto('https://example.com', { waitUntil: 'networkidle0' });\\nsetCurrentPage(page);\"},{\"step\":\"Click on the link with text \\\"More information...\\\" that leads to https://www.iana.org/domains/example\",\"code\":\"await page.click('a[href=\\\"https://www.iana.org/domains/example\\\"]');\",\"result\":\"Caught an error while evaluating \\\"Click on the link with text \\\"More information...\\\" that leads to https://www.iana.org/domains/example\\\", tried with generated code: \\\"await page.click('a[href=\\\"https://www.iana.org/domains/example\\\"]');\\\". Validate the code against the APIs and hierarchy and continue with a different approach. If can't, return a code that throws a descriptive error.\"}]}": [
+    {
+      "code": "await page.waitForSelector('a:has-text(\"More information...\")');\nawait page.click('a:has-text(\"More information...\")');",
+      "viewHierarchy": "eb277cdd0593c51d9dc2b5631b5beb3f",
+      "snapshotHash": {
+        "BlockHash": "ffffffffffffc1ff41fc400447fc7ffcffffffffffffffffffffffffffffffff"
+      }
+    }
+  ],
+  "{\"step\":\"Open a web browser and navigate to https://example.com/\",\"previous\":[]}": [
+    {
+      "code": "const browser = await puppeteer.launch();\nconst page = await browser.newPage();\nsetCurrentPage(page);\nawait getCurrentPage().goto('https://example.com/');",
+      "viewHierarchy": "3fec3b8808ef6d176aca23d3ad4e312a"
+    }
+  ],
+  "{\"step\":\"Click on the \\\"More information...\\\" link\",\"previous\":[{\"step\":\"Open a web browser and navigate to https://example.com/\",\"code\":\"const browser = await puppeteer.launch();\\nconst page = await browser.newPage();\\nsetCurrentPage(page);\\nawait getCurrentPage().goto('https://example.com/');\"}]}": [
+    {
+      "code": "await getCurrentPage().click('a[href=\"https://www.iana.org/domains/example\"]');",
+      "viewHierarchy": "eb277cdd0593c51d9dc2b5631b5beb3f",
+      "snapshotHash": {
+        "BlockHash": "ffffffffffffc1ff41fc400447fc7ffcffffffffffffffffffffffffffffffff"
+      }
+    }
+  ],
+  "{\"step\":\"Navigate to https://example.com by entering the URL in the browser's address bar\",\"previous\":[{\"step\":\"Open a web browser and navigate to https://example.com/\",\"code\":\"const browser = await puppeteer.launch();\\nconst page = await browser.newPage();\\nsetCurrentPage(page);\\nawait getCurrentPage().goto('https://example.com/');\"},{\"step\":\"Click on the \\\"More information...\\\" link\",\"code\":\"await getCurrentPage().click('a[href=\\\"https://www.iana.org/domains/example\\\"]');\"}]}": [
+    {
+      "code": "const browser = await puppeteer.launch();\nconst page = await browser.newPage();\nsetCurrentPage(page);\nawait getCurrentPage().goto('https://example.com');",
+      "viewHierarchy": "ff05b0bedfdc34c1e1291e499aaec9f4",
+      "snapshotHash": {
+        "BlockHash": "1fff07ffffffffffffffffffffffffffffffffff7fffffffffffffffffffffff"
+      }
+    }
+  ],
+  "{\"step\":\"Open URL \\\"https://example.com/\\\" in the web browser\",\"previous\":[]}": [
+    {
+      "code": "const browser = await puppeteer.launch();\nconst page = await browser.newPage();\nsetCurrentPage(page);\nawait getCurrentPage().goto('https://example.com/', { waitUntil: 'networkidle0' });",
+      "viewHierarchy": "3fec3b8808ef6d176aca23d3ad4e312a"
+    }
+  ],
+  "{\"step\":\"Click on the link with text \\\"More information...\\\" that leads to \\\"https://www.iana.org/domains/example\\\"\",\"previous\":[{\"step\":\"Open URL \\\"https://example.com/\\\" in the web browser\",\"code\":\"const browser = await puppeteer.launch();\\nconst page = await browser.newPage();\\nsetCurrentPage(page);\\nawait getCurrentPage().goto('https://example.com/', { waitUntil: 'networkidle0' });\"}]}": [
+    {
+      "code": "await getCurrentPage().click('a[href=\"https://www.iana.org/domains/example\"]');",
+      "viewHierarchy": "eb277cdd0593c51d9dc2b5631b5beb3f",
+      "snapshotHash": {
+        "BlockHash": "ffffffffffffc1ff41fc400447fc7ffcffffffffffffffffffffffffffffffff"
+      }
+    }
   ]
 }

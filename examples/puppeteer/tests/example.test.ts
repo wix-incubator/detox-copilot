@@ -1,6 +1,6 @@
-import copilot from "@/index";
+import copilot from "@copilot";
 import { PromptHandler } from "../../utils/promptHandler";
-import { PuppeteerFrameworkDriver } from "@/drivers/puppeteer";
+import { PuppeteerFrameworkDriver } from "@copilot/drivers/puppeteer";
 
 describe("Example Test Suite", () => {
   jest.setTimeout(300000);
@@ -9,12 +9,17 @@ describe("Example Test Suite", () => {
 
   beforeAll(async () => {
     const promptHandler: PromptHandler = new PromptHandler();
+
     frameworkDriver = new PuppeteerFrameworkDriver();
 
     copilot.init({
       frameworkDriver,
       promptHandler,
     });
+  });
+
+  afterAll(async () => {
+    frameworkDriver.getCurrentPage()?.browser().close();
   });
 
   beforeEach(async () => {
@@ -25,15 +30,9 @@ describe("Example Test Suite", () => {
     copilot.end();
   });
 
-  afterAll(async () => {
-    if (frameworkDriver.getCurrentBrowser()) {
-      await frameworkDriver.getCurrentBrowser()?.close();
-    }
-  });
-
   it("perform test with pilot", async () => {
     await copilot.pilot(
-      "open https://example.com/ and press on more information, make sure you no longer see the example.com domain",
+      "open https://example.com/ and press on more information, expect to be redirected to IANA website",
     );
   });
 });
