@@ -1,21 +1,21 @@
 import { TestingFrameworkAPICatalog, TestingFrameworkDriver } from "@/types";
-import puppeteer, { Page } from "puppeteer";
+import * as puppeteer from "puppeteer";
 import path from "path";
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
-  private currentPage?: Page;
+  private currentPage?: puppeteer.Page;
 
   /**
    * Gets the current page identifier
    */
-  getCurrentPage(): Page | undefined {
+  getCurrentPage(): puppeteer.Page | undefined {
     return this.currentPage;
   }
 
   /**
    * Sets the current page identifier, must be set if the driver needs to interact with a specific page
    */
-  setCurrentPage(page: Page): void {
+  setCurrentPage(page: puppeteer.Page): void {
     this.currentPage = page;
   }
 
