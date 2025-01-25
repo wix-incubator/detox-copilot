@@ -6,4 +6,9 @@ module.exports = {
     moduleFileExtensions: ['ts', 'js', 'json', 'node'],
     moduleDirectories: ['node_modules', '<rootDir>/node_modules'],
     transformIgnorePatterns: ['node_modules/(?!examples)'],
+    moduleNameMapper: {
+        '^@copilot$': '<rootDir>/../../src',
+        '^@copilot/(.*)$': '<rootDir>/../../src/$1',
+        '^@/(.*)$': '<rootDir>/../../src/$1'
+    }
 };
