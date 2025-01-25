@@ -1,14 +1,13 @@
 {
     "extends": "../tsconfig.json",
     "compilerOptions": {
-      "rootDir": "../",
+      "rootDir": "../../",
       "strict": true,
       "paths": {
-      "@copilot/*": ["../src/*"],
-      "@copilot": ["../src/index"],
-    }
+        "@copilot/*": ["../src/*"],
+        "@copilot": ["../src/index"],
+      }
     },
-    "include": ["**/*"],
+    "include": ["**/*", "../src/**/*"],
     "exclude": ["node_modules"]
 }
-  
