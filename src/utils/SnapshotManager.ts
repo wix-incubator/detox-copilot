@@ -88,6 +88,6 @@ export class SnapshotManager {
       pollInterval,
       timeout,
     );
-    return result || "";
+    return result ?? "";
   }
 }

@@ -8,18 +8,21 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "rootDir": "./src",
+    "rootDir": "./",
     "types": ["jest", "node"],
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": ["src/*"],
+      "@copilot": ["src/index"],
+      "@copilot/*": ["src/*"]
+    },
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "examples/**/*"],
   "exclude": [
     "node_modules",
-    "test-utils",
-    "**/*.test.ts",
+    "dist",
+    "./test-utils",
     "**/*.test.ts.snap"
-  ],
+  ]
 }
