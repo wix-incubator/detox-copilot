@@ -29,8 +29,7 @@
     "release": "npm run test && npm run bump-version && npm run build && npm publish",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "type-check": "tsc --noEmit",
-    "prepare": "husky"
+    "type-check": "tsc --noEmit"
   },
   "bugs": {
     "url": "https://github.com/wix-incubator/detox-copilot/issues"
