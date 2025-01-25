@@ -3,13 +3,13 @@ import { TestingFrameworkAPICatalog, TestingFrameworkDriver } from "@/types";
 export class TestingFrameworkDriverImpl implements TestingFrameworkDriver {
   private currentPage?: string;
 
-  // todo: we'll need to add puppeteer as dev dependency (for types) and as a peer dependency (for the actual package).
+  // todo: we'll need to add puppeteer as dev dependency (for types) (for the actual package).
   constructor(private readonly puppeteer: any) {}
 
   /**
    * Creates a new driver instance
    */
-  // todo: we'll need to add puppeteer as dev dependency (for types) and as a peer dependency (for the actual package).
+  // todo: we'll need to add puppeteer as dev dependency (for types) (for the actual package).
   static create(puppeteer: any): TestingFrameworkDriverImpl {
     return new TestingFrameworkDriverImpl(puppeteer);
   }
@@ -52,7 +52,7 @@ export class TestingFrameworkDriverImpl implements TestingFrameworkDriver {
     }
     // todo: we'll need to add puppeteer as dev dependency (for types) and as a peer dependency (for the actual package).
     // @ts-expect-error this is a puppeteer method
-    return await page.content();
+    return await this.currentPage.content();
   }
 
   /**
@@ -69,6 +69,21 @@ export class TestingFrameworkDriverImpl implements TestingFrameworkDriver {
         ...this.puppeteer,
       },
       categories: [
+        {
+          title: "Current page management",
+          items: [
+            {
+              signature: "const page = await getCurrentPage()",
+              description: "Gets the current page instance.",
+              example: "const page = await getCurrentPage();",
+            },
+            {
+              signature: "setCurrentPage(page)",
+              description: "Sets the current page instance.",
+              example: "setCurrentPage(page);",
+            },
+          ],
+        },
         {
           title: "Matchers",
           items: [
