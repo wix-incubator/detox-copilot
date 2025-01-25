@@ -82,11 +82,12 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
             {
               signature: "const browser = await puppeteer.launch([options])",
               description: "Launches a new browser instance.",
-              example: "const browser = await puppeteer.launch({`headless: \"new\"`});",
+              example:
+                'const browser = await puppeteer.launch({`headless: "new"`});',
               guidelines: [
                 "Options can specify `headless`, `slowMo`, `args`, etc.",
                 "Useful for running tests in a headless browser environment.",
-                "Prefer passing `headless: \"new\"` to `puppeteer.launch() unless mentioned that it is required not to.",
+                'Prefer passing `headless: "new"` to `puppeteer.launch() unless mentioned that it is required not to.',
               ],
             },
             {
@@ -123,7 +124,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
             {
               signature: "await getCurrentPage().$(selector)",
               description: "Finds the first element matching the selector.",
-              example: 'const element = await getCurrentPage().$("#login-button");',
+              example:
+                'const element = await getCurrentPage().$("#login-button");',
               guidelines: [
                 "Returns an ElementHandle if the element is found, otherwise `null`.",
                 "Use CSS selectors to locate elements.",
@@ -133,7 +135,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
             {
               signature: "await getCurrentPage().$$(selector)",
               description: "Finds all elements matching the selector.",
-              example: 'const elements = await getCurrentPage().$$(".list-item");',
+              example:
+                'const elements = await getCurrentPage().$$(".list-item");',
               guidelines: [
                 "Returns an array of ElementHandles.",
                 "Use this when you need to interact with multiple elements.",
@@ -150,7 +153,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               ],
             },
             {
-              signature: "await getCurrentPage().waitForSelector(selector[, options])",
+              signature:
+                "await getCurrentPage().waitForSelector(selector[, options])",
               description:
                 "Waits for an element matching the selector to appear in the DOM.",
               example:
@@ -161,10 +165,12 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               ],
             },
             {
-              signature: "await getCurrentPage().waitForXPath(xpath[, options])",
+              signature:
+                "await getCurrentPage().waitForXPath(xpath[, options])",
               description:
                 "Waits for an element matching the XPath expression to appear.",
-              example: "await getCurrentPage().waitForXPath(\"//div[@class='content']\");",
+              example:
+                "await getCurrentPage().waitForXPath(\"//div[@class='content']\");",
               guidelines: [
                 "Use when XPath is necessary to locate elements.",
                 "Similar to `waitForSelector` but using XPath expressions.",
@@ -209,7 +215,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               ],
             },
             {
-              signature: "await getCurrentPage().type(selector, text[, options])",
+              signature:
+                "await getCurrentPage().type(selector, text[, options])",
               description:
                 "Types text into an element matched by the selector.",
               example: 'await getCurrentPage().type("#username", "myUser123");',
@@ -231,7 +238,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
             {
               signature: "await getCurrentPage().select(selector, ...values)",
               description: "Selects options in a `<select>` element.",
-              example: 'await getCurrentPage().select("#country-select", "US");',
+              example:
+                'await getCurrentPage().select("#country-select", "US");',
               guidelines: [
                 "Supports selecting multiple options if the `<select>` element allows it.",
                 "Values correspond to the `value` attribute of `<option>` elements.",
@@ -247,7 +255,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               ],
             },
             {
-              signature: "await getCurrentPage().keyboard.press(key[, options])",
+              signature:
+                "await getCurrentPage().keyboard.press(key[, options])",
               description: "Presses a key on the keyboard.",
               example: 'await getCurrentPage().keyboard.press("Enter");',
               guidelines: [
@@ -275,7 +284,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               ],
             },
             {
-              signature: "await getCurrentPage().uploadFile(selector, ...filePaths)",
+              signature:
+                "await getCurrentPage().uploadFile(selector, ...filePaths)",
               description: 'Uploads files to an `<input type="file">` element.',
               example:
                 'await getCurrentPage().uploadFile("#file-input", "/path/to/file.png");',
@@ -293,7 +303,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               signature: "await expect(value).toBe(expected)",
               description:
                 "Asserts that a value is equal to an expected value.",
-              example: 'expect(await getCurrentPage().title()).toBe("Expected Title");',
+              example:
+                'expect(await getCurrentPage().title()).toBe("Expected Title");',
               guidelines: [
                 "Use within a testing framework like Jest or Mocha.",
                 "Ensure that the assertion is meaningful and directly related to the test case.",
@@ -374,7 +385,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               ],
             },
             {
-              signature: "const cookies = await getCurrentPage().cookies([...urls])",
+              signature:
+                "const cookies = await getCurrentPage().cookies([...urls])",
               description: "Retrieves cookies visible to the page.",
               example:
                 'const cookies = await getCurrentPage().cookies("https://www.example.com");',
@@ -394,7 +406,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               ],
             },
             {
-              signature: "await getCurrentPage().evaluate(pageFunction[, ...args])",
+              signature:
+                "await getCurrentPage().evaluate(pageFunction[, ...args])",
               description: "Executes a function in the page context.",
               example:
                 "const dimensions = await getCurrentPage().evaluate(() => { return { width: document.documentElement.clientWidth, height: document.documentElement.clientHeight }; });",
@@ -404,7 +417,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               ],
             },
             {
-              signature: "const response = await getCurrentPage().goto(url[, options])",
+              signature:
+                "const response = await getCurrentPage().goto(url[, options])",
               description:
                 "Navigates to a URL and returns the main resource response.",
               example:
@@ -415,9 +429,11 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               ],
             },
             {
-              signature: "await getCurrentPage().emulate(puppeteer.devices[deviceName])",
+              signature:
+                "await getCurrentPage().emulate(puppeteer.devices[deviceName])",
               description: "Emulates a device's user agent and viewport.",
-              example: 'await getCurrentPage().emulate(puppeteer.devices["iPhone X"]);',
+              example:
+                'await getCurrentPage().emulate(puppeteer.devices["iPhone X"]);',
               guidelines: [
                 "Simulates mobile devices, including touch events.",
                 "Useful for testing responsive design and mobile-specific behavior.",
@@ -426,7 +442,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
             {
               signature: "await getCurrentPage().setViewport(viewport)",
               description: "Sets the viewport size and device scale factor.",
-              example: "await getCurrentPage().setViewport({ width: 1280, height: 800 });",
+              example:
+                "await getCurrentPage().setViewport({ width: 1280, height: 800 });",
               guidelines: [
                 "Viewport emulates the visible area of the page.",
                 "Does not affect the window size in headful mode.",
@@ -435,7 +452,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
             {
               signature: "await getCurrentPage().setUserAgent(userAgent)",
               description: "Overrides the default user agent string.",
-              example: 'await getCurrentPage().setUserAgent("MyCustomUserAgent/1.0");',
+              example:
+                'await getCurrentPage().setUserAgent("MyCustomUserAgent/1.0");',
               guidelines: [
                 "Affects the value of `navigator.userAgent`.",
                 "Useful for simulating different browsers or bots.",
@@ -450,7 +468,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               signature: "await getCurrentPage().screenshot([options])",
               description:
                 "Captures a screenshot of the page or a portion of it.",
-              example: 'await getCurrentPage().screenshot({ path: "page_snapshot.png" });',
+              example:
+                'await getCurrentPage().screenshot({ path: "page_snapshot.png" });',
               guidelines: [
                 "Use this to capture the current state of the page visually.",
                 "Can specify `fullPage` to capture the entire scrollable area.",
@@ -459,7 +478,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
             {
               signature: "await getCurrentPage().content()",
               description: "Retrieves the current HTML content of the page.",
-              example: "const viewHierarchy = await getCurrentPage().content();",
+              example:
+                "const viewHierarchy = await getCurrentPage().content();",
               guidelines: [
                 "Use this to get the DOM structure as a string.",
                 "Helpful for debugging or verifying the page structure.",

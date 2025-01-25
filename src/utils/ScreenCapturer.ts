@@ -1,5 +1,5 @@
 import { SnapshotManager } from "@/utils/SnapshotManager";
-import {PromptHandler, ScreenCapturerResult} from "@/types";
+import { PromptHandler, ScreenCapturerResult } from "@/types";
 import logger from "@/utils/logger";
 
 export class ScreenCapturer {
@@ -14,14 +14,15 @@ export class ScreenCapturer {
     );
 
     const shouldCaptureSnapshot = this.promptHandler.isSnapshotImageSupported();
-    const result : ScreenCapturerResult = await Promise.all([
+    const result: ScreenCapturerResult = await Promise.all([
       shouldCaptureSnapshot
-        ? this.snapshotManager.captureSnapshotImage() : Promise.resolve(undefined),
-      this.snapshotManager.captureViewHierarchyString()
+        ? this.snapshotManager.captureSnapshotImage()
+        : Promise.resolve(undefined),
+      this.snapshotManager.captureViewHierarchyString(),
     ]).then(([snapshot, viewHierarchy]) => ({
       snapshot,
       viewHierarchy: viewHierarchy!,
-      isSnapshotImageAttached: snapshot != null && shouldCaptureSnapshot
+      isSnapshotImageAttached: snapshot != null && shouldCaptureSnapshot,
     }));
 
     loggerSpinner.stop(
