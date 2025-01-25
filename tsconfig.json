@@ -8,18 +8,19 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "rootDir": "./src",
+    "rootDir": "./",
     "types": ["jest", "node"],
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"],
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src"],
   "exclude": [
     "node_modules",
     "test-utils",
     "**/*.test.ts",
-    "**/*.test.ts.snap"
+    "**/*.test.ts.snap",
+    "examples"
   ]
 }

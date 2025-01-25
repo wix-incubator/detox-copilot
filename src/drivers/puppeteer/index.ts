@@ -1,9 +1,13 @@
-import { TestingFrameworkAPICatalog, TestingFrameworkDriver } from "@/types";
+import {
+  TestingFrameworkAPICatalog,
+  TestingFrameworkDriver,
+} from "@/types/framework";
 import * as puppeteer from "puppeteer";
 import path from "path";
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: puppeteer.Page;
+  private currentBrowser?: puppeteer.Browser;
 
   /**
    * Gets the current page identifier
@@ -17,6 +21,20 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
    */
   setCurrentPage(page: puppeteer.Page): void {
     this.currentPage = page;
+  }
+
+  /**
+   * Gets the current browser instance
+   */
+  getCurrentBrowser(): puppeteer.Browser | undefined {
+    return this.currentBrowser;
+  }
+
+  /**
+   * Sets the current browser instance
+   */
+  setCurrentBrowser(browser: puppeteer.Browser): void {
+    this.currentBrowser = browser;
   }
 
   /**
@@ -62,35 +80,32 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
       context: {
         getCurrentPage: this.getCurrentPage,
         setCurrentPage: this.setCurrentPage,
+        getCurrentBrowser: this.getCurrentBrowser,
+        setCurrentBrowser: this.setCurrentBrowser,
         puppeteer,
       },
       categories: [
         {
-          title: "Browser",
-            items: [
-                {
-                signature: "const browser = await puppeteer.launch([options])",
-                description: "Launches a new browser instance.",
-                example: "const browser = await puppeteer.launch();",
-                guidelines: [
-                    "Options can specify `headless`, `slowMo`, `args`, etc.",
-                    "Useful for running tests in a headless browser environment."
-                ],
-                },
-                {
-                signature: "await browser.close()",
-                description: "Closes the browser instance.",
-                example: "await browser.close();",
-                guidelines: [
-                    "Always close the browser after finishing the tests.",
-                    "Useful for cleaning up resources and freeing memory.",
-                ],
-                },
-            ],
-        },
-        {
-          title: "Current page management",
+          title: "Browser and Page management",
           items: [
+            {
+              signature: "const browser = await puppeteer.launch([options])",
+              description: "Launches a new browser instance.",
+              example: "const browser = await puppeteer.launch();",
+              guidelines: [
+                "Options can specify `headless`, `slowMo`, `args`, etc.",
+                "Useful for running tests in a headless browser environment.",
+              ],
+            },
+            {
+              signature: "await browser.close()",
+              description: "Closes the browser instance.",
+              example: "await browser.close();",
+              guidelines: [
+                "Always close the browser after finishing the tests.",
+                "Useful for cleaning up resources and freeing memory.",
+              ],
+            },
             {
               signature: "const page = await getCurrentPage()",
               description:
@@ -102,6 +117,36 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               description:
                 "Sets the current page instance for the driver to interact with (required if setting a new page).",
               example: "setCurrentPage(page);",
+            },
+            {
+              signature: "const page = await browser.newPage()",
+              description: "Creates a new page in the browser instance.",
+              example: "const page = await browser.newPage();",
+              guidelines: [
+                "Useful for isolating tests or performing multiple tasks.",
+                "Each page has its own execution context and DOM.",
+              ],
+            },
+            {
+              signature: "await page.close()",
+              description: "Closes the page instance.",
+              example: "await page.close();",
+              guidelines: [
+                "Always close the page after finishing the tests.",
+                "Useful for cleaning up resources and freeing memory.",
+              ],
+            },
+            {
+              signature: "setCurrentBrowser(browser)",
+              description:
+                "Sets the current browser instance for the driver to interact with (required if setting a new browser).",
+              example: "setCurrentBrowser(browser);",
+            },
+            {
+              signature: "const browser = await getCurrentBrowser()",
+              description:
+                "Gets the current browser instance. Can return `undefined` if no browser is set.",
+              example: "const browser = await getCurrentBrowser();",
             },
           ],
         },

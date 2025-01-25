@@ -1,14 +1,15 @@
-import copilot from "@copilot";
+import copilot from "@/index";
 import { PromptHandler } from "../../utils/promptHandler";
-import { PuppeteerFrameworkDriver } from "@copilot/drivers/puppeteer";
+import { PuppeteerFrameworkDriver } from "@/drivers/puppeteer";
 
 describe("Example Test Suite", () => {
   jest.setTimeout(300000);
 
+  let frameworkDriver: PuppeteerFrameworkDriver;
+
   beforeAll(async () => {
     const promptHandler: PromptHandler = new PromptHandler();
-
-    const frameworkDriver = new PuppeteerFrameworkDriver();
+    frameworkDriver = new PuppeteerFrameworkDriver();
 
     copilot.init({
       frameworkDriver,
@@ -22,6 +23,12 @@ describe("Example Test Suite", () => {
 
   afterEach(async () => {
     copilot.end();
+  });
+
+  afterAll(async () => {
+    if (frameworkDriver.getCurrentBrowser()) {
+      await frameworkDriver.getCurrentBrowser()?.close();
+    }
   });
 
   it("perform test with pilot", async () => {

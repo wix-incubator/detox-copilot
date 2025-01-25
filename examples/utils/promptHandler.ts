@@ -49,7 +49,8 @@ export class PromptHandler {
           },
         );
 
-        const generatedText: string | undefined = response.data.generatedTexts[0];
+        const generatedText: string | undefined =
+          response.data.generatedTexts[0];
         if (!generatedText) {
           throw new Error(
             `Failed to generate text, got response: ${JSON.stringify(response.data)}`,

@@ -10,5 +10,17 @@
       "code": "const puppeteer = require('puppeteer');\n\n(async () => {\n  const browser = await puppeteer.launch();\n  const page = await browser.newPage();\n  setCurrentPage(page);\n  await page.goto('https://example.com/', { waitUntil: 'networkidle0' });\n})();",
       "viewHierarchy": "3fec3b8808ef6d176aca23d3ad4e312a"
     }
+  ],
+  "{\"step\":\"Open a web browser and navigate to https://example.com\",\"previous\":[]}": [
+    {
+      "code": "const browser = await puppeteer.launch();\nconst page = await browser.newPage();\nawait page.goto('https://example.com', { waitUntil: 'networkidle0' });\nsetCurrentPage(page);",
+      "viewHierarchy": "3fec3b8808ef6d176aca23d3ad4e312a"
+    }
+  ],
+  "{\"step\":\"Open a web browser and navigate to https://example.com\",\"previous\":[{\"step\":\"Open a web browser and navigate to https://example.com\",\"code\":\"const browser = await puppeteer.launch();\\nconst page = await browser.newPage();\\nawait page.goto('https://example.com', { waitUntil: 'networkidle0' });\\nsetCurrentPage(page);\",\"result\":\"Caught an error while evaluating \\\"Open a web browser and navigate to https://example.com\\\", tried with generated code: \\\"const browser = await puppeteer.launch();\\nconst page = await browser.newPage();\\nawait page.goto('https://example.com', { waitUntil: 'networkidle0' });\\nsetCurrentPage(page);\\\". Validate the code against the APIs and hierarchy and continue with a different approach. If can't, return a code that throws a descriptive error.\"}]}": [
+    {
+      "code": "const browser = await puppeteer.launch({ headless: false });\nconst page = await browser.newPage();\nawait page.goto('https://example.com');\nsetCurrentPage(page);",
+      "viewHierarchy": "3fec3b8808ef6d176aca23d3ad4e312a"
+    }
   ]
 }
