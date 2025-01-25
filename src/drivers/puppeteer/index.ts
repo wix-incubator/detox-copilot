@@ -2,6 +2,7 @@ import { TestingFrameworkAPICatalog, TestingFrameworkDriver } from "@/types";
 import * as puppeteer from "puppeteer";
 import path from "path";
 import fs from "fs";
+import getCleanDOM from "./getCleanDOM";
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: puppeteer.Page;
@@ -59,7 +60,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
       );
     }
 
-    return await this.currentPage.content();
+    return await getCleanDOM(this.currentPage);
   }
 
   /**
