@@ -6,9 +6,4 @@ module.exports = {
     moduleFileExtensions: ['ts', 'js', 'json', 'node'],
     moduleDirectories: ['node_modules', '<rootDir>/node_modules'],
     transformIgnorePatterns: ['node_modules/(?!examples)'],
-    globals: {
-      'ts-jest': {
-        tsconfig: 'tsconfig.json',
-      },
-    },
-  };
+};

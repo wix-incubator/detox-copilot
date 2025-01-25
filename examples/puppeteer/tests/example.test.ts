@@ -26,7 +26,7 @@ describe("Example Test Suite", () => {
 
   it("perform test with pilot", async () => {
     await copilot.pilot(
-      "open https://example.com/ and press on more information",
+      "open https://example.com/ and press on more information, make sure you no longer see the example.com domain",
     );
   });
 });
