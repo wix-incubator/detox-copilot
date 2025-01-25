@@ -88,7 +88,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               guidelines: [
                 "Options can specify `headless`, `slowMo`, `args`, etc.",
                 "Useful for running tests in a headless browser environment.",
-                'Prefer passing `headless: "new"` to `puppeteer.launch() unless mentioned that it is required not to.',
+                'Prefer passing `headless: "new"` to `puppeteer.launch() unless mentioned that ' +
+                  'it is required not to (e.g. launching with GUI was mentioned).',
               ],
             },
             {

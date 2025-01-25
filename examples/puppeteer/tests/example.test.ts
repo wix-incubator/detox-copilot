@@ -32,7 +32,7 @@ describe("Example Test Suite", () => {
 
   it("perform test with pilot", async () => {
     await copilot.pilot(
-      "Enter https://freshuk.co.il/ and check the price of tomatoes, use non-headless mode",
+      "Search detox-copilot in https://github.com/wix-incubator and summarize the README.md file. Use non-headless mode.",
     );
   });
 });
