@@ -82,10 +82,11 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
             {
               signature: "const browser = await puppeteer.launch([options])",
               description: "Launches a new browser instance.",
-              example: "const browser = await puppeteer.launch();",
+              example: "const browser = await puppeteer.launch({`headless: \"new\"`});",
               guidelines: [
                 "Options can specify `headless`, `slowMo`, `args`, etc.",
                 "Useful for running tests in a headless browser environment.",
+                "Prefer passing `headless: \"new\"` to `puppeteer.launch() unless mentioned that it is required not to.",
               ],
             },
             {
