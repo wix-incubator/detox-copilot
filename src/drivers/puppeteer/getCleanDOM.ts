@@ -9,6 +9,8 @@ import * as puppeteer from "puppeteer";
  * @param page
  */
 export default async function getCleanDOM(page: puppeteer.Page) {
+  await page.waitForSelector("body");
+
   return await page.evaluate(() => {
     const copiedDocument = document.cloneNode(true) as Document;
 
