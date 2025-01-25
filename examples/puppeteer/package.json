@@ -1,0 +1,25 @@
+{
+  "name": "puppeteer-example",
+  "version": "1.0.0",
+  "description": "A sample project to demonstrate Puppeteer setup and usage with pilot and copilot",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:headless": "jest",
+    "test:headed": "HEADLESS=false jest"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "detox-copilot": "^0.0.33"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.3",
+    "@types/puppeteer": "^20.4.1",
+    "jest": "^29.7.0",
+    "puppeteer": "^20.8.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.3.3"
+  },
+  "license": "MIT"
+}
