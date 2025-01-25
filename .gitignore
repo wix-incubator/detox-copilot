@@ -134,3 +134,5 @@ dist
 
 # Examples
 examples/puppeteer/temp/
+
+**/*/detox_copilot_cache.json
