@@ -161,7 +161,10 @@ export class PilotPromptCreator {
       "",
       "#### Next Action with Thoughts:",
       "",
-      `<THOUGHTS>
+      `<SCREENNAME>
+Registration Page.
+</SCREENNAME>
+      <THOUGHTS>
 To complete the registration process, tapping on the 'Submit' button is necessary.
 </THOUGHTS>
 <ACTION>
@@ -198,7 +201,10 @@ The 'Submit' button (ID: btn_submit) lacks essential accessibility features.
       "",
       "#### Example of Success:",
       "",
-      `<THOUGHTS>
+      `<SCREENNAME>
+Goal Page Name.
+</SCREENNAME>
+      <THOUGHTS>
 All actions required to achieve the goal have been completed successfully.
 <SUMMARY>
 An overall summary of the actions taken and reviews conducted during the previous steps.
@@ -233,7 +239,10 @@ An overall accessibility review summary based on the previous steps' reviews.
       "",
       "#### Additional Example:",
       "",
-      `<THOUGHTS>
+      `<SCREENNAME>
+User Profile Screen.
+</SCREENNAME>
+      <THOUGHTS>
 To view the user profile, selecting the 'Profile' icon (ID: icon_profile) is required.
 </THOUGHTS>
 <ACTION>
@@ -283,6 +292,7 @@ The 'Profile' icon (ID: icon_profile) has accessibility issues that could affect
       `Consider the elements present in the view hierarchy${isSnapshotImageAttached ? " and the snapshot image" : ""} to determine possible next actions.`,
       "Determine the optimal next action the user should take to move closer to their goal.",
       "Ensure the action is directly related to available elements in the view hierarchy.",
+      "Make sure to create a unique screen name enclosed with <SCREENNAME> blocks according to the snapshot and view",
       "Generate a one-line string that precisely describes this next action, enclosed within `<ACTION>` tags.",
       "Provide a detailed description of your thought process enclosed within `<THOUGHTS>` tags.",
       "If the goal is achieved, add a `<SUMMARY>` block inside the `<THOUGHTS>` section, summarizing the overall flow and findings. Also, provide comprehensive overall UX and Accessibility reviews with total scores, given all the screens seen in previous steps, inside the respective review sections.",

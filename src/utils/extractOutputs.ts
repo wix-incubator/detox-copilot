@@ -12,6 +12,7 @@ export const OUTPUTS_MAPPINGS: Record<string, OutputsMapping> = {
     score: { tag: "SCORE", isRequired: false },
   },
   PILOT_STEP: {
+    screenName: { tag: "SCREENNAME", isRequired: true },
     thoughts: { tag: "THOUGHTS", isRequired: true },
     action: { tag: "ACTION", isRequired: true },
     ux: { tag: "UX", isRequired: false },

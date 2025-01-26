@@ -14,6 +14,7 @@ import {
 import { extractOutputs, OUTPUTS_MAPPINGS } from "@/utils/extractOutputs";
 import { CopilotStepPerformer } from "@/actions/CopilotStepPerformer";
 import { ScreenCapturer } from "@/utils/ScreenCapturer";
+import fs from 'fs';
 import logger from "@/utils/logger";
 
 export class PilotPerformer {
@@ -96,7 +97,7 @@ export class PilotPerformer {
       const generatedPilotTaskDetails: string =
         await this.promptHandler.runPrompt(prompt, snapshot);
 
-      const { thoughts, action, ux, a11y } = extractOutputs({
+      const { screenName, thoughts, action, ux, a11y } = extractOutputs({
         text: generatedPilotTaskDetails,
         outputsMapper: OUTPUTS_MAPPINGS.PILOT_STEP,
       });
@@ -106,12 +107,18 @@ export class PilotPerformer {
         isBold: true,
         color: "whiteBright",
       });
-
+      
       const plan: PilotStepPlan = { action, thoughts };
       const review: PilotReview = {
         ux: this.extractReviewOutput(ux),
         a11y: this.extractReviewOutput(a11y),
       };
+      
+      logger.info({
+        message: `Conducting review for ${screenName}\n`,
+        isBold: true,
+        color: 'whiteBright',
+      });
 
       review.ux && this.logReviewSection(review.ux, "ux");
       review.a11y && this.logReviewSection(review.a11y, "a11y");
@@ -125,7 +132,7 @@ export class PilotPerformer {
           }).summary
         : undefined;
 
-      return { plan, review, goalAchieved, summary };
+      return { screenName, plan, review, goalAchieved, summary };
     } catch (error) {
       analysisLoggerSpinner.stop(
         "failure",
@@ -157,7 +164,7 @@ export class PilotPerformer {
     for (let step = 0; step < maxSteps; step++) {
       const screenCapture: ScreenCapturerResult =
         await this.screenCapturer.capture();
-      const { plan, review, goalAchieved, summary } =
+      const { screenName, plan, review, goalAchieved, summary } =
         await this.analyseScreenAndCreateCopilotStep(
           goal,
           previousSteps,
@@ -170,19 +177,20 @@ export class PilotPerformer {
           isBold: true,
           color: "whiteBright",
         });
+        logger.writeLogsToFile(`pilot_logs_${Date.now()}`);
         return { goal, summary, steps: [...report.steps], review };
       }
-
+       
       const { code, result } = await this.copilotStepPerformer.perform(
         plan.action,
         [...copilotSteps],
         screenCapture,
       );
-
       copilotSteps = [...copilotSteps, { step: plan.action, code, result }];
-      previousSteps = [...previousSteps, { step: plan.action, review }];
+      previousSteps = [...previousSteps, { screenName, step: plan.action, review }];
 
       const stepReport: PilotStepReport = {
+        screenName,
         plan,
         review,
         code,
@@ -195,6 +203,7 @@ export class PilotPerformer {
     logger.warn(
       `🛬 Pilot finished execution due to limit of ${maxSteps} steps has been reached`,
     );
+    logger.writeLogsToFile(`pilot_logs_${Date.now()}`);
     return report;
   }
 }

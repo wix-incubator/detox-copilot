@@ -22,6 +22,8 @@ export type PilotReview = {
  * Single pilot step execution report.
  */
 export type PilotStepReport = {
+  /** Screen name of the current view */
+  screenName: string;
   /** Action plan and reasoning */
   plan: PilotStepPlan;
   /** Optional reviews */
@@ -74,6 +76,8 @@ export type PilotReviewSection = {
  * Previous pilot step record.
  */
 export type PilotPreviousStep = {
+  /** Screen name */
+  screenName: string;
   /** Step description */
   step: string;
   /** Optional reviews */

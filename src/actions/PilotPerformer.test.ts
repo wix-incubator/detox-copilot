@@ -2,7 +2,7 @@ import { PilotPerformer } from "@/actions/PilotPerformer";
 import { PilotPromptCreator } from "@/utils/PilotPromptCreator";
 import { ScreenCapturer } from "@/utils/ScreenCapturer";
 import {
-  PreviousStep,
+  PilotPreviousStep,
   PromptHandler,
   ScreenCapturerResult,
   PilotStepReport,
@@ -14,8 +14,11 @@ const GOAL = "tap button";
 const VIEW_HIERARCHY = "<view></view>";
 const GENERATED_PROMPT = "generated prompt";
 
-// Updated PROMPT_RESULT to include UX and Accessibility sections
+// Updated PROMPT_RESULT to include screenName, UX, and Accessibility sections
 const PROMPT_RESULT = `
+<SCREENNAME>
+default name
+</SCREENNAME>
 <THOUGHTS>
 I think this is great
 </THOUGHTS>
@@ -79,12 +82,12 @@ describe("PilotPerformer", () => {
       capture: jest.fn(),
     } as unknown as jest.Mocked<ScreenCapturer>;
 
-    // Instantiate PilotPerformer with the mocks, including the capture function
+    // Instantiate PilotPerformer with the mocks
     pilotPerformer = new PilotPerformer(
       mockPromptCreator,
       mockCopilotStepPerformer,
       mockPromptHandler,
-      mockScreenCapturer, // Pass the mock capture function
+      mockScreenCapturer,
     );
   });
 
@@ -125,6 +128,7 @@ describe("PilotPerformer", () => {
     );
 
     const expectedResult = {
+      screenName: "default name",
       plan: {
         thoughts: "I think this is great",
         action: "Tap on GREAT button",
@@ -167,6 +171,7 @@ describe("PilotPerformer", () => {
     );
 
     const expectedResult = {
+      screenName: "default name",
       plan: {
         thoughts: "I think this is great",
         action: "Tap on GREAT button",
@@ -209,6 +214,7 @@ describe("PilotPerformer", () => {
     );
 
     const expectedResult = {
+      screenName: "default name",
       plan: {
         thoughts: "I think this is great",
         action: "Tap on GREAT button",
@@ -243,11 +249,10 @@ describe("PilotPerformer", () => {
 
   it("should perform an intent successfully with previous intents", async () => {
     const intent = "current intent";
-    const previousIntents: PreviousStep[] = [
+    const previousIntents: PilotPreviousStep[] = [
       {
+        screenName: "default",
         step: "previous intent",
-        code: "previous code",
-        result: "previous result",
       },
     ];
 
@@ -260,6 +265,7 @@ describe("PilotPerformer", () => {
     );
 
     const expectedResult = {
+      screenName: "default name",
       plan: {
         thoughts: "I think this is great",
         action: "Tap on GREAT button",
@@ -295,6 +301,7 @@ describe("PilotPerformer", () => {
   describe("perform", () => {
     it("should perform multiple steps until success is returned", async () => {
       const pilotOutputStep1: PilotStepReport = {
+        screenName: "Screen 1",
         plan: {
           thoughts: "Step 1 thoughts",
           action: "Tap on GREAT button",
@@ -315,6 +322,7 @@ describe("PilotPerformer", () => {
       };
 
       const pilotOutputSuccess: PilotStepReport = {
+        screenName: "Screen 2",
         plan: {
           thoughts: "Completed successfully",
           action: "success",
@@ -365,6 +373,7 @@ describe("PilotPerformer", () => {
         goal: GOAL,
         steps: [
           {
+            screenName: "Screen 1",
             plan: pilotOutputStep1.plan,
             code: "code executed",
             review: pilotOutputStep1.review,

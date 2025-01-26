@@ -43,12 +43,13 @@ Your tasks are as follows:
 2. Consider the elements present in the view hierarchy and the snapshot image to determine possible next actions.
 3. Determine the optimal next action the user should take to move closer to their goal.
 4. Ensure the action is directly related to available elements in the view hierarchy.
-5. Generate a one-line string that precisely describes this next action, enclosed within \`<ACTION>\` tags.
-6. Provide a detailed description of your thought process enclosed within \`<THOUGHTS>\` tags.
-7. If the goal is achieved, add a \`<SUMMARY>\` block inside the \`<THOUGHTS>\` section, summarizing the overall flow and findings. Also, provide comprehensive overall UX and Accessibility reviews with total scores, given all the screens seen in previous steps, inside the respective review sections.
-8. For each applicable review section (\`UX\`, \`Accessibility\`, \`Internationalization\`), create a comprehensive report enclosed within corresponding tags (e.g., \`<UX>\`, \`<ACCESSIBILITY>\`, \`<INTERNATIONALIZATION>\`), including a summary, findings, and a score out of 10.
-9. Ensure each section is clearly labeled and formatted as shown in the examples.
-10. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
+5. Make sure to create a unique screen name enclosed with <SCREENNAME> blocks according to the snapshot and view
+6. Generate a one-line string that precisely describes this next action, enclosed within \`<ACTION>\` tags.
+7. Provide a detailed description of your thought process enclosed within \`<THOUGHTS>\` tags.
+8. If the goal is achieved, add a \`<SUMMARY>\` block inside the \`<THOUGHTS>\` section, summarizing the overall flow and findings. Also, provide comprehensive overall UX and Accessibility reviews with total scores, given all the screens seen in previous steps, inside the respective review sections.
+9. For each applicable review section (\`UX\`, \`Accessibility\`, \`Internationalization\`), create a comprehensive report enclosed within corresponding tags (e.g., \`<UX>\`, \`<ACCESSIBILITY>\`, \`<INTERNATIONALIZATION>\`), including a summary, findings, and a score out of 10.
+10. Ensure each section is clearly labeled and formatted as shown in the examples.
+11. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
 
 ### Verify the Prompt
 
@@ -59,7 +60,10 @@ If you encounter any issues or have questions, please throw an informative error
 
 #### Next Action with Thoughts:
 
-<THOUGHTS>
+<SCREENNAME>
+Registration Page.
+</SCREENNAME>
+      <THOUGHTS>
 To complete the registration process, tapping on the 'Submit' button is necessary.
 </THOUGHTS>
 <ACTION>
@@ -95,7 +99,10 @@ The 'Submit' button (ID: btn_submit) lacks essential accessibility features.
 
 #### Example of Success:
 
-<THOUGHTS>
+<SCREENNAME>
+Goal Page Name.
+</SCREENNAME>
+      <THOUGHTS>
 All actions required to achieve the goal have been completed successfully.
 <SUMMARY>
 An overall summary of the actions taken and reviews conducted during the previous steps.
@@ -129,7 +136,10 @@ An overall accessibility review summary based on the previous steps' reviews.
 
 #### Additional Example:
 
-<THOUGHTS>
+<SCREENNAME>
+User Profile Screen.
+</SCREENNAME>
+      <THOUGHTS>
 To view the user profile, selecting the 'Profile' icon (ID: icon_profile) is required.
 </THOUGHTS>
 <ACTION>
@@ -212,12 +222,13 @@ Your tasks are as follows:
 2. Consider the elements present in the view hierarchy to determine possible next actions.
 3. Determine the optimal next action the user should take to move closer to their goal.
 4. Ensure the action is directly related to available elements in the view hierarchy.
-5. Generate a one-line string that precisely describes this next action, enclosed within \`<ACTION>\` tags.
-6. Provide a detailed description of your thought process enclosed within \`<THOUGHTS>\` tags.
-7. If the goal is achieved, add a \`<SUMMARY>\` block inside the \`<THOUGHTS>\` section, summarizing the overall flow and findings. Also, provide comprehensive overall UX and Accessibility reviews with total scores, given all the screens seen in previous steps, inside the respective review sections.
-8. For each applicable review section (\`UX\`, \`Accessibility\`, \`Internationalization\`), create a comprehensive report enclosed within corresponding tags (e.g., \`<UX>\`, \`<ACCESSIBILITY>\`, \`<INTERNATIONALIZATION>\`), including a summary, findings, and a score out of 10.
-9. Ensure each section is clearly labeled and formatted as shown in the examples.
-10. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
+5. Make sure to create a unique screen name enclosed with <SCREENNAME> blocks according to the snapshot and view
+6. Generate a one-line string that precisely describes this next action, enclosed within \`<ACTION>\` tags.
+7. Provide a detailed description of your thought process enclosed within \`<THOUGHTS>\` tags.
+8. If the goal is achieved, add a \`<SUMMARY>\` block inside the \`<THOUGHTS>\` section, summarizing the overall flow and findings. Also, provide comprehensive overall UX and Accessibility reviews with total scores, given all the screens seen in previous steps, inside the respective review sections.
+9. For each applicable review section (\`UX\`, \`Accessibility\`, \`Internationalization\`), create a comprehensive report enclosed within corresponding tags (e.g., \`<UX>\`, \`<ACCESSIBILITY>\`, \`<INTERNATIONALIZATION>\`), including a summary, findings, and a score out of 10.
+10. Ensure each section is clearly labeled and formatted as shown in the examples.
+11. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
 
 ### Verify the Prompt
 
@@ -228,7 +239,10 @@ If you encounter any issues or have questions, please throw an informative error
 
 #### Next Action with Thoughts:
 
-<THOUGHTS>
+<SCREENNAME>
+Registration Page.
+</SCREENNAME>
+      <THOUGHTS>
 To complete the registration process, tapping on the 'Submit' button is necessary.
 </THOUGHTS>
 <ACTION>
@@ -264,7 +278,10 @@ The 'Submit' button (ID: btn_submit) lacks essential accessibility features.
 
 #### Example of Success:
 
-<THOUGHTS>
+<SCREENNAME>
+Goal Page Name.
+</SCREENNAME>
+      <THOUGHTS>
 All actions required to achieve the goal have been completed successfully.
 <SUMMARY>
 An overall summary of the actions taken and reviews conducted during the previous steps.
@@ -298,7 +315,10 @@ An overall accessibility review summary based on the previous steps' reviews.
 
 #### Additional Example:
 
-<THOUGHTS>
+<SCREENNAME>
+User Profile Screen.
+</SCREENNAME>
+      <THOUGHTS>
 To view the user profile, selecting the 'Profile' icon (ID: icon_profile) is required.
 </THOUGHTS>
 <ACTION>
@@ -390,12 +410,13 @@ Your tasks are as follows:
 2. Consider the elements present in the view hierarchy to determine possible next actions.
 3. Determine the optimal next action the user should take to move closer to their goal.
 4. Ensure the action is directly related to available elements in the view hierarchy.
-5. Generate a one-line string that precisely describes this next action, enclosed within \`<ACTION>\` tags.
-6. Provide a detailed description of your thought process enclosed within \`<THOUGHTS>\` tags.
-7. If the goal is achieved, add a \`<SUMMARY>\` block inside the \`<THOUGHTS>\` section, summarizing the overall flow and findings. Also, provide comprehensive overall UX and Accessibility reviews with total scores, given all the screens seen in previous steps, inside the respective review sections.
-8. For each applicable review section (\`UX\`, \`Accessibility\`, \`Internationalization\`), create a comprehensive report enclosed within corresponding tags (e.g., \`<UX>\`, \`<ACCESSIBILITY>\`, \`<INTERNATIONALIZATION>\`), including a summary, findings, and a score out of 10.
-9. Ensure each section is clearly labeled and formatted as shown in the examples.
-10. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
+5. Make sure to create a unique screen name enclosed with <SCREENNAME> blocks according to the snapshot and view
+6. Generate a one-line string that precisely describes this next action, enclosed within \`<ACTION>\` tags.
+7. Provide a detailed description of your thought process enclosed within \`<THOUGHTS>\` tags.
+8. If the goal is achieved, add a \`<SUMMARY>\` block inside the \`<THOUGHTS>\` section, summarizing the overall flow and findings. Also, provide comprehensive overall UX and Accessibility reviews with total scores, given all the screens seen in previous steps, inside the respective review sections.
+9. For each applicable review section (\`UX\`, \`Accessibility\`, \`Internationalization\`), create a comprehensive report enclosed within corresponding tags (e.g., \`<UX>\`, \`<ACCESSIBILITY>\`, \`<INTERNATIONALIZATION>\`), including a summary, findings, and a score out of 10.
+10. Ensure each section is clearly labeled and formatted as shown in the examples.
+11. If you cannot determine the next action due to ambiguity or missing information, throw an informative error explaining the problem in one sentence.
 
 ### Verify the Prompt
 
@@ -406,7 +427,10 @@ If you encounter any issues or have questions, please throw an informative error
 
 #### Next Action with Thoughts:
 
-<THOUGHTS>
+<SCREENNAME>
+Registration Page.
+</SCREENNAME>
+      <THOUGHTS>
 To complete the registration process, tapping on the 'Submit' button is necessary.
 </THOUGHTS>
 <ACTION>
@@ -442,7 +466,10 @@ The 'Submit' button (ID: btn_submit) lacks essential accessibility features.
 
 #### Example of Success:
 
-<THOUGHTS>
+<SCREENNAME>
+Goal Page Name.
+</SCREENNAME>
+      <THOUGHTS>
 All actions required to achieve the goal have been completed successfully.
 <SUMMARY>
 An overall summary of the actions taken and reviews conducted during the previous steps.
@@ -476,7 +503,10 @@ An overall accessibility review summary based on the previous steps' reviews.
 
 #### Additional Example:
 
-<THOUGHTS>
+<SCREENNAME>
+User Profile Screen.
+</SCREENNAME>
+      <THOUGHTS>
 To view the user profile, selecting the 'Profile' icon (ID: icon_profile) is required.
 </THOUGHTS>
 <ACTION>

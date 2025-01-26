@@ -6,6 +6,7 @@ import {
   ScreenCapturerResult,
   PromptHandler,
   PilotStepReport,
+  PilotReport,
 } from "@/types";
 import { mockCache, mockedCacheFile } from "./test-utils/cache";
 import { ScreenCapturer } from "@/utils/ScreenCapturer";
@@ -298,12 +299,11 @@ describe("Copilot", () => {
       instance.extendAPICatalog([barCategory1]);
       instance.extendAPICatalog([barCategory2], dummyContext);
 
-      expect(mockConfig.frameworkDriver.apiCatalog.categories.length).toEqual(
-        1,
-      );
-      expect(mockConfig.frameworkDriver.apiCatalog.categories[0].items).toEqual(
-        [...barCategory1.items, ...barCategory2.items],
-      );
+      expect(mockConfig.frameworkDriver.apiCatalog.categories.length).toEqual(1);
+      expect(mockConfig.frameworkDriver.apiCatalog.categories[0].items).toEqual([
+        ...barCategory1.items,
+        ...barCategory2.items,
+      ]);
       expect(spyCopilotStepPerformer).toHaveBeenCalledWith(dummyContext);
     });
 
@@ -326,9 +326,11 @@ describe("Copilot", () => {
       const goal = "test goal";
 
       const mockPilotResult = {
+        summary: "Test completed successfully",
         goal,
         steps: [
           {
+            screenName: "Screen 1",
             plan: {
               thoughts: "Step 1 thoughts",
               action: "Tap on GREAT button",
@@ -337,6 +339,7 @@ describe("Copilot", () => {
             goalAchieved: false,
           },
           {
+            screenName: "Screen 2",
             plan: {
               thoughts: "Completed successfully",
               action: "success",
@@ -362,9 +365,10 @@ describe("Copilot", () => {
       const goal = "Test the login flow";
 
       const pilotOutputStep1: PilotStepReport = {
+        screenName: "Login Screen",
         plan: {
           thoughts: "Step 1 thoughts",
-          action: "Tap on GREAT button",
+          action: "Tap on Login button",
         },
         review: {
           ux: {
@@ -382,8 +386,9 @@ describe("Copilot", () => {
       };
 
       const pilotOutputSuccess: PilotStepReport = {
+        screenName: "Home Screen",
         plan: {
-          thoughts: "Completed successfully <SUMMARY> all was good </SUMMARY>",
+          thoughts: "Completed successfully",
           action: "success",
         },
         review: {
@@ -399,34 +404,39 @@ describe("Copilot", () => {
           },
         },
         goalAchieved: true,
+        summary: "All was good",
       };
 
-      jest.spyOn(instance["pilotPerformer"], "perform").mockResolvedValue({
-        summary: "all was good",
-        goal: goal,
-        steps: [
-          {
-            plan: pilotOutputStep1.plan,
-            code: "code executed",
-            review: pilotOutputStep1.review,
-            goalAchieved: true,
-          },
-        ],
-        review: pilotOutputSuccess.review,
-      });
+      jest
+        .spyOn(instance["pilotPerformer"], "perform")
+        .mockResolvedValue({
+          summary: pilotOutputSuccess.summary,
+          goal: goal,
+          steps: [
+            {
+              screenName: pilotOutputStep1.screenName,
+              plan: pilotOutputStep1.plan,
+              code: "code executed",
+              review: pilotOutputStep1.review,
+              goalAchieved: pilotOutputStep1.goalAchieved,
+            },
+          ],
+          review: pilotOutputSuccess.review,
+        });
 
       const result = await instance.pilot(goal);
 
       expect(instance["pilotPerformer"].perform).toHaveBeenCalledWith(goal);
       expect(result).toEqual({
-        summary: "all was good",
+        summary: pilotOutputSuccess.summary,
         goal: goal,
         steps: [
           {
+            screenName: pilotOutputStep1.screenName,
             plan: pilotOutputStep1.plan,
             code: "code executed",
             review: pilotOutputStep1.review,
-            goalAchieved: true,
+            goalAchieved: pilotOutputStep1.goalAchieved,
           },
         ],
         review: pilotOutputSuccess.review,

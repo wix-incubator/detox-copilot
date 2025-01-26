@@ -1,5 +1,5 @@
 import { PilotPromptCreator } from "./PilotPromptCreator";
-import { PreviousStep } from "@/types";
+import { PilotPreviousStep } from "@/types";
 
 describe("PilotPromptCreator", () => {
   let promptCreator: PilotPromptCreator;
@@ -18,16 +18,15 @@ describe("PilotPromptCreator", () => {
 
   it("should include previous intents in the context", () => {
     const intent = "tap button";
-    const previousSteps: PreviousStep[] = [
+    const previousSteps: PilotPreviousStep[] = [
       {
+        screenName: "default 1",
         step: "navigate to login screen",
-        code: 'await element(by.id("login")).tap();',
-        result: undefined,
+        
       },
       {
+        screenName: "default 2",
         step: "enter username",
-        code: 'await element(by.id("username")).typeText("john_doe");',
-        result: undefined,
       },
     ];
 

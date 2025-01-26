@@ -500,6 +500,7 @@ describe("Copilot Integration Tests", () => {
         goal: goal,
         steps: [
           {
+            screenName: "Login Screen", // Added screenName
             plan: {
               thoughts: "First step thoughts",
               action: "Tap on login button",
@@ -560,6 +561,7 @@ describe("Copilot Integration Tests", () => {
       expect(spyPilotPerformerPerform).toHaveBeenCalledWith(goal);
     });
   });
+
 
   describe("Cache Modes", () => {
     beforeEach(() => {
