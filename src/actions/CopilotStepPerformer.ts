@@ -259,12 +259,12 @@ export class CopilotStepPerformer {
         if (attempt > 1) {
           logger.info(
             `🔄 Attempt ${attempt}/${maxAttempts} succeeded for step "${step}", generated code:\n`,
-              {
-                message: `\n\`\`\`javascript\n${code}\n\`\`\``,
-                isBold: false,
-                color: "gray",
-              }
-          )
+            {
+              message: `\n\`\`\`javascript\n${code}\n\`\`\``,
+              isBold: false,
+              color: "gray",
+            },
+          );
         }
 
         return result;

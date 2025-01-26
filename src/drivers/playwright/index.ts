@@ -1,5 +1,6 @@
 import { TestingFrameworkAPICatalog, TestingFrameworkDriver } from "@/types";
 import * as playwright from "playwright";
+import { expect as playwrightExpect } from "@playwright/test";
 import path from "path";
 import fs from "fs";
 import getCleanDOM from "./getCleanDOM";
@@ -74,11 +75,12 @@ export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
     return {
       name: "Playwright",
       description:
-        "Playwright is a Node library which provides a high-level API to control browsers over the DevTools Protocol.\nYou can assume that playwright is already imported (as `playwright`).",
+        "Playwright is a Node library which provides a high-level API to control browsers over the DevTools Protocol.\nYou can assume that playwright and playwrightExpect are already imported.",
       context: {
         getCurrentPage: this.getCurrentPage,
         setCurrentPage: this.setCurrentPage,
         playwright,
+        expect: playwrightExpect,
       },
       categories: [
         {
@@ -97,7 +99,8 @@ export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
             {
               signature: "setCurrentPage(page: playwright.Page): void",
               description: "Sets the current active page for interactions.",
-              example: "const page = await context.newPage(); setCurrentPage(page);",
+              example:
+                "const page = await context.newPage(); setCurrentPage(page);",
               guidelines: [
                 "Must be called after creating a new page.",
                 "Required before any page interactions.",
@@ -110,57 +113,72 @@ export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
           title: "Browser and Context Setup",
           items: [
             {
-              signature: "const browser = await playwright.chromium.launch([options])",
+              signature:
+                "const browser = await playwright.chromium.launch([options])",
               description: "Launches a new browser instance.",
-              example: `const browser = await playwright.chromium.launch({ headless: false });
+              example: `const browser = await playwright.chromium.launch({ 
+  headless: false,
+  timeout: 30000  // Default timeout for all operations
+});
 const context = await browser.newContext();
 const page = await context.newPage();
 setCurrentPage(page);`,
               guidelines: [
-                "Options can specify `headless`, `slowMo`, `args`, etc.",
+                "Set longer timeouts (30s or more) to handle slow operations.",
                 "Can use chromium, firefox, or webkit browsers.",
                 "Remember to call setCurrentPage after creating a page.",
               ],
             },
             {
               signature: "const context = await browser.newContext([options])",
-              description: "Creates a new browser context (like an incognito window).",
-              example: `const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+              description:
+                "Creates a new browser context (like an incognito window).",
+              example: `const context = await browser.newContext({ 
+  viewport: { width: 1280, height: 720 },
+  navigationTimeout: 30000,  // Navigation specific timeout
+  actionTimeout: 15000      // Action specific timeout
+});
 const page = await context.newPage();
 setCurrentPage(page);`,
               guidelines: [
                 "Each context is isolated with separate cookies/localStorage.",
-                "Can configure viewport, geolocation, permissions, etc.",
-                "Remember to call setCurrentPage after creating a page.",
+                "Set specific timeouts for different operation types.",
+                "Configure viewport and other browser settings here.",
               ],
             },
           ],
         },
         {
-          title: "Navigation and Loading",
+          title: "Navigation",
           items: [
             {
               signature: "await page.goto(url[, options])",
-              description: "Navigates to a URL and waits for load.",
+              description: "Navigates to a URL.",
               example: `const page = getCurrentPage();
-await page.goto('https://example.com', { waitUntil: 'networkidle' });`,
+if (page) {
+  await page.goto('https://example.com');
+  // Verify navigation success using assertions
+  await expect(page.getByRole('heading')).toBeVisible();
+}`,
               guidelines: [
-                "Always check if page exists before navigation.",
-                "waitUntil options: load, domcontentloaded, networkidle",
-                "Returns the main resource response.",
+                "Always verify navigation success with assertions.",
+                "Avoid using waitUntil options - use assertions instead.",
+                "Set proper timeouts at browser/context level.",
               ],
             },
             {
-              signature: "await page.waitForLoadState(state)",
-              description: "Waits for the required load state.",
+              signature: "await page.reload()",
+              description: "Reloads the current page.",
               example: `const page = getCurrentPage();
 if (page) {
-  await page.waitForLoadState('networkidle');
+  await page.reload();
+  // Verify reload success using assertions
+  await expect(page.getByRole('main')).toBeVisible();
 }`,
               guidelines: [
-                "Always check if page exists first.",
-                "States: load, domcontentloaded, networkidle",
-                "More reliable than wait timeouts.",
+                "Use assertions to verify page state after reload.",
+                "Avoid explicit waits - let assertions handle timing.",
+                "Good for refreshing stale content.",
               ],
             },
           ],
@@ -245,34 +263,49 @@ if (page) {
           items: [
             {
               signature: "await expect(locator).toBeVisible()",
-              description: "Asserts element is visible.",
+              description:
+                "Asserts element is visible using Playwright assertions.",
               example: `const page = getCurrentPage();
 if (page) {
   await expect(page.getByText('Success')).toBeVisible();
 }`,
               guidelines: [
-                "Always check if page exists first.",
-                "Waits for assertion to pass.",
-                "Has timeout option.",
+                "Uses Playwright's built-in assertions with auto-retry.",
+                "More reliable than isVisible() for assertions.",
+                "Has built-in timeout and retry logic.",
               ],
             },
             {
               signature: "await expect(locator).toHaveText(text)",
-              description: "Asserts element has text.",
+              description:
+                "Asserts element's text content using Playwright assertions.",
               example: `const page = getCurrentPage();
 if (page) {
   await expect(page.getByRole('heading')).toHaveText('Welcome');
 }`,
               guidelines: [
-                "Always check if page exists first.",
+                "Uses Playwright's built-in assertions with auto-retry.",
                 "Can check exact or partial text.",
-                "Supports regex patterns.",
+                "More reliable than textContent() for assertions.",
+              ],
+            },
+            {
+              signature: "await expect(locator).toHaveCount(number)",
+              description: "Asserts number of matching elements.",
+              example: `const page = getCurrentPage();
+if (page) {
+  await expect(page.getByRole('listitem')).toHaveCount(3);
+}`,
+              guidelines: [
+                "Uses Playwright's built-in assertions with auto-retry.",
+                "Good for checking element counts.",
+                "More reliable than count() for assertions.",
               ],
             },
           ],
         },
         {
-          title: "State and Properties",
+          title: "State Checks",
           items: [
             {
               signature: "await locator.isVisible()",
@@ -284,9 +317,9 @@ if (page) {
   }
 }`,
               guidelines: [
-                "Always check if page exists first.",
-                "Returns boolean immediately.",
-                "Good for conditional logic.",
+                "Returns immediately - good for conditionals.",
+                "Use expect().toBeVisible() for assertions.",
+                "Good for flow control.",
               ],
             },
             {
@@ -295,11 +328,12 @@ if (page) {
               example: `const page = getCurrentPage();
 if (page) {
   const title = await page.title();
+  await expect(title).toBe('Expected Title');
 }`,
               guidelines: [
-                "Always check if page exists first.",
                 "Returns current page title.",
-                "Waits for title to be set.",
+                "Use with expect for assertions.",
+                "Auto-waits for title to be available.",
               ],
             },
           ],
