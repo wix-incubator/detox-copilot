@@ -26,6 +26,7 @@
     "build": "tsc && tsc-alias",
     "test": "jest",
     "test:examples:puppeteer": "cd examples/puppeteer && jest",
+    "test:examples:playwright": "cd examples/playwright && jest",
     "bump-version": "npm version patch && git push && git push --tags",
     "release": "npm run test && npm run bump-version && npm run build && npm publish",
     "lint": "eslint . --ext .ts",
