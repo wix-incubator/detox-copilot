@@ -388,9 +388,11 @@ No snapshot image is attached for this intent.
 ### Previous Steps
 
 #### Step 1
+- Screen Name : "default 1"
 - Intent: "navigate to login screen"
 
 #### Step 2
+- Screen Name : "default 2"
 - Intent: "enter username"
 
 

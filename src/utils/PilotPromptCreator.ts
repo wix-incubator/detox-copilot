@@ -83,6 +83,7 @@ export class PilotPromptCreator {
           .map((previousStep, index) => {
             const stepDetails = [
               `#### Step ${index + 1}`,
+              `- Screen Name : "${previousStep.screenName}"`,
               `- Intent: "${previousStep.step}"`,
             ];
 
