@@ -1,47 +1,67 @@
 # Supported Frameworks for Copilot
 
-**Copilot by Detox** is designed to empower developers by simplifying the way they write tests for their applications. Originally developed as a feature for Detox, Copilot has grown into a **framework-agnostic tool**, making it adaptable to a wide range of testing frameworks with minimal customization.
+**Copilot by Detox** enables natural language testing across different testing frameworks. Here's how to use it with our supported frameworks:
 
----
+## Built-in Web Testing Support
 
-## Detox Integration: Mobile Apps Testing
-
-Detox, a powerful end-to-end testing framework for mobile apps, is the first framework to provide Copilot as part of its API. Copilot’s integration with Detox offers developers:
-
-- **Natural language testing**: Write tests in plain, intuitive language instead of manual test scripting.
-- **Enhanced usability with Detox APIs**: Leverage Detox’s robust matchers and actions, such as `by.id()`, `tap()`, and `longPress()`, for seamless app interaction.
-- **Improved debugging tools**: Use snapshots, including screenshots and view hierarchies, to better analyze the app’s state during testing.
-
-**To learn more, visit the ********[official documentation](https://wix.github.io/Detox/docs/copilot/testing-with-copilot)********.**
-
-### Example: Writing Tests with Copilot in Detox
-
-Here is an example test written in natural language that demonstrates step-by-step execution:
+### Playwright
 
 ```js
-it('should verify element sizes and button states', async () => {
+// 1. Install: npm install --save-dev playwright
+// 2. Import and use:
+import { PlaywrightFrameworkDriver } from 'detox-copilot/drivers/playwright';
+
+it('should login', async () => {
   await copilot.perform(
-    'Launch the app with notification permissions enabled',
-    'Navigate to the "Settings" page',
-    'Verify that the "Save" button is disabled',
-    'Locate the profile picture element',
-    'Verify that the profile picture size is 100 x 100 pixels and that the image is available and rendered',
-    'Tap on the "Edit Profile" button',
-    'Verify that the "Save" button is now enabled',
-    'Verify that the "Username" field text is bold'
+    'Open "https://example.com" in the browser',
+    'Fill in the username field with "testuser"',
+    'Fill in the password field with "password123"',
+    'Click the login button',
+    'Verify that the dashboard is visible'
   );
 });
 ```
 
----
+Supports Chrome, Firefox, and WebKit with powerful auto-waiting mechanisms.
 
-## Expanding Copilot’s Reach: Call for Contributions
+### Puppeteer
 
-**Copilot by Detox** is built with a flexible, framework-agnostic design, enabling integration with various testing frameworks. Currently, Detox is the only framework providing the API and necessary framework driver for Copilot. However, we believe the potential for Copilot extends far beyond Detox.
+```js
+// 1. Install: npm install --save-dev puppeteer
+// 2. Import and use:
+import { PuppeteerFrameworkDriver } from 'detox-copilot/drivers/puppeteer';
 
-We invite the community to contribute by:
+it('should submit a form', async () => {
+  await copilot.perform(
+    'Open "https://example.com/signup" in the browser',
+    'Fill in the email field with "user@example.com"',
+    'Check the terms checkbox',
+    'Click submit',
+    'Verify success message appears'
+  );
+});
+```
 
-- **Integrating new frameworks**: Extend Copilot’s compatibility to other testing frameworks by [developing the necessary drivers and APIs](https://github.com/wix-incubator/detox-copilot/issues).
-- **Enhancing existing integrations**: Refine and optimize Copilot’s functionality within Detox or other supported frameworks.
+Specialized for Chrome/Chromium automation with DevTools Protocol access.
 
-Your contributions can help shape Copilot into a universal testing tool for developers worldwide. To get involved or learn more about potential integrations, visit our [GitHub repository](https://github.com/wix-incubator/detox-copilot/issues).
+## External Framework Support
+
+### Detox
+
+Available directly in the Detox package for mobile app testing. [See Detox documentation](https://wix.github.io/Detox/docs/copilot/testing-with-copilot).
+
+```js
+it('should update profile', async () => {
+  await copilot.perform(
+    'Launch the app',
+    'Navigate to Settings',
+    'Tap on "Edit Profile"',
+    'Update username to "john_doe"',
+    'Verify changes are saved'
+  );
+});
+```
+
+## Contributing
+
+Want to add support for another framework? Check our [GitHub Issues](https://github.com/wix-incubator/detox-copilot/issues) or submit a PR.
