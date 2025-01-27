@@ -2,9 +2,9 @@ import { TestingFrameworkDriver } from "@/types";
 import { SnapshotComparator } from "@/utils/SnapshotComparator";
 import crypto from "crypto";
 
-const DEFAULT_POLL_INTERVAL = 100; // ms
-const DEFAULT_TIMEOUT = 3000; // ms
-const DEFAULT_STABILITY_THRESHOLD = 0.1;
+const DEFAULT_POLL_INTERVAL = 500; // ms
+const DEFAULT_TIMEOUT = 5000; // ms
+const DEFAULT_STABILITY_THRESHOLD = 0.05;
 
 export class SnapshotManager {
   constructor(
