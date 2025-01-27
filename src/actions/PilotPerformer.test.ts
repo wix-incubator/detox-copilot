@@ -9,6 +9,7 @@ import {
   PilotReport,
 } from "@/types";
 import { CopilotStepPerformer } from "@/actions/CopilotStepPerformer";
+import logger from "@/utils/logger";
 
 const GOAL = "tap button";
 const VIEW_HIERARCHY = "<view></view>";
@@ -74,7 +75,7 @@ describe("PilotPerformer", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-
+    jest.spyOn(logger, "writeLogsToFile").mockImplementation(() => {});
     // Create mock instances of dependencies
     mockPromptCreator = {
       createPrompt: jest.fn(),

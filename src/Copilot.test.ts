@@ -16,6 +16,7 @@ import {
   dummyContext,
 } from "./test-utils/APICatalogTestUtils";
 import { PilotPerformer } from "./actions/PilotPerformer";
+import logger from "@/utils/logger";
 
 jest.mock("@/actions/CopilotStepPerformer");
 jest.mock("@/utils/ScreenCapturer");
@@ -31,6 +32,7 @@ describe("Copilot", () => {
   let screenCapture: ScreenCapturerResult;
 
   beforeEach(() => {
+    jest.spyOn(logger, "writeLogsToFile").mockImplementation(() => {});
     mockPromptHandler = {
       runPrompt: jest.fn(),
       isSnapshotImageSupported: jest.fn(),
