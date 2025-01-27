@@ -30,7 +30,7 @@ describe("Copilot Integration Tests", () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    
+
     mockFrameworkDriver = {
       captureSnapshotImage: jest
         .fn()

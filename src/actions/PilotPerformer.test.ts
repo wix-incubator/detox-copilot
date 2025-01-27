@@ -74,7 +74,7 @@ describe("PilotPerformer", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    
+
     // Create mock instances of dependencies
     mockPromptCreator = {
       createPrompt: jest.fn(),
