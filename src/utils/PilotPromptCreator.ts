@@ -33,6 +33,7 @@ export class PilotPromptCreator {
       `   Please generate a one-line string that precisely describes the next action the user should take to move closer to their goal,`,
       `   and another string (which can be greater than one line) which describes your thoughts while creating the step.`,
       `   If you think that the goal has been reached return a one word action 'success'`,
+      `   If there are any active loaders, spinners, animations, or partially rendered content in the screen, return "wait 3000" as the action.`,
       "2. Creating comprehensive UX, Accessibility, and Internationalization reports that include a review, findings, and a score.",
       "",
       "Please adhere to the instructions below to provide detailed and helpful responses.",
@@ -329,6 +330,7 @@ The 'Profile' icon may not be properly adapted for different locales.
   ): string[] {
     const steps = [
       "Analyze the provided goal, view hierarchy, and previous steps to understand the user's progress and available actions.",
+      "Check if there are any active loaders, spinners, animations, or partially rendered content in the view hierarchy - if so, the next action should be to wait for 3 seconds ('wait 3000').",
       `Consider the elements present in the view hierarchy${isSnapshotImageAttached ? " and the snapshot image" : ""} to determine possible next actions.`,
       "Determine the optimal next action the user should take to move closer to their goal.",
       "Ensure the action is directly related to available elements in the view hierarchy.",
