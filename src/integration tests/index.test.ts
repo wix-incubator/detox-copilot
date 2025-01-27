@@ -19,7 +19,6 @@ import {
 } from "@/test-utils/APICatalogTestUtils";
 import { getSnapshotImage } from "@/test-utils/SnapshotComparatorTestImages/SnapshotImageGetter";
 import { SnapshotComparator } from "@/utils/SnapshotComparator";
-import logger from "@/utils/logger";
 
 jest.mock("crypto");
 jest.mock("fs");
@@ -31,7 +30,6 @@ describe("Copilot Integration Tests", () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    jest.spyOn(logger, "writeLogsToFile").mockImplementation(() => {});
     mockFrameworkDriver = {
       captureSnapshotImage: jest
         .fn()
