@@ -14,7 +14,6 @@ import {
 import { extractOutputs, OUTPUTS_MAPPINGS } from "@/utils/extractOutputs";
 import { CopilotStepPerformer } from "@/actions/CopilotStepPerformer";
 import { ScreenCapturer } from "@/utils/ScreenCapturer";
-import fs from 'fs';
 import logger from "@/utils/logger";
 
 export class PilotPerformer {
@@ -40,7 +39,10 @@ export class PilotPerformer {
     };
   }
 
-  private logReviewSection(review: PilotReviewSection, type: "ux" | "a11y" | "i18n") {
+  private logReviewSection(
+    review: PilotReviewSection,
+    type: "ux" | "a11y" | "i18n",
+  ) {
     const config: {
       [key: string]: {
         emoji: string;
@@ -102,10 +104,11 @@ export class PilotPerformer {
       const generatedPilotTaskDetails: string =
         await this.promptHandler.runPrompt(prompt, snapshot);
 
-      const { screenDescription, thoughts, action, ux, a11y, i18n } = extractOutputs({
-        text: generatedPilotTaskDetails,
-        outputsMapper: OUTPUTS_MAPPINGS.PILOT_STEP,
-      });
+      const { screenDescription, thoughts, action, ux, a11y, i18n } =
+        extractOutputs({
+          text: generatedPilotTaskDetails,
+          outputsMapper: OUTPUTS_MAPPINGS.PILOT_STEP,
+        });
 
       analysisLoggerSpinner.stop("success", `💭 Thoughts:`, {
         message: thoughts,
@@ -123,7 +126,7 @@ export class PilotPerformer {
       logger.info({
         message: `Conducting review for ${screenDescription}\n`,
         isBold: true,
-        color: 'whiteBright',
+        color: "whiteBright",
       });
 
       review.ux && this.logReviewSection(review.ux, "ux");
@@ -194,7 +197,10 @@ export class PilotPerformer {
         screenCapture,
       );
       copilotSteps = [...copilotSteps, { step: plan.action, code, result }];
-      previousSteps = [...previousSteps, { screenDescription, step: plan.action, review }];
+      previousSteps = [
+        ...previousSteps,
+        { screenDescription, step: plan.action, review },
+      ];
 
       const stepReport: PilotStepReport = {
         screenDescription,

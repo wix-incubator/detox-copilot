@@ -562,7 +562,6 @@ describe("Copilot Integration Tests", () => {
     });
   });
 
-
   describe("Cache Modes", () => {
     beforeEach(() => {
       mockPromptHandler.runPrompt.mockResolvedValue("// No operation");

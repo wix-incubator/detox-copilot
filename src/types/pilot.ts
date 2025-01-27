@@ -11,7 +11,7 @@ export type PreviousStep = {
 };
 
 /** Review section types */
-export type PilotReviewSectionType = "ux" | "a11y"| "i18n";
+export type PilotReviewSectionType = "ux" | "a11y" | "i18n";
 
 /** Complete pilot review */
 export type PilotReview = {

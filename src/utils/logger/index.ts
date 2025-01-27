@@ -12,7 +12,7 @@ import {
   LoggerMessageColor,
   LoggerOperationResultType,
 } from "@/types/logger";
-import * as fs from "fs"; 
+import * as fs from "fs";
 
 class Logger {
   private static instance: Logger;
@@ -27,7 +27,7 @@ class Logger {
     error: "red",
     debug: "gray",
   };
-  private logs: string[] = []; 
+  private logs: string[] = [];
 
   private constructor() {
     this.logger = createLogger({
@@ -69,7 +69,10 @@ class Logger {
       .join(" ");
   }
 
-  private formatMessageForLogFile(level: string, ...components: LoggerMessageComponent[]): string {
+  private formatMessageForLogFile(
+    level: string,
+    ...components: LoggerMessageComponent[]
+  ): string {
     const messageText = components
       .map((component) => {
         if (typeof component === "string") {
@@ -85,15 +88,15 @@ class Logger {
         return message;
       })
       .join(" ");
-      const timestamp: string = this.formatMessageEntryForLogFile(new Date());
-      const levelUpper: string = level.toUpperCase();
-      return `[${timestamp}] ${levelUpper}: ${messageText}`;
+    const timestamp: string = this.formatMessageEntryForLogFile(new Date());
+    const levelUpper: string = level.toUpperCase();
+    return `[${timestamp}] ${levelUpper}: ${messageText}`;
   }
 
   private formatMessageEntryForLogFile(date: Date): string {
     const pad = (n: number) => (n < 10 ? "0" + n : n.toString());
     const year = date.getFullYear();
-    const month = pad(date.getMonth() + 1); 
+    const month = pad(date.getMonth() + 1);
     const day = pad(date.getDate());
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
@@ -137,9 +140,7 @@ class Logger {
     this.log("debug", ...components);
   }
 
-  public startSpinner(
-    ...components: LoggerMessageComponent[]
-  ): LoggerSpinner {
+  public startSpinner(...components: LoggerMessageComponent[]): LoggerSpinner {
     const spinner = ora(this.colorizeMessage(...components)).start();
 
     const stop = (
@@ -149,10 +150,7 @@ class Logger {
       spinner.prefixText = "";
       const message = this.colorizeMessage(...components);
 
-      const spinnerActions: Record<
-        LoggerOperationResultType,
-        () => ora.Ora
-      > = {
+      const spinnerActions: Record<LoggerOperationResultType, () => ora.Ora> = {
         success: () => spinner.succeed(message),
         failure: () => spinner.fail(message),
         warn: () => spinner.warn(message),

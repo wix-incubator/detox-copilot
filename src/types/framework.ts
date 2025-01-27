@@ -32,7 +32,7 @@ export type TestingFrameworkAPICatalog = {
   context: any;
   /** Available API method categories */
   categories: TestingFrameworkAPICatalogCategory[];
-   /** List of restrictions and guidlines of wrong actions */
+  /** List of restrictions and guidlines of wrong actions */
   restrictions?: string[];
 };
 

@@ -6,7 +6,6 @@ import {
   ScreenCapturerResult,
   PromptHandler,
   PilotStepReport,
-  PilotReport,
 } from "@/types";
 import { mockCache, mockedCacheFile } from "./test-utils/cache";
 import { ScreenCapturer } from "@/utils/ScreenCapturer";
@@ -299,11 +298,12 @@ describe("Copilot", () => {
       instance.extendAPICatalog([barCategory1]);
       instance.extendAPICatalog([barCategory2], dummyContext);
 
-      expect(mockConfig.frameworkDriver.apiCatalog.categories.length).toEqual(1);
-      expect(mockConfig.frameworkDriver.apiCatalog.categories[0].items).toEqual([
-        ...barCategory1.items,
-        ...barCategory2.items,
-      ]);
+      expect(mockConfig.frameworkDriver.apiCatalog.categories.length).toEqual(
+        1,
+      );
+      expect(mockConfig.frameworkDriver.apiCatalog.categories[0].items).toEqual(
+        [...barCategory1.items, ...barCategory2.items],
+      );
       expect(spyCopilotStepPerformer).toHaveBeenCalledWith(dummyContext);
     });
 
@@ -407,22 +407,20 @@ describe("Copilot", () => {
         summary: "All was good",
       };
 
-      jest
-        .spyOn(instance["pilotPerformer"], "perform")
-        .mockResolvedValue({
-          summary: pilotOutputSuccess.summary,
-          goal: goal,
-          steps: [
-            {
-              screenDescription: pilotOutputStep1.screenDescription,
-              plan: pilotOutputStep1.plan,
-              code: "code executed",
-              review: pilotOutputStep1.review,
-              goalAchieved: pilotOutputStep1.goalAchieved,
-            },
-          ],
-          review: pilotOutputSuccess.review,
-        });
+      jest.spyOn(instance["pilotPerformer"], "perform").mockResolvedValue({
+        summary: pilotOutputSuccess.summary,
+        goal: goal,
+        steps: [
+          {
+            screenDescription: pilotOutputStep1.screenDescription,
+            plan: pilotOutputStep1.plan,
+            code: "code executed",
+            review: pilotOutputStep1.review,
+            goalAchieved: pilotOutputStep1.goalAchieved,
+          },
+        ],
+        review: pilotOutputSuccess.review,
+      });
 
       const result = await instance.pilot(goal);
 

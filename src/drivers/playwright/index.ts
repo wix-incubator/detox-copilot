@@ -82,7 +82,9 @@ export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
         playwright,
         expect: playwrightExpect,
       },
-      restrictions:['Never use expect on the page it self for example : await expect(page).toBeVisible()'],
+      restrictions: [
+        "Never use expect on the page it self for example : await expect(page).toBeVisible()",
+      ],
       categories: [
         {
           title: "Page Management",
@@ -91,7 +93,7 @@ export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
               signature: "getCurrentPage(): playwright.Page | undefined",
               description: "Gets the current active page instance.",
               example: "const page = getCurrentPage();",
-              guidelines: [              
+              guidelines: [
                 "Always check if page exists before operations.",
                 "Returns undefined if no page is set.",
                 "Use before any page interactions.",
@@ -102,7 +104,7 @@ export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
               description: "Sets the current active page for interactions.",
               example:
                 "const page = await context.newPage(); setCurrentPage(page);",
-              guidelines: [              
+              guidelines: [
                 "Must be called after creating a new page.",
                 "Required before any page interactions.",
                 "Only one page can be active at a time.",
@@ -127,7 +129,7 @@ setCurrentPage(page);
 await page.goto('https://www.test.com/');
 await page.waitForLoadState('load')
 `,
-              guidelines: [           
+              guidelines: [
                 "Set longer timeouts (30s or more) to handle slow operations.",
                 "Can use chromium, firefox, or webkit browsers.",
                 "Remember to call setCurrentPage after creating a page.",
@@ -182,7 +184,7 @@ if (page) {
 if (page) {
   await page.reload();
 }`,
-              guidelines: [              
+              guidelines: [
                 "Avoid explicit waits - let assertions handle timing.",
                 "Good for refreshing stale content.",
               ],
@@ -199,7 +201,7 @@ if (page) {
 if (page) {
   await page.getByRole('button', { name: 'Submit' }).click();
 }`,
-              guidelines: [              
+              guidelines: [
                 "Always check if page exists first.",
                 "Preferred way to locate interactive elements.",
                 "Improves test accessibility coverage.",
@@ -212,7 +214,7 @@ if (page) {
 if (page) {
   await page.getByText('Welcome').isVisible();
 }`,
-              guidelines: [              
+              guidelines: [
                 "Always check if page exists first.",
                 "Good for finding visible text on page.",
                 "Can use exact or fuzzy matching.",
@@ -225,7 +227,7 @@ if (page) {
 if (page) {
   await page.getByLabel('Username').fill('john');
 }`,
-              guidelines: [              
+              guidelines: [
                 "Always check if page exists first.",
                 "Best practice for form inputs.",
                 "More reliable than selectors.",
@@ -243,7 +245,7 @@ if (page) {
 if (page) {
   await page.getByRole('button').click();
 }`,
-              guidelines: [              
+              guidelines: [
                 "Always check if page exists first.",
                 "Automatically waits for element.",
                 "Handles scrolling automatically.",
@@ -256,7 +258,7 @@ if (page) {
 if (page) {
   await page.getByLabel('Password').fill('secret');
 }`,
-              guidelines: [              
+              guidelines: [
                 "Always check if page exists first.",
                 "Preferred over type() for forms.",
                 "Clears existing value first.",
@@ -320,7 +322,8 @@ if (page) {
             },
             {
               signature: "await locator.scrollIntoViewIfNeeded()",
-              description: "Scrolls the element into view if it is not already visible.",
+              description:
+                "Scrolls the element into view if it is not already visible.",
               example: `const page = getCurrentPage();
         if (page) {
           await page.getByText('Load More').scrollIntoViewIfNeeded();
@@ -523,7 +526,8 @@ if (page) {
               ],
             },
             {
-              signature: "const elementHandles = await locator.elementHandles()",
+              signature:
+                "const elementHandles = await locator.elementHandles()",
               description: "Gets all matching element handles.",
               example: `const page = getCurrentPage();
             if (page) {
@@ -570,7 +574,8 @@ if (page) {
             },
             {
               signature: "await expect(locator).toHaveText(expectedText)",
-              description: "Asserts that the element's text content matches the expected text.",
+              description:
+                "Asserts that the element's text content matches the expected text.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page.getByTestId('username')).toHaveText('John Doe');
@@ -583,7 +588,8 @@ if (page) {
             },
             {
               signature: "await expect(page).toHaveURL(expectedURL)",
-              description: "Asserts that the page's URL matches the expected URL.",
+              description:
+                "Asserts that the page's URL matches the expected URL.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page).toHaveURL('https://www.example.com/dashboard');
@@ -596,7 +602,8 @@ if (page) {
             },
             {
               signature: "await expect(locator).toHaveValue(expectedValue)",
-              description: "Asserts that an input element has the expected value.",
+              description:
+                "Asserts that an input element has the expected value.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page.getByPlaceholder('Email')).toHaveValue('user@example.com');
@@ -635,7 +642,8 @@ if (page) {
             },
             {
               signature: "await expect(locator).toBeChecked()",
-              description: "Asserts that a checkbox or radio button is checked.",
+              description:
+                "Asserts that a checkbox or radio button is checked.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page.getByLabel('Accept Terms')).toBeChecked();
@@ -648,7 +656,8 @@ if (page) {
             },
             {
               signature: "await expect(locator).toBeEditable()",
-              description: "Asserts that an input or textarea element is editable.",
+              description:
+                "Asserts that an input or textarea element is editable.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page.getByPlaceholder('Enter your name')).toBeEditable();
@@ -661,7 +670,8 @@ if (page) {
             },
             {
               signature: "await expect(locator).toHaveAttribute(name, value)",
-              description: "Asserts that the element has the specified attribute value.",
+              description:
+                "Asserts that the element has the specified attribute value.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page.getByTestId('profile-link')).toHaveAttribute('href', '/profile');
@@ -674,7 +684,8 @@ if (page) {
             },
             {
               signature: "await expect(locator).toHaveClass(expectedClass)",
-              description: "Asserts that the element has the specified CSS class.",
+              description:
+                "Asserts that the element has the specified CSS class.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page.getByRole('button', { name: 'Submit' })).toHaveClass('btn-primary');
@@ -687,7 +698,8 @@ if (page) {
             },
             {
               signature: "await expect(locator).toContainText(expectedText)",
-              description: "Asserts that the element's text contains the expected text.",
+              description:
+                "Asserts that the element's text contains the expected text.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page.getByTestId('notification')).toContainText('Success');
@@ -700,7 +712,8 @@ if (page) {
             },
             {
               signature: "await expect(locator).toHaveJSProperty(name, value)",
-              description: "Asserts that the element has the specified JavaScript property.",
+              description:
+                "Asserts that the element has the specified JavaScript property.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page.getByTestId('toggle')).toHaveJSProperty('checked', true);
@@ -726,7 +739,8 @@ if (page) {
             },
             {
               signature: "await expect(page).toHaveTitle(expectedTitle)",
-              description: "Asserts that the page's title matches the expected title.",
+              description:
+                "Asserts that the page's title matches the expected title.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page).toHaveTitle('Dashboard - MyApp');
@@ -739,7 +753,8 @@ if (page) {
             },
             {
               signature: "await expect(page).toHaveScreenshot([options])",
-              description: "Asserts that the page's screenshot matches a stored reference image.",
+              description:
+                "Asserts that the page's screenshot matches a stored reference image.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page).toHaveScreenshot('dashboard.png');
@@ -752,7 +767,8 @@ if (page) {
             },
             {
               signature: "await expect(locator).toHaveCount(expectedCount)",
-              description: "Asserts that the locator resolves to a specific number of elements.",
+              description:
+                "Asserts that the locator resolves to a specific number of elements.",
               example: `const page = getCurrentPage();
         if (page) {
           await expect(page.locator('.todo-item')).toHaveCount(3);
@@ -777,7 +793,7 @@ if (page) {
               ],
             },
           ],
-        }
+        },
       ],
     };
   }

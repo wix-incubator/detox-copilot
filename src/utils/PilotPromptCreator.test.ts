@@ -22,7 +22,6 @@ describe("PilotPromptCreator", () => {
       {
         screenDescription: "default 1",
         step: "navigate to login screen",
-        
       },
       {
         screenDescription: "default 2",
