@@ -17,6 +17,12 @@ export class CodeEvaluator {
     try {
       const result = await asyncFunction();
 
+      logger.info({
+        message: `\nCopilot evaluated the code: \n\`\`\`\n${code}\n\`\`\``,
+        isBold: false,
+        color: "gray",
+      });
+
       return { code, result, sharedContext };
     } catch (error) {
       logger.error({
