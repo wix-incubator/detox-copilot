@@ -1,6 +1,6 @@
 {
   "name": "detox-copilot",
-  "version": "0.0.33",
+  "version": "0.0.35",
   "description": "A flexible plugin that drives your tests with human-written commands, enhanced by the power of large language models (LLMs)",
   "keywords": [
     "detox",
@@ -35,6 +35,10 @@
   },
   "bugs": {
     "url": "https://github.com/wix-incubator/detox-copilot/issues"
+  },
+  "peerDependencies": {
+    "playwright": ">=1.50.0",
+    "puppeteer-core": ">=20.8.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.0",

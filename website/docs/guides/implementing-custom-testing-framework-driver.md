@@ -11,6 +11,21 @@ The **testing framework driver** is a core component of **Copilot by Detox**, en
 
 ---
 
+## Available Framework Drivers
+
+Copilot has several framework drivers available:
+
+### Built into this package:
+- **Puppeteer Driver**: A complete implementation for web testing using Puppeteer
+- **Playwright Driver**: A modern web testing implementation using Playwright
+
+### Available in other packages:
+- **Detox Driver**: Mobile app testing implementation (available in the [Detox repository](https://github.com/wix/Detox/tree/master/detox/src/copilot))
+
+You can use these implementations as references when creating your own custom driver.
+
+---
+
 ## Recommended Approach for Framework Support
 
 Where possible, framework support should ideally be provided directly from the framework's codebase. For example, Detox includes support within its own repository: [Detox Copilot Driver](https://github.com/wix/Detox/tree/master/detox/src/copilot).
@@ -40,7 +55,7 @@ All drivers must implement the `TestingFrameworkDriver` interface. Key methods i
   Returns the view hierarchy of the current screen as a string.
 
 - `apiCatalog: TestingFrameworkAPICatalog`\
-  Categorizes the framework’s actions, matchers, and utilities.
+  Categorizes the framework's actions, matchers, and utilities.
 
 For detailed documentation, see the [Framework Driver API](../API/framework-driver.md).
 
@@ -52,7 +67,7 @@ For detailed documentation, see the [Framework Driver API](../API/framework-driv
 
 ### 3. **Define the API Catalog**
 
-The `apiCatalog` organizes the framework’s capabilities into categories:
+The `apiCatalog` organizes the framework's capabilities into categories:
 
 - **Actions**: e.g., `tap`, `longPress`, `scroll`.
 - **Matchers**: e.g., `by.id`, `by.text`.
