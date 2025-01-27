@@ -11,7 +11,7 @@ export type PreviousStep = {
 };
 
 /** Review section types */
-export type PilotReviewSectionType = "ux" | "a11y";
+export type PilotReviewSectionType = "ux" | "a11y"| "i18n";
 
 /** Complete pilot review */
 export type PilotReview = {
@@ -23,7 +23,7 @@ export type PilotReview = {
  */
 export type PilotStepReport = {
   /** Screen name of the current view */
-  screenName: string;
+  screenDescription: string;
   /** Action plan and reasoning */
   plan: PilotStepPlan;
   /** Optional reviews */
@@ -76,8 +76,8 @@ export type PilotReviewSection = {
  * Previous pilot step record.
  */
 export type PilotPreviousStep = {
-  /** Screen name */
-  screenName: string;
+  /** Screen description */
+  screenDescription: string;
   /** Step description */
   step: string;
   /** Optional reviews */

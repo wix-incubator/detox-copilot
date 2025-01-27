@@ -69,8 +69,8 @@ class Logger {
       .join(" ");
   }
 
-  private formatMessage(...components: LoggerMessageComponent[]): string {
-    return components
+  private formatMessageForLogFile(level: string, ...components: LoggerMessageComponent[]): string {
+    const messageText = components
       .map((component) => {
         if (typeof component === "string") {
           return component;
@@ -85,9 +85,12 @@ class Logger {
         return message;
       })
       .join(" ");
+      const timestamp: string = this.formatMessageEntryForLogFile(new Date());
+      const levelUpper: string = level.toUpperCase();
+      return `[${timestamp}] ${levelUpper}: ${messageText}`;
   }
 
-  private formatTimestamp(date: Date): string {
+  private formatMessageEntryForLogFile(date: Date): string {
     const pad = (n: number) => (n < 10 ? "0" + n : n.toString());
     const year = date.getFullYear();
     const month = pad(date.getMonth() + 1); 
@@ -114,15 +117,8 @@ class Logger {
       return component;
     });
 
-
     this.logger[level](this.colorizeMessage(...newComponents));
-
-    const timestamp = this.formatTimestamp(new Date());
-    const levelUpper = level.toUpperCase();
-    const messageText = this.formatMessage(...components); 
-    const logEntry = `[${timestamp}] ${levelUpper}: ${messageText}`;
-
-    this.logs.push(logEntry);
+    this.logs.push(this.formatMessageForLogFile(level, ...components));
   }
 
   public info(...components: LoggerMessageComponent[]): void {
@@ -176,7 +172,7 @@ class Logger {
   public writeLogsToFile(filename: string): void {
     try {
       fs.writeFileSync(filename, this.logs.join("\n"), "utf8");
-      this.info(`Logs have been written to ${filename}`);
+      this.info(`💾 Logs have been written to ${filename}`);
     } catch (err) {
       this.error("Failed to write logs to file:", {
         message: `${(err as Error).message}`,

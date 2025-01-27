@@ -330,7 +330,7 @@ describe("Copilot", () => {
         goal,
         steps: [
           {
-            screenName: "Screen 1",
+            screenDescription: "Screen 1",
             plan: {
               thoughts: "Step 1 thoughts",
               action: "Tap on GREAT button",
@@ -339,7 +339,7 @@ describe("Copilot", () => {
             goalAchieved: false,
           },
           {
-            screenName: "Screen 2",
+            screenDescription: "Screen 2",
             plan: {
               thoughts: "Completed successfully",
               action: "success",
@@ -365,7 +365,7 @@ describe("Copilot", () => {
       const goal = "Test the login flow";
 
       const pilotOutputStep1: PilotStepReport = {
-        screenName: "Login Screen",
+        screenDescription: "Login Screen",
         plan: {
           thoughts: "Step 1 thoughts",
           action: "Tap on Login button",
@@ -386,7 +386,7 @@ describe("Copilot", () => {
       };
 
       const pilotOutputSuccess: PilotStepReport = {
-        screenName: "Home Screen",
+        screenDescription: "Home Screen",
         plan: {
           thoughts: "Completed successfully",
           action: "success",
@@ -414,7 +414,7 @@ describe("Copilot", () => {
           goal: goal,
           steps: [
             {
-              screenName: pilotOutputStep1.screenName,
+              screenDescription: pilotOutputStep1.screenDescription,
               plan: pilotOutputStep1.plan,
               code: "code executed",
               review: pilotOutputStep1.review,
@@ -432,7 +432,7 @@ describe("Copilot", () => {
         goal: goal,
         steps: [
           {
-            screenName: pilotOutputStep1.screenName,
+            screenDescription: pilotOutputStep1.screenDescription,
             plan: pilotOutputStep1.plan,
             code: "code executed",
             review: pilotOutputStep1.review,

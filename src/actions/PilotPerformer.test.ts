@@ -14,11 +14,11 @@ const GOAL = "tap button";
 const VIEW_HIERARCHY = "<view></view>";
 const GENERATED_PROMPT = "generated prompt";
 
-// Updated PROMPT_RESULT to include screenName, UX, and Accessibility sections
+// Updated PROMPT_RESULT to include screenDescription, UX, Accessibility, and Internationalization sections
 const PROMPT_RESULT = `
-<SCREENNAME>
+<SCREENDESCRIPTION>
 default name
-</SCREENNAME>
+</SCREENDESCRIPTION>
 <THOUGHTS>
 I think this is great
 </THOUGHTS>
@@ -48,7 +48,19 @@ The review of accessibility
 <SCORE>
 8/10
 </SCORE>
-</ACCESSIBILITY>`;
+</ACCESSIBILITY>
+<INTERNATIONALIZATION>
+<SUMMARY>
+The review of i18n
+</SUMMARY>
+<FINDINGS>
+- i18n finding one
+- i18n finding two
+</FINDINGS>
+<SCORE>
+6/10
+</SCORE>
+</INTERNATIONALIZATION>`;
 
 const SNAPSHOT_DATA = "snapshot_data";
 
@@ -128,7 +140,7 @@ describe("PilotPerformer", () => {
     );
 
     const expectedResult = {
-      screenName: "default name",
+      screenDescription: "default name",
       plan: {
         thoughts: "I think this is great",
         action: "Tap on GREAT button",
@@ -143,6 +155,11 @@ describe("PilotPerformer", () => {
           summary: "The review of accessibility",
           findings: ["ACC finding one", "ACC finding two"],
           score: "8/10",
+        },
+        i18n: {
+          summary: "The review of i18n",
+          findings: ["i18n finding one", "i18n finding two"],
+          score: "6/10",
         },
       },
       goalAchieved: false,
@@ -171,7 +188,7 @@ describe("PilotPerformer", () => {
     );
 
     const expectedResult = {
-      screenName: "default name",
+      screenDescription: "default name",
       plan: {
         thoughts: "I think this is great",
         action: "Tap on GREAT button",
@@ -186,6 +203,11 @@ describe("PilotPerformer", () => {
           summary: "The review of accessibility",
           findings: ["ACC finding one", "ACC finding two"],
           score: "8/10",
+        },
+        i18n: {
+          summary: "The review of i18n",
+          findings: ["i18n finding one", "i18n finding two"],
+          score: "6/10",
         },
       },
       goalAchieved: false,
@@ -214,7 +236,7 @@ describe("PilotPerformer", () => {
     );
 
     const expectedResult = {
-      screenName: "default name",
+      screenDescription: "default name",
       plan: {
         thoughts: "I think this is great",
         action: "Tap on GREAT button",
@@ -229,6 +251,11 @@ describe("PilotPerformer", () => {
           summary: "The review of accessibility",
           findings: ["ACC finding one", "ACC finding two"],
           score: "8/10",
+        },
+        i18n: {
+          summary: "The review of i18n",
+          findings: ["i18n finding one", "i18n finding two"],
+          score: "6/10",
         },
       },
       goalAchieved: false,
@@ -251,8 +278,25 @@ describe("PilotPerformer", () => {
     const intent = "current intent";
     const previousIntents: PilotPreviousStep[] = [
       {
-        screenName: "default",
+        screenDescription: "default",
         step: "previous intent",
+        review: {
+          ux: {
+            summary: "Previous UX summary",
+            findings: ["Previous UX finding"],
+            score: "6/10",
+          },
+          a11y: {
+            summary: "Previous Accessibility summary",
+            findings: ["Previous ACC finding"],
+            score: "7/10",
+          },
+          i18n: {
+            summary: "Previous i18n summary",
+            findings: ["Previous i18n finding"],
+            score: "5/10",
+          },
+        },
       },
     ];
 
@@ -265,7 +309,7 @@ describe("PilotPerformer", () => {
     );
 
     const expectedResult = {
-      screenName: "default name",
+      screenDescription: "default name",
       plan: {
         thoughts: "I think this is great",
         action: "Tap on GREAT button",
@@ -280,6 +324,11 @@ describe("PilotPerformer", () => {
           summary: "The review of accessibility",
           findings: ["ACC finding one", "ACC finding two"],
           score: "8/10",
+        },
+        i18n: {
+          summary: "The review of i18n",
+          findings: ["i18n finding one", "i18n finding two"],
+          score: "6/10",
         },
       },
       goalAchieved: false,
@@ -301,7 +350,7 @@ describe("PilotPerformer", () => {
   describe("perform", () => {
     it("should perform multiple steps until success is returned", async () => {
       const pilotOutputStep1: PilotStepReport = {
-        screenName: "Screen 1",
+        screenDescription: "Screen 1",
         plan: {
           thoughts: "Step 1 thoughts",
           action: "Tap on GREAT button",
@@ -317,12 +366,17 @@ describe("PilotPerformer", () => {
             findings: [],
             score: "8/10",
           },
+          i18n: {
+            summary: "i18n review for step 1",
+            findings: [],
+            score: "6/10",
+          },
         },
         goalAchieved: false,
       };
 
       const pilotOutputSuccess: PilotStepReport = {
-        screenName: "Screen 2",
+        screenDescription: "Screen 2",
         plan: {
           thoughts: "Completed successfully",
           action: "success",
@@ -337,6 +391,11 @@ describe("PilotPerformer", () => {
             summary: "Final Accessibility review",
             findings: [],
             score: "9/10",
+          },
+          i18n: {
+            summary: "Final i18n review",
+            findings: [],
+            score: "8/10",
           },
         },
         goalAchieved: true,
@@ -373,7 +432,7 @@ describe("PilotPerformer", () => {
         goal: GOAL,
         steps: [
           {
-            screenName: "Screen 1",
+            screenDescription: "Screen 1",
             plan: pilotOutputStep1.plan,
             code: "code executed",
             review: pilotOutputStep1.review,

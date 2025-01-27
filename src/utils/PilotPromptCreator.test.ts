@@ -20,12 +20,12 @@ describe("PilotPromptCreator", () => {
     const intent = "tap button";
     const previousSteps: PilotPreviousStep[] = [
       {
-        screenName: "default 1",
+        screenDescription: "default 1",
         step: "navigate to login screen",
         
       },
       {
-        screenName: "default 2",
+        screenDescription: "default 2",
         step: "enter username",
       },
     ];
