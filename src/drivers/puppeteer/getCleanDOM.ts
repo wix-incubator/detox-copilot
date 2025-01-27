@@ -1,4 +1,4 @@
-import * as puppeteer from "puppeteer";
+import * as puppeteer from "puppeteer-core";
 
 /**
  * Get clean DOM from the page content

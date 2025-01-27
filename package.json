@@ -37,8 +37,8 @@
     "url": "https://github.com/wix-incubator/detox-copilot/issues"
   },
   "peerDependencies": {
-    "playwright": "^1.50.0",
-    "puppeteer": "^20.8.0"
+    "playwright": ">=1.50.0",
+    "puppeteer-core": ">=20.8.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.0",

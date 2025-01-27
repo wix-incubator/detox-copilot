@@ -1,15 +1,17 @@
 import { TestingFrameworkAPICatalog, TestingFrameworkDriver } from "@/types";
-import * as puppeteer from "puppeteer";
+import * as puppeteer from "puppeteer-core";
 import path from "path";
 import fs from "fs";
 import getCleanDOM from "./getCleanDOM";
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: puppeteer.Page;
+  private executablePath?: string;
 
-  constructor() {
+  constructor(executablePath?: string) {
     this.getCurrentPage = this.getCurrentPage.bind(this);
     this.setCurrentPage = this.setCurrentPage.bind(this);
+    this.executablePath = executablePath;
   }
 
   /**
@@ -84,8 +86,10 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               signature: "const browser = await puppeteer.launch([options])",
               description: "Launches a new browser instance.",
               example:
-                'const browser = await puppeteer.launch({`headless: "new"`});',
+                `const browser = await puppeteer.launch({\`headless: "new"\`, executablePath: "${this.executablePath}" });\n` +
+                `const browser = await puppeteer.launch({\`headless: "false"\`, executablePath: "${this.executablePath}" });`,
               guidelines: [
+                `Executable path is required always, use the path: ${this.executablePath}`,
                 "Options can specify `headless`, `slowMo`, `args`, etc.",
                 "Useful for running tests in a headless browser environment.",
                 'Prefer passing `headless: "new"` to `puppeteer.launch() unless mentioned that ' +

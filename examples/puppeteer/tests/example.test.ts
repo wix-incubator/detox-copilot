@@ -1,4 +1,5 @@
 import copilot from "@copilot";
+import puppeteer from "puppeteer";
 import { PromptHandler } from "../../utils/promptHandler";
 import { PuppeteerFrameworkDriver } from "@copilot/drivers/puppeteer";
 
@@ -11,6 +12,7 @@ describe("Example Test Suite", () => {
     const promptHandler: PromptHandler = new PromptHandler();
 
     frameworkDriver = new PuppeteerFrameworkDriver();
+    frameworkDriver = new PuppeteerFrameworkDriver(puppeteer.executablePath());
 
     copilot.init({
       frameworkDriver,
