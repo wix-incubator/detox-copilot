@@ -12,10 +12,12 @@ export const OUTPUTS_MAPPINGS: Record<string, OutputsMapping> = {
     score: { tag: "SCORE", isRequired: false },
   },
   PILOT_STEP: {
+    screenDescription: { tag: "SCREENDESCRIPTION", isRequired: true },
     thoughts: { tag: "THOUGHTS", isRequired: true },
     action: { tag: "ACTION", isRequired: true },
     ux: { tag: "UX", isRequired: false },
     a11y: { tag: "ACCESSIBILITY", isRequired: false },
+    i18n: { tag: "INTERNATIONALIZATION", isRequired: false },
   },
   PILOT_SUMMARY: {
     summary: { tag: "SUMMARY", isRequired: true },

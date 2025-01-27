@@ -500,6 +500,7 @@ describe("Copilot Integration Tests", () => {
         goal: goal,
         steps: [
           {
+            screenDescription: "Login Screen", // Added screenDescription
             plan: {
               thoughts: "First step thoughts",
               action: "Tap on login button",

@@ -12,6 +12,7 @@ import {
   LoggerMessageColor,
   LoggerOperationResultType,
 } from "@/types/logger";
+import * as fs from "fs";
 
 class Logger {
   private static instance: Logger;
@@ -26,6 +27,7 @@ class Logger {
     error: "red",
     debug: "gray",
   };
+  private logs: string[] = [];
 
   private constructor() {
     this.logger = createLogger({
@@ -67,13 +69,47 @@ class Logger {
       .join(" ");
   }
 
+  private formatMessageForLogFile(
+    level: string,
+    ...components: LoggerMessageComponent[]
+  ): string {
+    const messageText = components
+      .map((component) => {
+        if (typeof component === "string") {
+          return component;
+        }
+
+        let message = component.message;
+
+        if (component.isBold) {
+          message = `**${message}**`;
+        }
+
+        return message;
+      })
+      .join(" ");
+    const timestamp: string = this.formatMessageEntryForLogFile(new Date());
+    const levelUpper: string = level.toUpperCase();
+    return `[${timestamp}] ${levelUpper}: ${messageText}`;
+  }
+
+  private formatMessageEntryForLogFile(date: Date): string {
+    const pad = (n: number) => (n < 10 ? "0" + n : n.toString());
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
   private log(
     level: (typeof this.logLevels)[number],
     ...components: LoggerMessageComponent[]
   ): void {
     const newComponents = components.map((component) => {
       if (typeof component === "string") {
-        // Overriding the component to include the specified color
         return {
           message: component,
           isBold: false,
@@ -85,6 +121,7 @@ class Logger {
     });
 
     this.logger[level](this.colorizeMessage(...newComponents));
+    this.logs.push(this.formatMessageForLogFile(level, ...components));
   }
 
   public info(...components: LoggerMessageComponent[]): void {
@@ -113,7 +150,7 @@ class Logger {
       spinner.prefixText = "";
       const message = this.colorizeMessage(...components);
 
-      const spinnerActions: Record<LoggerOperationResultType, () => void> = {
+      const spinnerActions: Record<LoggerOperationResultType, () => ora.Ora> = {
         success: () => spinner.succeed(message),
         failure: () => spinner.fail(message),
         warn: () => spinner.warn(message),
@@ -128,6 +165,19 @@ class Logger {
     };
 
     return { update, stop };
+  }
+
+  public writeLogsToFile(filename: string): void {
+    try {
+      fs.writeFileSync(filename, this.logs.join("\n"), "utf8");
+      this.info(`💾 Logs have been written to ${filename}`);
+    } catch (err) {
+      this.error("Failed to write logs to file:", {
+        message: `${(err as Error).message}`,
+        isBold: false,
+        color: "red",
+      });
+    }
   }
 }
 

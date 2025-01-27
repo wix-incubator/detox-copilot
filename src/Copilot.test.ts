@@ -326,9 +326,11 @@ describe("Copilot", () => {
       const goal = "test goal";
 
       const mockPilotResult = {
+        summary: "Test completed successfully",
         goal,
         steps: [
           {
+            screenDescription: "Screen 1",
             plan: {
               thoughts: "Step 1 thoughts",
               action: "Tap on GREAT button",
@@ -337,6 +339,7 @@ describe("Copilot", () => {
             goalAchieved: false,
           },
           {
+            screenDescription: "Screen 2",
             plan: {
               thoughts: "Completed successfully",
               action: "success",
@@ -362,9 +365,10 @@ describe("Copilot", () => {
       const goal = "Test the login flow";
 
       const pilotOutputStep1: PilotStepReport = {
+        screenDescription: "Login Screen",
         plan: {
           thoughts: "Step 1 thoughts",
-          action: "Tap on GREAT button",
+          action: "Tap on Login button",
         },
         review: {
           ux: {
@@ -382,8 +386,9 @@ describe("Copilot", () => {
       };
 
       const pilotOutputSuccess: PilotStepReport = {
+        screenDescription: "Home Screen",
         plan: {
-          thoughts: "Completed successfully <SUMMARY> all was good </SUMMARY>",
+          thoughts: "Completed successfully",
           action: "success",
         },
         review: {
@@ -399,17 +404,19 @@ describe("Copilot", () => {
           },
         },
         goalAchieved: true,
+        summary: "All was good",
       };
 
       jest.spyOn(instance["pilotPerformer"], "perform").mockResolvedValue({
-        summary: "all was good",
+        summary: pilotOutputSuccess.summary,
         goal: goal,
         steps: [
           {
+            screenDescription: pilotOutputStep1.screenDescription,
             plan: pilotOutputStep1.plan,
             code: "code executed",
             review: pilotOutputStep1.review,
-            goalAchieved: true,
+            goalAchieved: pilotOutputStep1.goalAchieved,
           },
         ],
         review: pilotOutputSuccess.review,
@@ -419,14 +426,15 @@ describe("Copilot", () => {
 
       expect(instance["pilotPerformer"].perform).toHaveBeenCalledWith(goal);
       expect(result).toEqual({
-        summary: "all was good",
+        summary: pilotOutputSuccess.summary,
         goal: goal,
         steps: [
           {
+            screenDescription: pilotOutputStep1.screenDescription,
             plan: pilotOutputStep1.plan,
             code: "code executed",
             review: pilotOutputStep1.review,
-            goalAchieved: true,
+            goalAchieved: pilotOutputStep1.goalAchieved,
           },
         ],
         review: pilotOutputSuccess.review,

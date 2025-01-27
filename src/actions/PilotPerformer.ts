@@ -39,7 +39,10 @@ export class PilotPerformer {
     };
   }
 
-  private logReviewSection(review: PilotReviewSection, type: "ux" | "a11y") {
+  private logReviewSection(
+    review: PilotReviewSection,
+    type: "ux" | "a11y" | "i18n",
+  ) {
     const config: {
       [key: string]: {
         emoji: string;
@@ -56,6 +59,11 @@ export class PilotPerformer {
         emoji: "👁️ ",
         color: "yellowBright",
         findingColor: "yellow",
+      },
+      i18n: {
+        emoji: "🌐",
+        color: "cyanBright",
+        findingColor: "cyan",
       },
     };
 
@@ -96,10 +104,11 @@ export class PilotPerformer {
       const generatedPilotTaskDetails: string =
         await this.promptHandler.runPrompt(prompt, snapshot);
 
-      const { thoughts, action, ux, a11y } = extractOutputs({
-        text: generatedPilotTaskDetails,
-        outputsMapper: OUTPUTS_MAPPINGS.PILOT_STEP,
-      });
+      const { screenDescription, thoughts, action, ux, a11y, i18n } =
+        extractOutputs({
+          text: generatedPilotTaskDetails,
+          outputsMapper: OUTPUTS_MAPPINGS.PILOT_STEP,
+        });
 
       analysisLoggerSpinner.stop("success", `💭 Thoughts:`, {
         message: thoughts,
@@ -111,10 +120,18 @@ export class PilotPerformer {
       const review: PilotReview = {
         ux: this.extractReviewOutput(ux),
         a11y: this.extractReviewOutput(a11y),
+        i18n: this.extractReviewOutput(i18n),
       };
+
+      logger.info({
+        message: `Conducting review for ${screenDescription}\n`,
+        isBold: true,
+        color: "whiteBright",
+      });
 
       review.ux && this.logReviewSection(review.ux, "ux");
       review.a11y && this.logReviewSection(review.a11y, "a11y");
+      review.i18n && this.logReviewSection(review.i18n, "i18n");
 
       const goalAchieved = action === "success";
 
@@ -125,7 +142,7 @@ export class PilotPerformer {
           }).summary
         : undefined;
 
-      return { plan, review, goalAchieved, summary };
+      return { screenDescription, plan, review, goalAchieved, summary };
     } catch (error) {
       analysisLoggerSpinner.stop(
         "failure",
@@ -157,7 +174,7 @@ export class PilotPerformer {
     for (let step = 0; step < maxSteps; step++) {
       const screenCapture: ScreenCapturerResult =
         await this.screenCapturer.capture();
-      const { plan, review, goalAchieved, summary } =
+      const { screenDescription, plan, review, goalAchieved, summary } =
         await this.analyseScreenAndCreateCopilotStep(
           goal,
           previousSteps,
@@ -170,6 +187,7 @@ export class PilotPerformer {
           isBold: true,
           color: "whiteBright",
         });
+        logger.writeLogsToFile(`pilot_logs_${Date.now()}`);
         return { goal, summary, steps: [...report.steps], review };
       }
 
@@ -178,11 +196,14 @@ export class PilotPerformer {
         [...copilotSteps],
         screenCapture,
       );
-
       copilotSteps = [...copilotSteps, { step: plan.action, code, result }];
-      previousSteps = [...previousSteps, { step: plan.action, review }];
+      previousSteps = [
+        ...previousSteps,
+        { screenDescription, step: plan.action, review },
+      ];
 
       const stepReport: PilotStepReport = {
+        screenDescription,
         plan,
         review,
         code,
@@ -195,6 +216,7 @@ export class PilotPerformer {
     logger.warn(
       `🛬 Pilot finished execution due to limit of ${maxSteps} steps has been reached`,
     );
+    logger.writeLogsToFile(`pilot_logs_${Date.now()}`);
     return report;
   }
 }
