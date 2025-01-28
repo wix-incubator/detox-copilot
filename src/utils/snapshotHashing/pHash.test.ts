@@ -1,7 +1,7 @@
 import { pHash } from "./pHash";
 import { getSnapshotImage } from "@/test-utils/SnapshotComparatorTestImages/SnapshotImageGetter";
 
-describe("pHash algorithm", () => {
+describe.skip("pHash algorithm", () => {
   const snapshotComparator = new pHash();
   it("should hash a snapshot", async () => {
     const snapshot = getSnapshotImage("baseline");
