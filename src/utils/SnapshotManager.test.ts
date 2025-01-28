@@ -11,14 +11,15 @@ jest.mock("crypto", () => ({
   }),
 }));
 
-
 jest.mock("gm", () => {
-  const resizeMock = jest.fn().mockReturnThis();
-  const writeMock = jest.fn((outputPath: string, callback: Function) => {
-    callback(null); 
-  });
+  const resizeMock: jest.Mock = jest.fn().mockReturnThis();
+  const writeMock = jest.fn(
+    (outputPath: string, callback: (error: Error | null) => void) => {
+      callback(null);
+    },
+  );
 
-  const gmMock = jest.fn((imagePath: string) => ({
+  const gmMock = jest.fn(() => ({
     resize: resizeMock,
     write: writeMock,
   }));
@@ -28,7 +29,7 @@ jest.mock("gm", () => {
 
   return gmMock;
 });
-const gmMock = (gm as unknown) as jest.Mock & {
+const gmMock = gm as unknown as jest.Mock & {
   resizeMock: jest.MockedFunction<any>;
   writeMock: jest.MockedFunction<any>;
 };

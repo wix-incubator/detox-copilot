@@ -19,25 +19,27 @@ import {
 } from "@/test-utils/APICatalogTestUtils";
 import { getSnapshotImage } from "@/test-utils/SnapshotComparatorTestImages/SnapshotImageGetter";
 import { SnapshotComparator } from "@/utils/SnapshotComparator";
-import gm from "gm"
+
 jest.mock("crypto");
 jest.mock("fs");
 jest.mock("gm", () => {
-    const resizeMock = jest.fn().mockReturnThis();
-    const writeMock = jest.fn((outputPath: string, callback: Function) => {
-      callback(null); 
-    });
-  
-    const gmMock = jest.fn((imagePath: string) => ({
-      resize: resizeMock,
-      write: writeMock,
-    }));
-  
-    (gmMock as any).resizeMock = resizeMock;
-    (gmMock as any).writeMock = writeMock;
-  
-    return gmMock;
-  });
+  const resizeMock = jest.fn().mockReturnThis();
+  const writeMock = jest.fn(
+    (outputPath: string, callback: (error: Error | null) => void) => {
+      callback(null);
+    },
+  );
+
+  const gmMock = jest.fn(() => ({
+    resize: resizeMock,
+    write: writeMock,
+  }));
+
+  (gmMock as any).resizeMock = resizeMock;
+  (gmMock as any).writeMock = writeMock;
+
+  return gmMock;
+});
 
 describe("Copilot Integration Tests", () => {
   let mockedCachedSnapshotHash: SnapshotHashObject;
@@ -64,8 +66,6 @@ describe("Copilot Integration Tests", () => {
       runPrompt: jest.fn(),
       isSnapshotImageSupported: jest.fn().mockReturnValue(true),
     };
-    
-   
 
     mockedCachedSnapshotHash = await new SnapshotComparator().generateHashes(
       getSnapshotImage("baseline"),

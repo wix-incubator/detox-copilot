@@ -1,8 +1,7 @@
 import { TestingFrameworkDriver } from "@/types";
 import { SnapshotComparator } from "@/utils/SnapshotComparator";
 import crypto from "crypto";
-import gm from 'gm';
-import path from 'path';
+import gm from "gm";
 
 const DEFAULT_POLL_INTERVAL = 500; // ms
 const DEFAULT_TIMEOUT = 5000; // ms
@@ -85,17 +84,16 @@ export class SnapshotManager {
       timeout,
     );
   }
-  
+
   private async downscaleImage(imagePath: string): Promise<string> {
     const desiredWidth = 800;
-  
-  
+
     return new Promise<string>((resolve, reject) => {
       gm(imagePath)
-        .resize(desiredWidth)  
+        .resize(desiredWidth)
         .write(imagePath, (err: any) => {
           if (err) {
-            console.error('Error downscaling image:', err);
+            console.error("Error downscaling image:", err);
             reject(err);
           } else {
             resolve(imagePath);
