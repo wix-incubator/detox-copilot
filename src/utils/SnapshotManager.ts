@@ -1,7 +1,7 @@
 import { TestingFrameworkDriver } from "@/types";
 import { SnapshotComparator } from "@/utils/SnapshotComparator";
 import crypto from "crypto";
-import Jimp from 'jimp';
+import gm from 'gm';
 import path from 'path';
 
 const DEFAULT_POLL_INTERVAL = 500; // ms
@@ -88,24 +88,20 @@ export class SnapshotManager {
   
   private async downscaleImage(imagePath: string): Promise<string> {
     const desiredWidth = 800;
-    const image = await Jimp.read(imagePath);
-
-    const { width, height } = image.bitmap;
-    const scaleFactor = desiredWidth / width;
-    const newWidth = desiredWidth;
-    const newHeight = Math.round(height * scaleFactor);
   
-    image.resize(newWidth, newHeight);
-    const dirname = path.dirname(imagePath);
-    const extname = path.extname(imagePath);
-    const basename = path.basename(imagePath, extname);
-    const downscaledImagePath = path.join(
-      dirname,
-      `${basename}_downscaled${extname}`,
-    );
-    await image.writeAsync(downscaledImagePath);
   
-    return downscaledImagePath;
+    return new Promise<string>((resolve, reject) => {
+      gm(imagePath)
+        .resize(desiredWidth)  
+        .write(imagePath, (err: any) => {
+          if (err) {
+            console.error('Error downscaling image:', err);
+            reject(err);
+          } else {
+            resolve(imagePath);
+          }
+        });
+    });
   }
 
   async captureViewHierarchyString(

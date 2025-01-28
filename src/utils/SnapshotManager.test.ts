@@ -2,6 +2,7 @@ import { SnapshotManager } from "./SnapshotManager";
 import { TestingFrameworkDriver } from "@/types";
 import { SnapshotComparator } from "./SnapshotComparator";
 import crypto from "crypto";
+import gm from "gm";
 
 jest.mock("crypto", () => ({
   createHash: jest.fn().mockReturnValue({
@@ -9,6 +10,28 @@ jest.mock("crypto", () => ({
     digest: jest.fn(),
   }),
 }));
+
+
+jest.mock("gm", () => {
+  const resizeMock = jest.fn().mockReturnThis();
+  const writeMock = jest.fn((outputPath: string, callback: Function) => {
+    callback(null); 
+  });
+
+  const gmMock = jest.fn((imagePath: string) => ({
+    resize: resizeMock,
+    write: writeMock,
+  }));
+
+  (gmMock as any).resizeMock = resizeMock;
+  (gmMock as any).writeMock = writeMock;
+
+  return gmMock;
+});
+const gmMock = (gm as unknown) as jest.Mock & {
+  resizeMock: jest.MockedFunction<any>;
+  writeMock: jest.MockedFunction<any>;
+};
 
 describe("SnapshotManager", () => {
   let mockDriver: jest.Mocked<TestingFrameworkDriver>;
@@ -30,26 +53,36 @@ describe("SnapshotManager", () => {
 
     // Mock timers
     jest.useFakeTimers();
+
+    // Clear mocks
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
     jest.useRealTimers();
-    jest.clearAllMocks();
   });
 
   describe("captureSnapshotImage", () => {
     it("should return stable snapshot when UI becomes stable", async () => {
-      const snapshots = ["snapshot1", "snapshot2", "snapshot2"];
-      const hashes = ["hash1", "hash2", "hash2"];
+      const snapshots = [
+        "/path/to/snapshot1.png",
+        "/path/to/snapshot2.png",
+        "/path/to/snapshot2.png",
+      ];
       let callCount = 0;
 
       mockDriver.captureSnapshotImage.mockImplementation(async () => {
         return snapshots[callCount++];
       });
 
+      const imagePathToHash: { [key: string]: string } = {
+        "/path/to/snapshot1.png": "hash1",
+        "/path/to/snapshot2.png": "hash2",
+      };
+
       mockSnapshotComparator.generateHashes.mockImplementation(
-        async (snapshot) => {
-          return { BlockHash: hashes[snapshots.indexOf(snapshot)] };
+        async (snapshot: string) => {
+          return { BlockHash: imagePathToHash[snapshot] };
         },
       );
 
@@ -69,24 +102,44 @@ describe("SnapshotManager", () => {
 
       const result = await capturePromise;
 
-      expect(result).toBe("snapshot2");
+      expect(result).toBe("/path/to/snapshot2.png");
       expect(mockDriver.captureSnapshotImage).toHaveBeenCalledTimes(3);
       expect(mockSnapshotComparator.generateHashes).toHaveBeenCalledTimes(4);
       expect(mockSnapshotComparator.compareSnapshot).toHaveBeenCalledTimes(2);
+
+      // Verify that gm was called with correct parameters
+      expect(gmMock).toHaveBeenCalledTimes(3);
+      expect(gmMock).toHaveBeenNthCalledWith(1, "/path/to/snapshot1.png");
+      expect(gmMock).toHaveBeenNthCalledWith(2, "/path/to/snapshot2.png");
+      expect(gmMock).toHaveBeenNthCalledWith(3, "/path/to/snapshot2.png");
+      expect(gmMock.resizeMock).toHaveBeenCalledTimes(3);
+      expect(gmMock.resizeMock).toHaveBeenCalledWith(800);
+      expect(gmMock.writeMock).toHaveBeenCalledTimes(3);
     });
 
     it("should return last snapshot when timeout is reached", async () => {
-      const snapshots = ["snapshot1", "snapshot2", "snapshot3", "snapshot4"];
-      const hashes = ["hash1", "hash2", "hash3", "hash4"];
+      const snapshots = [
+        "/path/to/snapshot1.png",
+        "/path/to/snapshot2.png",
+        "/path/to/snapshot3.png",
+        "/path/to/snapshot4.png",
+      ];
       let callCount = 0;
 
       mockDriver.captureSnapshotImage.mockImplementation(async () => {
         return snapshots[callCount++];
       });
 
+      const imagePathToHash: { [key: string]: string } = {
+        "/path/to/snapshot1.png": "hash1",
+        "/path/to/snapshot2.png": "hash2",
+        "/path/to/snapshot3.png": "hash3",
+        "/path/to/snapshot4.png": "hash4",
+      };
+
       mockSnapshotComparator.generateHashes.mockImplementation(
-        async (snapshot) => {
-          return { BlockHash: hashes[snapshots.indexOf(snapshot)] };
+        async (snapshot: string) => {
+          return { BlockHash: imagePathToHash[snapshot] };
         },
       );
 
@@ -99,8 +152,13 @@ describe("SnapshotManager", () => {
 
       const result = await capturePromise;
 
-      expect(result).toBe("snapshot3");
+      expect(result).toBe("/path/to/snapshot3.png");
       expect(mockDriver.captureSnapshotImage).toHaveBeenCalledTimes(3);
+
+      // Verify that gm was called
+      expect(gmMock).toHaveBeenCalledTimes(3);
+      expect(gmMock.resizeMock).toHaveBeenCalledTimes(3);
+      expect(gmMock.writeMock).toHaveBeenCalledTimes(3);
     });
 
     it("should handle undefined snapshots", async () => {
@@ -111,6 +169,7 @@ describe("SnapshotManager", () => {
       expect(result).toBeUndefined();
       expect(mockDriver.captureSnapshotImage).toHaveBeenCalledTimes(1);
       expect(mockSnapshotComparator.generateHashes).not.toHaveBeenCalled();
+      expect(gmMock).not.toHaveBeenCalled();
     });
   });
 
