@@ -44,7 +44,7 @@ export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
 
     await this.currentPage.screenshot({
       path: fileName,
-      fullPage: false,
+      fullPage: true,
     });
 
     return path.resolve(fileName);

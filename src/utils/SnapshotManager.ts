@@ -1,6 +1,8 @@
 import { TestingFrameworkDriver } from "@/types";
 import { SnapshotComparator } from "@/utils/SnapshotComparator";
 import crypto from "crypto";
+import Jimp from 'jimp';
+import path from 'path';
 
 const DEFAULT_POLL_INTERVAL = 500; // ms
 const DEFAULT_TIMEOUT = 5000; // ms
@@ -70,12 +72,40 @@ export class SnapshotManager {
     stabilityThreshold: number = DEFAULT_STABILITY_THRESHOLD,
   ): Promise<string | undefined> {
     return this.waitForStableState(
-      () => this.driver.captureSnapshotImage(),
+      async () => {
+        const imagePath = await this.driver.captureSnapshotImage();
+        if (imagePath) {
+          const downscaledImagePath = await this.downscaleImage(imagePath);
+          return downscaledImagePath;
+        }
+      },
       (current, last) =>
         this.compareSnapshots(current, last, stabilityThreshold),
       pollInterval,
       timeout,
     );
+  }
+  
+  private async downscaleImage(imagePath: string): Promise<string> {
+    const desiredWidth = 800;
+    const image = await Jimp.read(imagePath);
+
+    const { width, height } = image.bitmap;
+    const scaleFactor = desiredWidth / width;
+    const newWidth = desiredWidth;
+    const newHeight = Math.round(height * scaleFactor);
+  
+    image.resize(newWidth, newHeight);
+    const dirname = path.dirname(imagePath);
+    const extname = path.extname(imagePath);
+    const basename = path.basename(imagePath, extname);
+    const downscaledImagePath = path.join(
+      dirname,
+      `${basename}_downscaled${extname}`,
+    );
+    await image.writeAsync(downscaledImagePath);
+  
+    return downscaledImagePath;
   }
 
   async captureViewHierarchyString(
