@@ -1,8 +1,8 @@
 import { SnapshotManager } from "./SnapshotManager";
 import { TestingFrameworkDriver } from "@/types";
-import { SnapshotComparator } from "./SnapshotComparator";
+import { SnapshotComparator } from "@/utils/SnapshotComparator";
 import crypto from "crypto";
-import gm from "gm";
+import { downscaleImage } from "./ImageScaler";
 
 jest.mock("crypto", () => ({
   createHash: jest.fn().mockReturnValue({
@@ -11,28 +11,15 @@ jest.mock("crypto", () => ({
   }),
 }));
 
-jest.mock("gm", () => {
-  const resizeMock: jest.Mock = jest.fn().mockReturnThis();
-  const writeMock = jest.fn(
-    (outputPath: string, callback: (error: Error | null) => void) => {
-      callback(null);
-    },
-  );
+jest.mock("./ImageScaler", () => ({
+  downscaleImage: jest
+    .fn()
+    .mockImplementation((path: string) => Promise.resolve(path)),
+}));
 
-  const gmMock = jest.fn(() => ({
-    resize: resizeMock,
-    write: writeMock,
-  }));
-
-  (gmMock as any).resizeMock = resizeMock;
-  (gmMock as any).writeMock = writeMock;
-
-  return gmMock;
-});
-const gmMock = gm as unknown as jest.Mock & {
-  resizeMock: jest.MockedFunction<any>;
-  writeMock: jest.MockedFunction<any>;
-};
+const downscaleImageMock = downscaleImage as jest.MockedFunction<
+  typeof downscaleImage
+>;
 
 describe("SnapshotManager", () => {
   let mockDriver: jest.Mocked<TestingFrameworkDriver>;
@@ -83,7 +70,10 @@ describe("SnapshotManager", () => {
 
       mockSnapshotComparator.generateHashes.mockImplementation(
         async (snapshot: string) => {
-          return { BlockHash: imagePathToHash[snapshot] };
+          return {
+            BlockHash: imagePathToHash[snapshot],
+            Phash: imagePathToHash[snapshot],
+          };
         },
       );
 
@@ -95,10 +85,7 @@ describe("SnapshotManager", () => {
 
       const capturePromise = snapshotManager.captureSnapshotImage(100);
 
-      // Fast-forward time to trigger the first two different snapshots
       await jest.advanceTimersByTimeAsync(200);
-
-      // Fast-forward to get the stable snapshot
       await jest.advanceTimersByTimeAsync(100);
 
       const result = await capturePromise;
@@ -108,14 +95,19 @@ describe("SnapshotManager", () => {
       expect(mockSnapshotComparator.generateHashes).toHaveBeenCalledTimes(4);
       expect(mockSnapshotComparator.compareSnapshot).toHaveBeenCalledTimes(2);
 
-      // Verify that gm was called with correct parameters
-      expect(gmMock).toHaveBeenCalledTimes(3);
-      expect(gmMock).toHaveBeenNthCalledWith(1, "/path/to/snapshot1.png");
-      expect(gmMock).toHaveBeenNthCalledWith(2, "/path/to/snapshot2.png");
-      expect(gmMock).toHaveBeenNthCalledWith(3, "/path/to/snapshot2.png");
-      expect(gmMock.resizeMock).toHaveBeenCalledTimes(3);
-      expect(gmMock.resizeMock).toHaveBeenCalledWith(800);
-      expect(gmMock.writeMock).toHaveBeenCalledTimes(3);
+      expect(downscaleImageMock).toHaveBeenCalledTimes(3);
+      expect(downscaleImageMock).toHaveBeenNthCalledWith(
+        1,
+        "/path/to/snapshot1.png",
+      );
+      expect(downscaleImageMock).toHaveBeenNthCalledWith(
+        2,
+        "/path/to/snapshot2.png",
+      );
+      expect(downscaleImageMock).toHaveBeenNthCalledWith(
+        3,
+        "/path/to/snapshot2.png",
+      );
     });
 
     it("should return last snapshot when timeout is reached", async () => {
@@ -140,7 +132,10 @@ describe("SnapshotManager", () => {
 
       mockSnapshotComparator.generateHashes.mockImplementation(
         async (snapshot: string) => {
-          return { BlockHash: imagePathToHash[snapshot] };
+          return {
+            BlockHash: imagePathToHash[snapshot],
+            Phash: imagePathToHash[snapshot],
+          };
         },
       );
 
@@ -156,10 +151,8 @@ describe("SnapshotManager", () => {
       expect(result).toBe("/path/to/snapshot3.png");
       expect(mockDriver.captureSnapshotImage).toHaveBeenCalledTimes(3);
 
-      // Verify that gm was called
-      expect(gmMock).toHaveBeenCalledTimes(3);
-      expect(gmMock.resizeMock).toHaveBeenCalledTimes(3);
-      expect(gmMock.writeMock).toHaveBeenCalledTimes(3);
+      // Verify that downscaleImage was called
+      expect(downscaleImageMock).toHaveBeenCalledTimes(3);
     });
 
     it("should handle undefined snapshots", async () => {
@@ -170,7 +163,7 @@ describe("SnapshotManager", () => {
       expect(result).toBeUndefined();
       expect(mockDriver.captureSnapshotImage).toHaveBeenCalledTimes(1);
       expect(mockSnapshotComparator.generateHashes).not.toHaveBeenCalled();
-      expect(gmMock).not.toHaveBeenCalled();
+      expect(downscaleImageMock).not.toHaveBeenCalled();
     });
   });
 

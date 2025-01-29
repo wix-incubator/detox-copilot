@@ -22,24 +22,11 @@ import { SnapshotComparator } from "@/utils/SnapshotComparator";
 
 jest.mock("crypto");
 jest.mock("fs");
-jest.mock("gm", () => {
-  const resizeMock = jest.fn().mockReturnThis();
-  const writeMock = jest.fn(
-    (outputPath: string, callback: (error: Error | null) => void) => {
-      callback(null);
-    },
-  );
-
-  const gmMock = jest.fn(() => ({
-    resize: resizeMock,
-    write: writeMock,
-  }));
-
-  (gmMock as any).resizeMock = resizeMock;
-  (gmMock as any).writeMock = writeMock;
-
-  return gmMock;
-});
+jest.mock("../utils/ImageScaler", () => ({
+  downscaleImage: jest
+    .fn()
+    .mockImplementation((path: string) => Promise.resolve(path)),
+}));
 
 describe("Copilot Integration Tests", () => {
   let mockedCachedSnapshotHash: SnapshotHashObject;

@@ -1,9 +1,8 @@
 import { TestingFrameworkDriver } from "@/types";
 import { SnapshotComparator } from "@/utils/SnapshotComparator";
 import crypto from "crypto";
-import gm from "gm";
+import { downscaleImage } from "./ImageScaler";
 
-const MAX_PIXELS = 2000000;
 const DEFAULT_POLL_INTERVAL = 500; // ms
 const DEFAULT_TIMEOUT = 5000; // ms
 const DEFAULT_STABILITY_THRESHOLD = 0.05;
@@ -75,7 +74,7 @@ export class SnapshotManager {
       async () => {
         const imagePath = await this.driver.captureSnapshotImage();
         if (imagePath) {
-          const downscaledImagePath = await this.downscaleImage(imagePath);
+          const downscaledImagePath = await downscaleImage(imagePath);
           return downscaledImagePath;
         }
       },
@@ -84,44 +83,6 @@ export class SnapshotManager {
       pollInterval,
       timeout,
     );
-  }
-
-  private async downscaleImage(imagePath: string): Promise<string> {
-   
-    return new Promise<string>((resolve, reject) => {
-      gm(imagePath)
-        .size(function (err: any, size: { width: number; height: number }) {
-          if (err) {
-            console.error("Error getting image size:", err);
-            reject(err);
-          } else {
-            const originalWidth = size.width;
-            const originalHeight = size.height;
-            const originalTotalPixels = originalWidth * originalHeight;
-  
-            if (originalTotalPixels <= MAX_PIXELS) {
-              resolve(imagePath);
-            } else {
-              const aspectRatio = originalWidth / originalHeight;
-              const newHeight = Math.sqrt(MAX_PIXELS / aspectRatio);
-              const newWidth = newHeight * aspectRatio;
-              const roundedWidth = Math.round(newWidth);
-              const roundedHeight = Math.round(newHeight);
-  
-              gm(imagePath)
-                .resize(roundedWidth, roundedHeight)
-                 .write(imagePath, (err: any) => {
-                  if (err) {
-                    console.error("Error downscaling image:", err);
-                    reject(err);
-                  } else {
-                    resolve(imagePath);
-                  }
-                });
-            }
-          }
-        });
-    });
   }
 
   async captureViewHierarchyString(
