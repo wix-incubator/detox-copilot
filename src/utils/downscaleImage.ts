@@ -1,14 +1,27 @@
 import gm from "gm";
+import logger from "./logger";
+import path from "path";
+import os from "os";
+
 const MAX_PIXELS = 2000000;
 
-export async function downscaleImage(imagePath: string): Promise<string> {
+async function downscaleImage(imagePath: string): Promise<string> {
   return new Promise<string>((resolve, reject) => {
+    const parsedPath = path.parse(imagePath);
+    parsedPath.dir = os.tmpdir();
+    parsedPath.name += "_downscaled";
+    parsedPath.base = parsedPath.name + parsedPath.ext;
+    const downscaledPath = path.format(parsedPath);
     gm(imagePath).size(function (
       err: any,
       size: { width: number; height: number },
     ) {
       if (err) {
-        console.error("Error getting image size:", err);
+        logger.error({
+          message: `Error getting image size: ${err}`,
+          isBold: false,
+          color: "gray",
+        });
         reject(err);
       } else {
         const originalWidth = size.width;
@@ -26,12 +39,16 @@ export async function downscaleImage(imagePath: string): Promise<string> {
 
           gm(imagePath)
             .resize(roundedWidth, roundedHeight)
-            .write(imagePath, (err: any) => {
+            .write(downscaledPath, (err: any) => {
               if (err) {
-                console.error("Error downscaling image:", err);
+                logger.error({
+                  message: `Error writing downscaled image: ${err}`,
+                  isBold: false,
+                  color: "gray",
+                });
                 reject(err);
               } else {
-                resolve(imagePath);
+                resolve(downscaledPath);
               }
             });
         }
@@ -39,3 +56,5 @@ export async function downscaleImage(imagePath: string): Promise<string> {
     });
   });
 }
+
+export default downscaleImage;

@@ -2,8 +2,8 @@ import { SnapshotManager } from "./SnapshotManager";
 import { TestingFrameworkDriver } from "@/types";
 import { SnapshotComparator } from "@/utils/SnapshotComparator";
 import crypto from "crypto";
-import { downscaleImage } from "./ImageScaler";
 
+// Mock the crypto module
 jest.mock("crypto", () => ({
   createHash: jest.fn().mockReturnValue({
     update: jest.fn().mockReturnThis(),
@@ -11,20 +11,11 @@ jest.mock("crypto", () => ({
   }),
 }));
 
-jest.mock("./ImageScaler", () => ({
-  downscaleImage: jest
-    .fn()
-    .mockImplementation((path: string) => Promise.resolve(path)),
-}));
-
-const downscaleImageMock = downscaleImage as jest.MockedFunction<
-  typeof downscaleImage
->;
-
 describe("SnapshotManager", () => {
   let mockDriver: jest.Mocked<TestingFrameworkDriver>;
   let mockSnapshotComparator: jest.Mocked<SnapshotComparator>;
   let snapshotManager: SnapshotManager;
+  let mockDownscaleImage: jest.Mock;
 
   beforeEach(() => {
     mockDriver = {
@@ -37,17 +28,17 @@ describe("SnapshotManager", () => {
       compareSnapshot: jest.fn(),
     } as any;
 
-    snapshotManager = new SnapshotManager(mockDriver, mockSnapshotComparator);
+    // Create a mock for downscaleImage
+    mockDownscaleImage = jest.fn();
 
-    // Mock timers
-    jest.useFakeTimers();
-
+    snapshotManager = new SnapshotManager(
+      mockDriver,
+      mockSnapshotComparator,
+      mockDownscaleImage,
+    );
+    mockDownscaleImage.mockImplementation(async (imagePath) => imagePath);
     // Clear mocks
     jest.clearAllMocks();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
   });
 
   describe("captureSnapshotImage", () => {
@@ -83,28 +74,28 @@ describe("SnapshotManager", () => {
         },
       );
 
-      const capturePromise = snapshotManager.captureSnapshotImage(100);
+      const resultPromise = snapshotManager.captureSnapshotImage(100);
 
-      await jest.advanceTimersByTimeAsync(200);
-      await jest.advanceTimersByTimeAsync(100);
+      // Wait for the snapshots to be captured and compared
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
-      const result = await capturePromise;
+      const result = await resultPromise;
 
       expect(result).toBe("/path/to/snapshot2.png");
       expect(mockDriver.captureSnapshotImage).toHaveBeenCalledTimes(3);
       expect(mockSnapshotComparator.generateHashes).toHaveBeenCalledTimes(4);
       expect(mockSnapshotComparator.compareSnapshot).toHaveBeenCalledTimes(2);
 
-      expect(downscaleImageMock).toHaveBeenCalledTimes(3);
-      expect(downscaleImageMock).toHaveBeenNthCalledWith(
+      expect(mockDownscaleImage).toHaveBeenCalledTimes(3);
+      expect(mockDownscaleImage).toHaveBeenNthCalledWith(
         1,
         "/path/to/snapshot1.png",
       );
-      expect(downscaleImageMock).toHaveBeenNthCalledWith(
+      expect(mockDownscaleImage).toHaveBeenNthCalledWith(
         2,
         "/path/to/snapshot2.png",
       );
-      expect(downscaleImageMock).toHaveBeenNthCalledWith(
+      expect(mockDownscaleImage).toHaveBeenNthCalledWith(
         3,
         "/path/to/snapshot2.png",
       );
@@ -141,18 +132,16 @@ describe("SnapshotManager", () => {
 
       mockSnapshotComparator.compareSnapshot.mockReturnValue(false);
 
-      const capturePromise = snapshotManager.captureSnapshotImage(100, 250);
+      const resultPromise = snapshotManager.captureSnapshotImage(100, 250);
 
-      // Fast-forward past the timeout
-      await jest.advanceTimersByTimeAsync(300);
+      // Wait for the timeout to be reached
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
-      const result = await capturePromise;
+      const result = await resultPromise;
 
       expect(result).toBe("/path/to/snapshot3.png");
       expect(mockDriver.captureSnapshotImage).toHaveBeenCalledTimes(3);
-
-      // Verify that downscaleImage was called
-      expect(downscaleImageMock).toHaveBeenCalledTimes(3);
+      expect(mockDownscaleImage).toHaveBeenCalledTimes(3);
     });
 
     it("should handle undefined snapshots", async () => {
@@ -163,7 +152,7 @@ describe("SnapshotManager", () => {
       expect(result).toBeUndefined();
       expect(mockDriver.captureSnapshotImage).toHaveBeenCalledTimes(1);
       expect(mockSnapshotComparator.generateHashes).not.toHaveBeenCalled();
-      expect(downscaleImageMock).not.toHaveBeenCalled();
+      expect(mockDownscaleImage).not.toHaveBeenCalled();
     });
   });
 
@@ -192,15 +181,12 @@ describe("SnapshotManager", () => {
         digest: mockDigest,
       });
 
-      const capturePromise = snapshotManager.captureViewHierarchyString(100);
+      const resultPromise = snapshotManager.captureViewHierarchyString(100);
 
-      // Fast-forward time to trigger the first two different hierarchies
-      await jest.advanceTimersByTimeAsync(200);
+      // Wait for the view hierarchies to be captured and compared
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // Fast-forward to get the stable hierarchy
-      await jest.advanceTimersByTimeAsync(100);
-
-      const result = await capturePromise;
+      const result = await resultPromise;
 
       expect(result).toBe("<view>2</view>");
       expect(mockDriver.captureViewHierarchyString).toHaveBeenCalledTimes(3);

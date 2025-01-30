@@ -1,17 +1,20 @@
 import { TestingFrameworkDriver } from "@/types";
 import { SnapshotComparator } from "@/utils/SnapshotComparator";
 import crypto from "crypto";
-import { downscaleImage } from "./ImageScaler";
 
 const DEFAULT_POLL_INTERVAL = 500; // ms
 const DEFAULT_TIMEOUT = 5000; // ms
 const DEFAULT_STABILITY_THRESHOLD = 0.05;
 
 export class SnapshotManager {
+  private downscaleImage: (imagePath: string) => Promise<string>;
   constructor(
     private driver: TestingFrameworkDriver,
     private snapshotComparator: SnapshotComparator,
-  ) {}
+    downscaleImage: (imagePath: string) => Promise<string>,
+  ) {
+    this.downscaleImage = downscaleImage;
+  }
 
   private async waitForStableState<T>(
     captureFunc: () => Promise<T | undefined>,
@@ -65,19 +68,23 @@ export class SnapshotManager {
     return currentHash === lastHash;
   }
 
+  private async captureSnapshotAndDownScaleImage(): Promise<
+    string | undefined
+  > {
+    const imagePath = await this.driver.captureSnapshotImage();
+    if (imagePath) {
+      const downscaledImagePath = await this.downscaleImage(imagePath);
+      return downscaledImagePath;
+    }
+  }
+
   async captureSnapshotImage(
     pollInterval?: number,
     timeout?: number,
     stabilityThreshold: number = DEFAULT_STABILITY_THRESHOLD,
   ): Promise<string | undefined> {
     return this.waitForStableState(
-      async () => {
-        const imagePath = await this.driver.captureSnapshotImage();
-        if (imagePath) {
-          const downscaledImagePath = await downscaleImage(imagePath);
-          return downscaledImagePath;
-        }
-      },
+      async () => this.captureSnapshotAndDownScaleImage(),
       (current, last) =>
         this.compareSnapshots(current, last, stabilityThreshold),
       pollInterval,

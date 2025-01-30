@@ -17,6 +17,7 @@ import { PilotPromptCreator } from "./utils/PilotPromptCreator";
 import { ScreenCapturer } from "./utils/ScreenCapturer";
 import { CopilotAPISearchPromptCreator } from "./utils/CopilotAPISearchPromptCreator";
 import { ViewAnalysisPromptCreator } from "./utils/ViewAnalysisPromptCreator";
+import downscaleImage from "./utils/downscaleImage";
 
 /**
  * The main Copilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
@@ -48,6 +49,7 @@ export class Copilot {
     this.snapshotManager = new SnapshotManager(
       config.frameworkDriver,
       snapshotComparator,
+      downscaleImage,
     );
     this.pilotPromptCreator = new PilotPromptCreator();
     this.cacheHandler = new CacheHandler();

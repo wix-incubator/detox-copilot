@@ -22,11 +22,6 @@ import { SnapshotComparator } from "@/utils/SnapshotComparator";
 
 jest.mock("crypto");
 jest.mock("fs");
-jest.mock("../utils/ImageScaler", () => ({
-  downscaleImage: jest
-    .fn()
-    .mockImplementation((path: string) => Promise.resolve(path)),
-}));
 
 describe("Copilot Integration Tests", () => {
   let mockedCachedSnapshotHash: SnapshotHashObject;
