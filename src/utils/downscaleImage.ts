@@ -1,60 +1,58 @@
-import gm from "gm";
-import logger from "./logger";
+import { createCanvas, loadImage } from "canvas";
+import fs from "fs";
 import path from "path";
 import os from "os";
+import logger from "./logger";
 
 const MAX_PIXELS = 2000000;
 
 async function downscaleImage(imagePath: string): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    const parsedPath = path.parse(imagePath);
-    parsedPath.dir = os.tmpdir();
-    parsedPath.name += "_downscaled";
-    parsedPath.base = parsedPath.name + parsedPath.ext;
-    const downscaledPath = path.format(parsedPath);
-    gm(imagePath).size(function (
-      err: any,
-      size: { width: number; height: number },
-    ) {
-      if (err) {
-        logger.error({
-          message: `Error getting image size: ${err}`,
-          isBold: false,
-          color: "gray",
-        });
-        reject(err);
-      } else {
-        const originalWidth = size.width;
-        const originalHeight = size.height;
-        const originalTotalPixels = originalWidth * originalHeight;
+  try {
+    const img = await loadImage(imagePath);
 
-        if (originalTotalPixels <= MAX_PIXELS) {
-          resolve(imagePath);
-        } else {
-          const aspectRatio = originalWidth / originalHeight;
-          const newHeight = Math.sqrt(MAX_PIXELS / aspectRatio);
-          const newWidth = newHeight * aspectRatio;
-          const roundedWidth = Math.round(newWidth);
-          const roundedHeight = Math.round(newHeight);
+    const originalWidth = img.width;
+    const originalHeight = img.height;
+    const originalTotalPixels = originalWidth * originalHeight;
 
-          gm(imagePath)
-            .resize(roundedWidth, roundedHeight)
-            .write(downscaledPath, (err: any) => {
-              if (err) {
-                logger.error({
-                  message: `Error writing downscaled image: ${err}`,
-                  isBold: false,
-                  color: "gray",
-                });
-                reject(err);
-              } else {
-                resolve(downscaledPath);
-              }
-            });
-        }
-      }
+    if (originalTotalPixels <= MAX_PIXELS) {
+      return imagePath;
+    } else {
+      const aspectRatio = originalWidth / originalHeight;
+      const newHeight = Math.sqrt(MAX_PIXELS / aspectRatio);
+      const newWidth = newHeight * aspectRatio;
+      const roundedWidth = Math.round(newWidth);
+      const roundedHeight = Math.round(newHeight);
+
+      const canvas = createCanvas(roundedWidth, roundedHeight);
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(img, 0, 0, roundedWidth, roundedHeight);
+
+      const parsedPath = path.parse(imagePath);
+      parsedPath.dir = os.tmpdir();
+      parsedPath.name += "_downscaled";
+      parsedPath.ext = ".png";
+      parsedPath.base = parsedPath.name + parsedPath.ext;
+      const downscaledPath = path.format(parsedPath);
+      const out = fs.createWriteStream(downscaledPath);
+      const stream = canvas.createPNGStream();
+      stream.pipe(out);
+
+      await new Promise<void>((resolve, reject) => {
+        out.on("finish", () => resolve());
+        out.on("error", (err) => reject(err));
+      });
+
+      return downscaledPath;
+    }
+  } catch (err) {
+    logger.error({
+      message: `Error getting image size: ${err}`,
+      isBold: false,
+      color: "gray",
     });
-  });
+    throw new Error(`Error processing image: ${err}`);
+  }
 }
 
 export default downscaleImage;
