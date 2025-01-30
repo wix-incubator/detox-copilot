@@ -7,14 +7,13 @@ const DEFAULT_TIMEOUT = 5000; // ms
 const DEFAULT_STABILITY_THRESHOLD = 0.05;
 
 export class SnapshotManager {
-  private downscaleImage: (imagePath: string) => Promise<string>;
   constructor(
     private driver: TestingFrameworkDriver,
     private snapshotComparator: SnapshotComparator,
-    downscaleImage: (imagePath: string) => Promise<string>,
-  ) {
-    this.downscaleImage = downscaleImage;
-  }
+    private downscaleImage: (
+      imagePath: string,
+    ) => Promise<string> = downscaleImage,
+  ) {}
 
   private async waitForStableState<T>(
     captureFunc: () => Promise<T | undefined>,
@@ -68,9 +67,7 @@ export class SnapshotManager {
     return currentHash === lastHash;
   }
 
-  private async captureSnapshotAndDownScaleImage(): Promise<
-    string | undefined
-  > {
+  private async captureDownscaledImage(): Promise<string | undefined> {
     const imagePath = await this.driver.captureSnapshotImage();
     if (imagePath) {
       const downscaledImagePath = await this.downscaleImage(imagePath);
@@ -84,7 +81,7 @@ export class SnapshotManager {
     stabilityThreshold: number = DEFAULT_STABILITY_THRESHOLD,
   ): Promise<string | undefined> {
     return this.waitForStableState(
-      async () => this.captureSnapshotAndDownScaleImage(),
+      async () => this.captureDownscaledImage(),
       (current, last) =>
         this.compareSnapshots(current, last, stabilityThreshold),
       pollInterval,

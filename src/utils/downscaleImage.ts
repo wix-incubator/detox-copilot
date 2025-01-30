@@ -32,7 +32,6 @@ async function downscaleImage(imagePath: string): Promise<string> {
       parsedPath.dir = os.tmpdir();
       parsedPath.name += "_downscaled";
       parsedPath.ext = ".png";
-      parsedPath.base = parsedPath.name + parsedPath.ext;
       const downscaledPath = path.format(parsedPath);
       const out = fs.createWriteStream(downscaledPath);
       const stream = canvas.createPNGStream();
