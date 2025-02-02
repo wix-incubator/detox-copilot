@@ -12,8 +12,24 @@
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./drivers/puppeteer": {
+      "types": "./dist/drivers/puppeteer/index.d.ts",
+      "default": "./dist/drivers/puppeteer/index.js"
+    },
+    "./drivers/playwright": {
+      "types": "./dist/drivers/playwright/index.d.ts",
+      "default": "./dist/drivers/playwright/index.js"
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "dist/drivers/puppeteer",
+    "dist/drivers/playwright"
   ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
