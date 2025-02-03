@@ -1,15 +1,7 @@
 {
     "name": "@pilot/puppeterr-driver",
     "version": "0.0.1",
-    "description": "A flexible plugin that drives your tests with human-written commands, enhanced by the power of large language models (LLMs)",
-    "keywords": [
-      "detox",
-      "copilot",
-      "ai"
-    ],
-    "author": "Asaf Korem <asaf.korem@gmail.com>",
-    "homepage": "https://github.com/wix-incubator/detox-copilot",
-    "license": "MIT",
+    "description": "Puppeterr driver for pilot and copilot usage",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -37,7 +29,7 @@
     "dependencies": {
      "@pilot/core": "^0.0.37"
     },
-    
+
     "devDependencies": {
       "@typescript-eslint/eslint-plugin": "^6.21.0",
       "@typescript-eslint/parser": "^6.21.0",

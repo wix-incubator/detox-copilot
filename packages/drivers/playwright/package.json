@@ -1,7 +1,7 @@
 {
     "name": "@pilot/playwright-driver",
     "version": "0.0.1",
-    "description": "Playwright driver for pilot usage",
+    "description": "Playwright driver for pilot and copilot usage",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -28,7 +28,7 @@
     "dependencies": {
      "@pilot/core": "^0.0.37"
     },
-    
+
     "devDependencies": {
       "@playwright/test": "^1.50.0",
       "@typescript-eslint/eslint-plugin": "^6.21.0",
