@@ -18,12 +18,17 @@ jobs:
       with:
         node-version: '18.x'
         cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
+        check-latest: true
 
     - name: Install dependencies
-      run: npm ci
+      run: npm install
 
     - name: Run ESLint
       run: npm run lint
 
+    - name: Build Packages
+      run: npm run build
+
     - name: Type check
-      run: npm run type-check 
+      run: npm run type-check
