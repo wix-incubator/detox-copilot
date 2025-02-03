@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "build": "echo no build script for this packages",
-    "test": "jest",
     "lint": "echo 'No linting configured for this package.'",
     "lint:fix": "echo 'No lint:fix configured for this package.'",
     "type-check": "tsc --noEmit"
