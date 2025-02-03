@@ -1,0 +1,9 @@
+{
+  "extends": "@pilot/core/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../../src",
+    "rootDir": "../",
+  },
+  "include": ["tests/**/*"],
+  "exclude": ["node_modules"]
+} 

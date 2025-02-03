@@ -1,8 +1,11 @@
-import { TestingFrameworkAPICatalog, TestingFrameworkDriver } from "@/types";
+import {
+  TestingFrameworkAPICatalog,
+  TestingFrameworkDriver,
+} from "@pilot/core";
 import * as puppeteer from "puppeteer-core";
 import path from "path";
 import fs from "fs";
-import getCleanDOM from "./getCleanDOM";
+import getCleanDOM from "./utils/getCleanDOM";
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: puppeteer.Page;

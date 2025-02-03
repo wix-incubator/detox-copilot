@@ -1,0 +1,25 @@
+{
+  "name": "@pilot/detox-copilot-playwright-example",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo no build script for this packages",
+    "test": "jest",
+    "lint": "echo 'No linting configured for this package.'",
+    "lint:fix": "echo 'No lint:fix configured for this package.'"
+  },
+
+  "dependencies": {
+     "@pilot/core": "^0.0.37",
+     "@pilot/playwright-driver": "^0.0.1"
+  },
+
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.4",
+    "typescript": "^5.3.3",
+    "playwright": "^1.42.1",
+    "@playwright/test": "^1.42.1"
+  }
+} 
