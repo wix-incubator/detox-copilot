@@ -27,7 +27,7 @@
     },
 
     "dependencies": {
-     "@pilot/core": "workspace:^"
+     "@pilot/core": "*"
     },
 
     "devDependencies": {

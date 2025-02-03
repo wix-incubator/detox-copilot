@@ -26,7 +26,7 @@
       "url": "https://github.com/wix-incubator/detox-copilot/issues"
     },
     "dependencies": {
-     "@pilot/core": "workspace:^"
+     "@pilot/core": "*"
     },
 
     "devDependencies": {

@@ -11,8 +11,8 @@
   },
 
   "dependencies": {
-     "@pilot/core": "workspace:^",
-     "@pilot/playwright-driver": "workspace:^"
+     "@pilot/core": "*",
+     "@pilot/playwright-driver": "*"
   },
 
   "devDependencies": {
