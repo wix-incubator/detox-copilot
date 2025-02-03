@@ -6,12 +6,13 @@
     "build": "echo no build script for this packages",
     "test": "jest",
     "lint": "echo 'No linting configured for this package.'",
-    "lint:fix": "echo 'No lint:fix configured for this package.'"
+    "lint:fix": "echo 'No lint:fix configured for this package.'",
+    "type-check": "tsc --noEmit"
   },
 
   "dependencies": {
-     "@pilot/core": "^0.0.37",
-     "@pilot/playwright-driver": "^0.0.1"
+     "@pilot/core": "workspace:^",
+     "@pilot/playwright-driver": "workspace:^"
   },
 
   "devDependencies": {
