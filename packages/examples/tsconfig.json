@@ -4,6 +4,6 @@
     "baseUrl": "../../src",
     "rootDir": "../",
   },
-  "include": ["tests/**/*"],
+  "include": ["playwright/**/*", "puppeteer/**/*"],
   "exclude": ["node_modules"]
 } 
