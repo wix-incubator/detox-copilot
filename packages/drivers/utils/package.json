@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "tsc && tsc-alias",
-    "test": "jest",
+    "test": "echo No tests avialable for this package",
     "bump-version": "npm version patch && git push && git push --tags",
     "release": "npm run test && npm run bump-version && npm run build && npm publish",
     "lint": "eslint . --ext .ts",
