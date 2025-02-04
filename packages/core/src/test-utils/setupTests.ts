@@ -9,7 +9,6 @@ beforeAll(() => {
   console.debug = jest.fn();
   process.stdout.write = jest.fn();
   process.stderr.write = jest.fn();
-  jest.spyOn(logger, "writeLogsToFile").mockImplementation(() => {});
 });
 
 afterAll(() => {

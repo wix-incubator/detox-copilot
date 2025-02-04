@@ -13,6 +13,8 @@ import {
   LoggerOperationResultType,
 } from "@/types/logger";
 import * as fs from "fs";
+import path from "path";
+import os from "os";
 
 class Logger {
   private static instance: Logger;
@@ -169,8 +171,9 @@ class Logger {
 
   public writeLogsToFile(filename: string): void {
     try {
-      fs.writeFileSync(filename, this.logs.join("\n"), "utf8");
-      this.info(`💾 Logs have been written to ${filename}`);
+      const tempFilePath = path.join(os.tmpdir(), filename);
+      fs.writeFileSync(tempFilePath, this.logs.join("\n"), "utf8");
+      this.info(`💾 Logs have been written to ${tempFilePath}`);
     } catch (err) {
       this.error("Failed to write logs to file:", {
         message: `${(err as Error).message}`,
