@@ -191,4 +191,4 @@ describe("Wix Domains Visual Testing", () => {
       customSnapshotIdentifier: "wix-domains-filters",
     });
   });
-}); 
+});

@@ -54,4 +54,4 @@ describe("Style Manipulation", () => {
 
     expect(stylesAfterCleanup).toMatchSnapshot("styles-after-cleanup");
   });
-}); 
+});

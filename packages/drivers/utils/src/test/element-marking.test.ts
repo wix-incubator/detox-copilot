@@ -77,4 +77,4 @@ describe("Element Marking Functionality", () => {
 
     expect(hiddenElementsResult).toMatchSnapshot("hidden-elements-included");
   });
-}); 
+});

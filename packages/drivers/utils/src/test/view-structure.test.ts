@@ -72,8 +72,10 @@ describe("View Structure Extraction", () => {
     });
 
     // Verify semantic structure is preserved
-    expect(structure).toMatch(/aria-pilot-category="semantic".*aria-pilot-category="list"/s);
-    
+    expect(structure).toMatch(
+      /aria-pilot-category="semantic".*aria-pilot-category="list"/s,
+    );
+
     // Verify proper nesting and closing tags
     expect(structure).toMatch(/<nav[^>]*>.*<\/nav>/s);
     expect(structure).toMatch(/<ul[^>]*>.*<\/ul>/s);
@@ -82,4 +84,4 @@ describe("View Structure Extraction", () => {
     expect(structure).toMatch(/aria-pilot-category="semantic"[^>]*>.*<nav/s);
     expect(structure).toMatch(/aria-pilot-category="list"[^>]*>.*<\/ul>/s);
   });
-}); 
+});

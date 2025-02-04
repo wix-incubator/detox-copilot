@@ -63,7 +63,8 @@ describe("Wix Domains Page Testing", () => {
           form.querySelectorAll("[aria-pilot-category='input']"),
         ).map((input) => ({
           type: input instanceof HTMLInputElement ? input.type : undefined,
-          placeholder: input instanceof HTMLInputElement ? input.placeholder : undefined,
+          placeholder:
+            input instanceof HTMLInputElement ? input.placeholder : undefined,
           category: input.getAttribute("aria-pilot-category"),
           index: input.getAttribute("aria-pilot-index"),
         })),
