@@ -16,7 +16,9 @@ export interface TestContext {
   bundledCode: string;
 }
 
-export async function setupTestEnvironment(): Promise<TestContext> {
+export async function setupTestEnvironment(
+  testPage: string = "test-page.html",
+): Promise<TestContext> {
   try {
     const bundledCode = await bundleDriverUtils();
     const browser = await puppeteer.launch({
@@ -31,7 +33,7 @@ export async function setupTestEnvironment(): Promise<TestContext> {
     page.on("error", (err) => console.error("Browser error:", err));
     page.setDefaultNavigationTimeout(10000);
 
-    await page.goto(`file://${__dirname}/test-pages/test-page.html`);
+    await page.goto(`file://${__dirname}/test-pages/${testPage}`);
     await page.addScriptTag({ content: bundledCode });
 
     return { browser, page, bundledCode };
