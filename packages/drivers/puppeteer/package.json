@@ -17,6 +17,7 @@
     "scripts": {
       "build": "tsc && tsc-alias",
       "test": "echo No tests avialable for this package",
+      "test:example": "jest",
       "bump-version": "npm version patch && git push && git push --tags",
       "release": "npm run test && npm run bump-version && npm run build && npm publish",
       "lint": "eslint . --ext .ts",
@@ -28,7 +29,7 @@
     },
 
     "dependencies": {
-     "@pilot/core": "*"
+     "@pilot/core": "^0.0.37"
     },
 
     "devDependencies": {
@@ -37,4 +38,3 @@
 
     }
   }
-  

@@ -25,7 +25,7 @@ This must be called once before using any other Copilot methods, as it sets up t
 
 Basic initialization example:
 ```typescript
-import copilot from 'detox-copilot';
+import copilot from '@pilot/core';
 import { DetoxDriver } from 'your-testing-framework-driver'; // Replace with your actual driver
 import { OpenAIHandler } from 'your-ai-service-handler'; // Replace with your actual handler
 
