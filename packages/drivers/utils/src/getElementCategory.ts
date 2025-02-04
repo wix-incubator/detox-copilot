@@ -1,4 +1,4 @@
-import {ElementCategory} from "./types";
+import { ElementCategory } from "./types";
 
 const roleToCategory: Record<string, ElementCategory> = {
   // Interactive roles
