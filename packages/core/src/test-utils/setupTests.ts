@@ -1,5 +1,4 @@
 const originalConsole = { ...console };
-import logger from "@/utils/logger";
 
 beforeAll(() => {
   console.log = jest.fn();
