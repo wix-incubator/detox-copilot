@@ -27,11 +27,10 @@
       "url": "https://github.com/wix-incubator/detox-copilot/issues"
     },
     "dependencies": {
-     "@pilot/core": "*"
+     "@pilot/core": "^0.0.37"
     },
     "devDependencies": {
       "@playwright/test": "^1.50.0",
       "axios": "^1.7.9"
     }
   }
-  
