@@ -1,7 +1,7 @@
-import copilot from "@copilot";
+import copilot from "@pilot/core";
 import puppeteer from "puppeteer";
 import { PromptHandler } from "../../utils/promptHandler";
-import { PuppeteerFrameworkDriver } from "@copilot/drivers/puppeteer";
+import { PuppeteerFrameworkDriver } from "@pilot/puppeterr-driver";
 
 describe("Example Test Suite", () => {
   jest.setTimeout(300000);

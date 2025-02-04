@@ -1,9 +1,12 @@
-import { TestingFrameworkAPICatalog, TestingFrameworkDriver } from "@/types";
+import {
+  TestingFrameworkAPICatalog,
+  TestingFrameworkDriver,
+} from "@pilot/core";
 import * as playwright from "playwright";
 import { expect as playwrightExpect } from "@playwright/test";
 import path from "path";
 import fs from "fs";
-import getCleanDOM from "./getCleanDOM";
+import getCleanDOM from "./utils/getCleanDOM";
 
 export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: playwright.Page;

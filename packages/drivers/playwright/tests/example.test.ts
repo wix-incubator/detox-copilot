@@ -1,6 +1,6 @@
-import copilot from "@copilot";
-import { PromptHandler } from "../../utils/promptHandler";
-import { PlaywrightFrameworkDriver } from "@copilot/drivers/playwright";
+import copilot from "@pilot/core";
+import { PromptHandler } from "../utils/promptHandler";
+import { PlaywrightFrameworkDriver } from "@pilot/playwright-driver";
 
 describe("Example Test Suite", () => {
   jest.setTimeout(300000);
