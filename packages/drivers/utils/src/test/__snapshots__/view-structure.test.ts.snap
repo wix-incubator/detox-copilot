@@ -1,0 +1,89 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`View Structure Extraction should generate clean DOM structure with only relevant elements: clean-dom-structure 1`] = `
+"<html>
+  <head>
+  </head>
+  <body>
+    <header aria-pilot-category="semantic" aria-pilot-index="0" data-category="semantic" data-index="0">
+      <h1 aria-pilot-category="header" aria-pilot-index="0" data-category="header" data-index="0">
+      </h1>
+      <nav aria-pilot-category="semantic" aria-pilot-index="1" data-category="semantic" data-index="1">
+        <ul aria-pilot-category="list" aria-pilot-index="0" data-category="list" data-index="0">
+        </ul>
+      </nav>
+    </header>
+    <main aria-pilot-category="semantic" aria-pilot-index="2" data-category="semantic" data-index="2">
+      <section aria-pilot-category="semantic" aria-pilot-index="3" data-category="semantic" data-index="3">
+        <h2 aria-pilot-category="header" aria-pilot-index="1" data-category="header" data-index="1">
+        </h2>
+      </section>
+      <section aria-pilot-category="semantic" aria-pilot-index="4" data-category="semantic" data-index="4">
+        <h2 aria-pilot-category="header" aria-pilot-index="2" data-category="header" data-index="2">
+        </h2>
+        <ul aria-pilot-category="list" aria-pilot-index="1" data-category="list" data-index="1">
+        </ul>
+        <ol aria-pilot-category="list" aria-pilot-index="2" data-category="list" data-index="2">
+        </ol>
+      </section>
+      <section aria-pilot-category="semantic" aria-pilot-index="5" data-category="semantic" data-index="5">
+        <h2 aria-pilot-category="header" aria-pilot-index="3" data-category="header" data-index="3">
+        </h2>
+        <table aria-pilot-category="table" aria-pilot-index="0" data-category="table" data-index="0">
+        </table>
+      </section>
+      <section aria-pilot-category="semantic" aria-pilot-index="6" data-category="semantic" data-index="6">
+        <h2 aria-pilot-category="header" aria-pilot-index="4" data-category="header" data-index="4">
+        </h2>
+      </section>
+    </main>
+    <footer aria-pilot-category="semantic" aria-pilot-index="7" data-category="semantic" data-index="7">
+    </footer>
+  </body>
+</html>
+"
+`;
+
+exports[`View Structure Extraction should preserve allowed attributes and remove others: attribute-filtering 1`] = `
+"<html>
+  <head>
+  </head>
+  <body>
+    <header aria-pilot-category="semantic" aria-pilot-index="0" data-category="semantic" data-index="0">
+      <h1 aria-pilot-category="header" aria-pilot-index="0" data-category="header" data-index="0">
+      </h1>
+      <nav aria-pilot-category="semantic" aria-pilot-index="1" data-category="semantic" data-index="1">
+        <ul aria-pilot-category="list" aria-pilot-index="0" data-category="list" data-index="0">
+        </ul>
+      </nav>
+    </header>
+    <main aria-pilot-category="semantic" aria-pilot-index="2" data-category="semantic" data-index="2">
+      <section aria-pilot-category="semantic" aria-pilot-index="3" data-category="semantic" data-index="3">
+        <h2 aria-pilot-category="header" aria-pilot-index="1" data-category="header" data-index="1">
+        </h2>
+      </section>
+      <section aria-pilot-category="semantic" aria-pilot-index="4" data-category="semantic" data-index="4">
+        <h2 aria-pilot-category="header" aria-pilot-index="2" data-category="header" data-index="2">
+        </h2>
+        <ul aria-pilot-category="list" aria-pilot-index="1" data-category="list" data-index="1">
+        </ul>
+        <ol aria-pilot-category="list" aria-pilot-index="2" data-category="list" data-index="2">
+        </ol>
+      </section>
+      <section aria-pilot-category="semantic" aria-pilot-index="5" data-category="semantic" data-index="5">
+        <h2 aria-pilot-category="header" aria-pilot-index="3" data-category="header" data-index="3">
+        </h2>
+        <table aria-pilot-category="table" aria-pilot-index="0" data-category="table" data-index="0">
+        </table>
+      </section>
+      <section aria-pilot-category="semantic" aria-pilot-index="6" data-category="semantic" data-index="6">
+        <h2 aria-pilot-category="header" aria-pilot-index="4" data-category="header" data-index="4">
+        </h2>
+      </section>
+    </main>
+    <footer aria-pilot-category="semantic" aria-pilot-index="7" data-category="semantic" data-index="7">
+    </footer>
+  </body>
+</html>
+"
+`;
