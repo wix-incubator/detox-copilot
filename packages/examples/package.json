@@ -11,15 +11,12 @@
     "type-check": "tsc --noEmit"
   },
 
-  "dependencies": {
-     "@pilot/core": "*",
-     "@pilot/playwright-driver": "*"
-  },
-
   "devDependencies": {
     "axios": "^1.7.9",
     "playwright": "^1.42.1",
     "puppeteer": "^20.8.0",
-    "@playwright/test": "^1.42.1"
+    "@playwright/test": "^1.42.1",
+    "@pilot/core": "*",
+    "@pilot/playwright-driver": "*"
   }
 } 
