@@ -1,6 +1,7 @@
 import getElementCategory, { tags } from "./getElementCategory";
 import isElementHidden from "./isElementHidden";
 import { ElementCategory } from "./types";
+import { bundleDriverUtils as bundleUtils } from "./bundle";
 
 const CATEGORY_COLORS: Record<ElementCategory, [string, string]> = {
   button: ["#ff0000", "#ffffff"],
@@ -150,4 +151,5 @@ const utils: DriverUtils = {
   },
 };
 
+export const bundleDriverUtils = bundleUtils;
 export default utils;

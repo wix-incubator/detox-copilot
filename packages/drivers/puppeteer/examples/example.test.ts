@@ -34,9 +34,8 @@ describe("Example Test Suite", () => {
 
   it("perform test with pilot", async () => {
     await copilot.pilot(
-      "On `https://github.com/wix-incubator/detox-copilot`, " +
-        "open the Commits page and summarize the latest commits. " +
-        "Open the browser with GUI.",
+      "Go to https://www.wix.com/domains, search the domain WixPilot.com, " +
+        "it should be available. Open in not-headless browser.",
     );
   });
 });

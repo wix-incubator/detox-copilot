@@ -5,16 +5,35 @@ import {
 import * as puppeteer from "puppeteer-core";
 import path from "path";
 import fs from "fs";
-import getCleanDOM from "./utils/getCleanDOM";
+import type { DriverUtils } from "../utils";
+import { bundleDriverUtils } from "../utils";
+
+declare global {
+  interface Window {
+    driverUtils: DriverUtils;
+  }
+}
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: puppeteer.Page;
   private executablePath?: string;
+  private driverUtilsInjected: boolean = false;
 
   constructor(executablePath?: string) {
     this.getCurrentPage = this.getCurrentPage.bind(this);
     this.setCurrentPage = this.setCurrentPage.bind(this);
     this.executablePath = executablePath;
+  }
+
+  /**
+   * Ensures driver utils are injected into the page
+   */
+  private async ensureDriverUtils(): Promise<void> {
+    if (!this.currentPage || this.driverUtilsInjected) return;
+    
+    const bundledCode = await bundleDriverUtils();
+    await this.currentPage.addScriptTag({ content: bundledCode });
+    this.driverUtilsInjected = true;
   }
 
   /**
@@ -29,6 +48,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
    */
   setCurrentPage(page: puppeteer.Page): void {
     this.currentPage = page;
+    this.driverUtilsInjected = false; // Reset flag when page changes
   }
 
   /**
@@ -46,9 +66,23 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
       fs.mkdirSync("temp");
     }
 
+    // Ensure driver utils are injected before using them
+    await this.ensureDriverUtils();
+
+    // Mark elements and add styles before taking screenshot
+    await this.currentPage.evaluate(() => {
+      window.driverUtils.markImportantElements();
+      window.driverUtils.manipulateElementStyles();
+    });
+
     await this.currentPage.screenshot({
       path: fileName,
       fullPage: false,
+    });
+
+    // Clean up styles after taking screenshot
+    await this.currentPage.evaluate(() => {
+      window.driverUtils.cleanupStyleChanges();
     });
 
     return path.resolve(fileName);
@@ -65,7 +99,13 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
       );
     }
 
-    return await getCleanDOM(this.currentPage);
+    // Ensure driver utils are injected before using them
+    await this.ensureDriverUtils();
+
+    return await this.currentPage.evaluate(() => {
+      window.driverUtils.markImportantElements();
+      return window.driverUtils.extractCleanViewStructure();
+    });
   }
 
   /**

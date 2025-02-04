@@ -29,7 +29,8 @@
     },
 
     "dependencies": {
-     "@pilot/core": "^0.0.37"
+     "@pilot/core": "^0.0.37",
+     "@pilot/drivers-utils": "^0.0.1"
     },
 
     "devDependencies": {
