@@ -10,6 +10,8 @@ export async function bundleDriverUtils(): Promise<string> {
       format: "iife",
       globalName: "driverUtils",
       target: ["chrome100"],
+      platform: "node",
+      external: ["path", "fs", "os", "child_process", "crypto", "tty"],
       footer: {
         js: "window.driverUtils = driverUtils.default;",
       },

@@ -5,9 +5,8 @@ import {
 import * as puppeteer from "puppeteer-core";
 import path from "path";
 import fs from "fs";
-import type { DriverUtils } from "../utils";
-// @ts-ignore
-import { bundleDriverUtils } from "../utils/src/bundle";
+import type { DriverUtils } from "@pilot/drivers-utils";
+import { bundleDriverUtils } from "@pilot/drivers-utils/src/bundle";
 
 declare global {
   interface Window {
@@ -34,6 +33,17 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
 
     const bundledCode = await bundleDriverUtils();
     await this.currentPage.addScriptTag({ content: bundledCode });
+    
+    // Verify driver utils are properly injected
+    const hasDriverUtils = await this.currentPage.evaluate(() => {
+      return typeof window.driverUtils !== 'undefined' && 
+             typeof window.driverUtils.markImportantElements === 'function';
+    });
+
+    if (!hasDriverUtils) {
+      throw new Error('Failed to inject driver utils into the page');
+    }
+
     this.driverUtilsInjected = true;
   }
 

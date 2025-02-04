@@ -1,5 +1,6 @@
 import copilot from "@pilot/core";
-import puppeteer from "puppeteer";
+import type { Browser, Page } from "puppeteer-core";
+import puppeteer from "puppeteer-core";
 import { PuppeteerFrameworkDriver } from "../index";
 import { PromptHandler } from "../utils/promptHandler";
 
@@ -7,12 +8,24 @@ describe("Example Test Suite", () => {
   jest.setTimeout(300000);
 
   let frameworkDriver: PuppeteerFrameworkDriver;
+  let browser: Browser;
+  let page: Page;
 
   beforeAll(async () => {
     const promptHandler = new PromptHandler();
-    frameworkDriver = new PuppeteerFrameworkDriver(
-      puppeteer.executablePath()
-    );
+    // Launch browser first
+    browser = await puppeteer.launch({
+      headless: false,
+      executablePath:
+        process.env.CHROME_PATH ||
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    });
+
+    // Create a new page
+    page = await browser.newPage();
+    // Initialize framework driver
+    frameworkDriver = new PuppeteerFrameworkDriver();
+    frameworkDriver.setCurrentPage(page);
 
     copilot.init({
       frameworkDriver,
@@ -21,21 +34,17 @@ describe("Example Test Suite", () => {
   });
 
   afterAll(async () => {
-    const page = frameworkDriver.getCurrentPage();
-    if (page) {
-      const browser = page.browser();
-      if (browser) {
-        await browser.close();
-      }
+    if (browser) {
+      await browser.close();
     }
   });
 
   beforeEach(async () => {
-    copilot.start();
+    await copilot.start();
   });
 
   afterEach(async () => {
-    copilot.end();
+    await copilot.end();
   });
 
   it("should search for domain on Wix", async () => {
