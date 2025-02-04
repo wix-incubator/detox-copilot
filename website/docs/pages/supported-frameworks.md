@@ -7,9 +7,9 @@
 ### Playwright
 
 ```js
-// 1. Install: npm install --save-dev playwright
+// 1. Install: npm install --save-dev @pilot/playwright-driver
 // 2. Import and use:
-import { PlaywrightFrameworkDriver } from 'detox-copilot/drivers/playwright';
+import { PlaywrightFrameworkDriver } from '@pilot/playwright-driver';
 
 it('should login', async () => {
   await copilot.perform(
@@ -27,9 +27,9 @@ Supports Chrome, Firefox, and WebKit with powerful auto-waiting mechanisms.
 ### Puppeteer
 
 ```js
-// 1. Install: npm install --save-dev puppeteer
+// 1. Install: npm install --save-dev @pilot/puppeteer-driver
 // 2. Import and use:
-import { PuppeteerFrameworkDriver } from 'detox-copilot/drivers/puppeteer';
+import { PuppeteerFrameworkDriver } from '@pilot/puppeteer-driver';
 
 it('should submit a form', async () => {
   await copilot.perform(
