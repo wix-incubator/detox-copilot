@@ -6,7 +6,8 @@ import * as puppeteer from "puppeteer-core";
 import path from "path";
 import fs from "fs";
 import type { DriverUtils } from "../utils";
-import { bundleDriverUtils } from "../utils";
+// @ts-ignore
+import { bundleDriverUtils } from "../utils/src/bundle";
 
 declare global {
   interface Window {
@@ -30,7 +31,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
    */
   private async ensureDriverUtils(): Promise<void> {
     if (!this.currentPage || this.driverUtilsInjected) return;
-    
+
     const bundledCode = await bundleDriverUtils();
     await this.currentPage.addScriptTag({ content: bundledCode });
     this.driverUtilsInjected = true;

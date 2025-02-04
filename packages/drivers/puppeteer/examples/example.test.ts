@@ -1,7 +1,7 @@
 import copilot from "@pilot/core";
 import puppeteer from "puppeteer";
-import { PromptHandler } from "../utils/promptHandler";
 import { PuppeteerFrameworkDriver } from "../index";
+import { PromptHandler } from "../utils/promptHandler";
 
 describe("Example Test Suite", () => {
   jest.setTimeout(300000);
@@ -9,10 +9,10 @@ describe("Example Test Suite", () => {
   let frameworkDriver: PuppeteerFrameworkDriver;
 
   beforeAll(async () => {
-    const promptHandler: PromptHandler = new PromptHandler();
-
-    frameworkDriver = new PuppeteerFrameworkDriver();
-    frameworkDriver = new PuppeteerFrameworkDriver(puppeteer.executablePath());
+    const promptHandler = new PromptHandler();
+    frameworkDriver = new PuppeteerFrameworkDriver(
+      puppeteer.executablePath()
+    );
 
     copilot.init({
       frameworkDriver,
@@ -21,7 +21,13 @@ describe("Example Test Suite", () => {
   });
 
   afterAll(async () => {
-    frameworkDriver.getCurrentPage()?.browser().close();
+    const page = frameworkDriver.getCurrentPage();
+    if (page) {
+      const browser = page.browser();
+      if (browser) {
+        await browser.close();
+      }
+    }
   });
 
   beforeEach(async () => {
@@ -32,10 +38,10 @@ describe("Example Test Suite", () => {
     copilot.end();
   });
 
-  it("perform test with pilot", async () => {
+  it("should search for domain on Wix", async () => {
     await copilot.pilot(
       "Go to https://www.wix.com/domains, search the domain WixPilot.com, " +
         "it should be available. Open in not-headless browser.",
     );
-  });
+  }, 60000);
 });

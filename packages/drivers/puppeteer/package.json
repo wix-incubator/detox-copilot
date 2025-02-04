@@ -1,7 +1,7 @@
 {
-    "name": "@pilot/puppeterr-driver",
+    "name": "@pilot/puppeteer-driver",
     "version": "0.0.1",
-    "description": "Puppeterr driver for pilot and copilot usage",
+    "description": "Puppeteer driver for pilot and copilot usage",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -16,8 +16,8 @@
     },
     "scripts": {
       "build": "tsc && tsc-alias",
-      "test": "echo No tests avialable for this package",
-      "test:example": "jest",
+      "test": "jest",
+      "test:example": "jest examples/",
       "bump-version": "npm version patch && git push && git push --tags",
       "release": "npm run test && npm run bump-version && npm run build && npm publish",
       "lint": "eslint . --ext .ts",
@@ -30,12 +30,15 @@
 
     "dependencies": {
      "@pilot/core": "^0.0.37",
-     "@pilot/drivers-utils": "^0.0.1"
+     "@pilot/drivers-utils": "^0.0.1",
+     "puppeteer-core": "^20.8.0"
     },
 
     "devDependencies": {
-      "puppeteer": "^20.8.0",
+      "@types/jest": "^29.5.0",
+      "jest": "^29.5.0",
+      "ts-jest": "^29.1.0",
+      "typescript": "^5.0.0",
       "axios": "^1.7.9"
-
     }
   }
