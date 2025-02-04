@@ -1,9 +1,0 @@
-{
-  "extends": "@pilot/core/tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": "../../src",
-    "rootDir": "../",
-  },
-  "include": ["playwright/**/*", "puppeteer/**/*"],
-  "exclude": ["node_modules"]
-} 

@@ -1,5 +1,5 @@
 import copilot from "@pilot/core";
-import { PromptHandler } from "../../utils/promptHandler";
+import { PromptHandler } from "../utils/promptHandler";
 import { PlaywrightFrameworkDriver } from "@pilot/playwright-driver";
 
 describe("Example Test Suite", () => {
