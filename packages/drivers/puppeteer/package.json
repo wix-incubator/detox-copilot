@@ -1,5 +1,5 @@
 {
-    "name": "@pilot/puppeterr-driver",
+    "name": "detox-copilot-puppeterr-driver",
     "version": "0.0.1",
     "description": "Puppeterr driver for pilot and copilot usage",
     "main": "dist/index.js",
