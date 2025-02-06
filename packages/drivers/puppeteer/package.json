@@ -1,40 +1,37 @@
 {
     "name": "detox-copilot-puppeterr-driver",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Puppeterr driver for pilot and copilot usage",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
-      "dist"
+        "dist"
     ],
     "publishConfig": {
-      "registry": "https://registry.npmjs.org"
+        "registry": "https://registry.npmjs.org"
     },
     "repository": {
-      "type": "git",
-      "url": "git+https://github.com/wix-incubator/detox-copilot.git"
+        "type": "git",
+        "url": "git+https://github.com/wix-incubator/detox-copilot.git"
     },
     "scripts": {
-      "build": "tsc && tsc-alias",
-      "test": "echo No tests avialable for this package",
-      "test:example": "jest",
-      "bump-version": "npm version patch && git push && git push --tags",
-      "release": "npm run test && npm run bump-version && npm run build && npm publish",
-      "lint": "eslint . --ext .ts",
-      "lint:fix": "eslint . --ext .ts --fix",
-      "type-check": "tsc --noEmit"
+        "build": "tsc && tsc-alias",
+        "test": "echo No tests avialable for this package",
+        "test:example": "jest",
+        "bump-version": "npm version patch && git push && git push --tags",
+        "release": "npm run test && npm run bump-version && npm run build && npm publish",
+        "lint": "eslint . --ext .ts",
+        "lint:fix": "eslint . --ext .ts --fix",
+        "type-check": "tsc --noEmit"
     },
     "bugs": {
-      "url": "https://github.com/wix-incubator/detox-copilot/issues"
+        "url": "https://github.com/wix-incubator/detox-copilot/issues"
     },
-
     "dependencies": {
-     "@pilot/core": "^0.0.37"
+        "detox-copilot": "^0.0.38"
     },
-
     "devDependencies": {
-      "puppeteer": "^20.8.0",
-      "axios": "^1.7.9"
-
+        "puppeteer": "^20.8.0",
+        "axios": "^1.7.9"
     }
-  }
+}

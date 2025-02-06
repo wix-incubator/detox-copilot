@@ -1,4 +1,4 @@
-import copilot from "@pilot/core";
+import copilot from "detox-copilot";
 import puppeteer from "puppeteer";
 import { PromptHandler } from "../utils/promptHandler";
 import { PuppeteerFrameworkDriver } from "../index";
