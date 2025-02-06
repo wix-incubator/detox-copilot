@@ -1,6 +1,6 @@
 {
-  "name": "@pilot/core",
-  "version": "0.0.37",
+  "name": "detox-copilot",
+  "version": "0.0.38",
   "description": "A flexible plugin that drives your tests with human-written commands, enhanced by the power of large language models (LLMs)",
   "keywords": [
     "detox",
@@ -34,7 +34,6 @@
   "bugs": {
     "url": "https://github.com/wix-incubator/detox-copilot/issues"
   },
-  
   "dependencies": {
     "blockhash-core": "^0.1.0",
     "canvas": "^3.0.1",
