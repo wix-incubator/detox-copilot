@@ -1,6 +1,6 @@
 {
     "name": "detox-copilot-puppeterr-driver",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Puppeterr driver for pilot and copilot usage",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
