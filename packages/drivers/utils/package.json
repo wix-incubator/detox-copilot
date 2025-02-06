@@ -1,5 +1,5 @@
 {
-  "name": "@pilot/driver-utils",
+  "name": "@wix/pilot-web-utils",
   "version": "1.0.0",
   "description": "Driver utils for pilot and copilot usage",
   "main": "dist/index.js",

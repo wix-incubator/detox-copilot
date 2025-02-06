@@ -1,7 +1,7 @@
 import {
   TestingFrameworkAPICatalog,
   TestingFrameworkDriver,
-} from "@pilot/core";
+} from "@wix/pilot";
 import * as puppeteer from "puppeteer-core";
 import path from "path";
 import fs from "fs";

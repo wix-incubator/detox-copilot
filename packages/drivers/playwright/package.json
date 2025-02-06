@@ -1,5 +1,5 @@
 {
-    "name": "@pilot/playwright-driver",
+    "name": "@wix/pilot-playwright",
     "version": "1.0.0",
     "description": "Playwright driver for pilot and copilot usage",
     "main": "dist/index.js",
@@ -28,7 +28,7 @@
       "url": "https://github.com/wix-incubator/detox-copilot/issues"
     },
     "dependencies": {
-     "@pilot/core": "^1.0.0"
+     "@wix/pilot": "^1.0.0"
     },
     "devDependencies": {
       "@playwright/test": "^1.50.0",

@@ -1,4 +1,4 @@
-import copilot from "@pilot/core";
+import copilot from "@wix/pilot";
 import { PromptHandler } from "../utils/promptHandler";
 import { PlaywrightFrameworkDriver } from "../index";
 
