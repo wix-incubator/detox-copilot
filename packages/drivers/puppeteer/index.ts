@@ -1,7 +1,7 @@
 import {
   TestingFrameworkAPICatalog,
   TestingFrameworkDriver,
-} from "detox-copilot";
+} from "@pilot/core";
 import * as puppeteer from "puppeteer-core";
 import path from "path";
 import fs from "fs";

@@ -1,5 +1,5 @@
 {
-    "name": "detox-copilot-puppeterr-driver",
+    "name": "@pilot/puppeteer-driver",
     "version": "0.0.3",
     "description": "Puppeterr driver for pilot and copilot usage",
     "main": "dist/index.js",
@@ -28,7 +28,7 @@
         "url": "https://github.com/wix-incubator/detox-copilot/issues"
     },
     "dependencies": {
-        "detox-copilot": "^0.0.38"
+        "@pilot/core": "^0.0.38"
     },
     "devDependencies": {
         "puppeteer": "^20.8.0",

@@ -1,5 +1,5 @@
 {
-  "name": "detox-copilot",
+  "name": "@pilot/core",
   "version": "0.0.38",
   "description": "A flexible plugin that drives your tests with human-written commands, enhanced by the power of large language models (LLMs)",
   "keywords": [

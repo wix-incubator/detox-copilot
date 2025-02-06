@@ -1,4 +1,4 @@
-import copilot from "detox-copilot";
+import copilot from "@pilot/core";
 import { PromptHandler } from "../utils/promptHandler";
 import { PlaywrightFrameworkDriver } from "../index";
 

@@ -1,7 +1,7 @@
 import {
   TestingFrameworkAPICatalog,
   TestingFrameworkDriver,
-} from "detox-copilot";
+} from "@pilot/core";
 import * as playwright from "playwright";
 import { expect as playwrightExpect } from "@playwright/test";
 import path from "path";
