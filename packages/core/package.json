@@ -1,5 +1,5 @@
 {
-  "name": "@wix/pilot",
+  "name": "@wix-pilot/core",
   "version": "1.0.0",
   "description": "A flexible plugin that drives your tests with human-written commands, enhanced by the power of large language models (LLMs)",
   "keywords": [

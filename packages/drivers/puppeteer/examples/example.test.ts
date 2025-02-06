@@ -1,4 +1,4 @@
-import copilot from "@wix/pilot";
+import copilot from "@wix-pilot/core";
 import puppeteer from "puppeteer";
 import { PromptHandler } from "../utils/promptHandler";
 import { PuppeteerFrameworkDriver } from "../index";
