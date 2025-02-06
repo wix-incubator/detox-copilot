@@ -1,6 +1,6 @@
 {
     "name": "@pilot/playwright-driver",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Playwright driver for pilot and copilot usage",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -19,7 +19,7 @@
       "test": "echo No tests avialable for this package",
       "test:example": "jest",
       "bump-version": "npm version patch && git push && git push --tags",
-      "release": "npm run test && npm run bump-version && npm run build && npm publish",
+      "release": "npm run test && npm run bump-version && npm run build && npm publish --access public",
       "lint": "eslint . --ext .ts",
       "lint:fix": "eslint . --ext .ts --fix",
       "type-check": "tsc --noEmit"
@@ -28,7 +28,7 @@
       "url": "https://github.com/wix-incubator/detox-copilot/issues"
     },
     "dependencies": {
-     "@pilot/core": "^0.0.38"
+     "@pilot/core": "^1.0.0"
     },
     "devDependencies": {
       "@playwright/test": "^1.50.0",
