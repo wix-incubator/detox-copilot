@@ -1,0 +1,39 @@
+name: Tag Monorepo Packages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Tag Packages
+        run: |
+          for package in packages/*; do
+            if [ -f "$package/package.json" ]; then
+              name=$(jq -r '.name' "$package/package.json")
+              version=$(jq -r '.version' "$package/package.json")
+              tag="${name}@${version}"
+
+              if ! git rev-parse "$tag" >/dev/null 2>&1; then
+                echo "Tagging: $tag"
+                git tag "$tag"
+              fi
+            fi
+          done
+          git push --tags

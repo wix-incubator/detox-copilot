@@ -17,7 +17,7 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "test": "echo No tests avialable for this package",
-    "bump-version": "npm version patch && git push && git push --tags",
+    "bump-version": "npm version patch && git push",
     "release": "npm run test && npm run bump-version && npm run build && npm publish --access public",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
