@@ -9,11 +9,11 @@ import OverviewSVG from '/static/img/guides/copilot-overview.svg';
 
 # Technical Overview
 
-Detox Copilot integrates seamlessly with your testing environment by combining natural language processing with Detox's robust testing capabilities.
+Wix Pilot integrates seamlessly with your testing environment by combining natural language processing with Detox's robust testing capabilities.
 
-## Building Blocks of Detox Copilot
+## Building Blocks of Wix Pilot
 
-To enable Detox Copilot to work harmoniously with Detox and your app, it relies on several building blocks:
+To enable Wix Pilot to work harmoniously with Detox and your app, it relies on several building blocks:
 
 - **Dynamic Code Generation**: Copilot generates Detox code on-the-fly to perform actions or assertions based on your instructions.
 - **Visual Analysis**: Copilot can analyze the app's screen to verify the presence of specific elements or text, enabling assertions beyond standard UI checks.
@@ -32,7 +32,7 @@ To enable Detox Copilot to work harmoniously with Detox and your app, it relies 
   }}
 />
 
-The execution flow of Detox Copilot can be broken down into six main steps:
+The execution flow of Wix Pilot can be broken down into six main steps:
 
 1. **Gather Context**: Collect relevant app state, view hierarchy, and previous step results.
 2. **Interpret Intent**: Use the LLM to interpret the natural language instruction.
@@ -41,11 +41,11 @@ The execution flow of Detox Copilot can be broken down into six main steps:
 5. **Cache Results**: Store execution results to optimize future runs.
 6. **Provide Feedback**: Return values or confirm actions for subsequent steps.
 
-By combining these steps, Detox Copilot effectively bridges the gap between natural language instructions and concrete test actions.
+By combining these steps, Wix Pilot effectively bridges the gap between natural language instructions and concrete test actions.
 
 ### Performance Optimization
 
-Detox Copilot is designed to avoid unnecessary calls to the LLM service and optimize performance using static cache that is based on the current state of the app.
+Wix Pilot is designed to avoid unnecessary calls to the LLM service and optimize performance using static cache that is based on the current state of the app.
 This minimizes the number of calls to the LLM service and reduces latency.
 However, you can optimize your `PromptHandler` implementation to reduce latency and improve response times (e.g., by reducing the image size or implementing a server-side cache).
 We have plans to optimize even further by introducing more advanced caching mechanisms for better performance.

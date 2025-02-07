@@ -1,18 +1,18 @@
-# Supported Frameworks for Copilot
+# Supported Frameworks for Wix Pilot
 
-**Copilot by Detox** enables natural language testing across different testing frameworks. Here's how to use it with our supported frameworks:
+**Wix Pilot** enables natural language testing across different testing frameworks. Here's how to use it with our supported frameworks:
 
 ## Built-in Web Testing Support
 
 ### Playwright
 
 ```js
-// 1. Install: npm install --save-dev @pilot/playwright-driver
+// 1. Install: npm install --save-dev @wix-pilot/playwright
 // 2. Import and use:
-import { PlaywrightFrameworkDriver } from '@pilot/playwright-driver';
+import { PlaywrightFrameworkDriver } from '@wix-pilot/playwright';
 
 it('should login', async () => {
-  await copilot.perform(
+  await pilot.perform(
     'Open "https://example.com" in the browser',
     'Fill in the username field with "testuser"',
     'Fill in the password field with "password123"',
@@ -27,12 +27,12 @@ Supports Chrome, Firefox, and WebKit with powerful auto-waiting mechanisms.
 ### Puppeteer
 
 ```js
-// 1. Install: npm install --save-dev @pilot/puppeteer-driver
+// 1. Install: npm install --save-dev @wix-pilot/puppeteer
 // 2. Import and use:
-import { PuppeteerFrameworkDriver } from '@pilot/puppeteer-driver';
+import { PuppeteerFrameworkDriver } from '@wix-pilot/puppeteer';
 
 it('should submit a form', async () => {
-  await copilot.perform(
+  await pilot.perform(
     'Open "https://example.com/signup" in the browser',
     'Fill in the email field with "user@example.com"',
     'Check the terms checkbox',
@@ -48,11 +48,11 @@ Specialized for Chrome/Chromium automation with DevTools Protocol access.
 
 ### Detox
 
-Available directly in the Detox package for mobile app testing. [See Detox documentation](https://wix.github.io/Detox/docs/copilot/testing-with-copilot).
+Available directly in the Detox package for mobile app testing. [See Detox documentation](https://wix.github.io/Detox/docs/pilot/testing-with-pilot).
 
 ```js
 it('should update profile', async () => {
-  await copilot.perform(
+  await pilot.perform(
     'Launch the app',
     'Navigate to Settings',
     'Tap on "Edit Profile"',
@@ -64,4 +64,4 @@ it('should update profile', async () => {
 
 ## Contributing
 
-Want to add support for another framework? Check our [GitHub Issues](https://github.com/wix-incubator/detox-copilot/issues) or submit a PR.
+Want to add support for another framework? Check our [GitHub Issues](https://github.com/wix-incubator/pilot/issues) or submit a PR.

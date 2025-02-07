@@ -7,20 +7,20 @@ sidebar_position: 4
 
 # Implementing a Custom Testing Framework Driver
 
-The **testing framework driver** is a core component of **Copilot by Detox**, enabling seamless integration with any testing framework. It allows Copilot to translate natural language commands into actionable steps using the framework's API. This guide outlines how to implement and integrate a custom testing framework driver into the Copilot ecosystem.
+The **testing framework driver** is a core component of **Wix Pilot**, enabling seamless integration with any testing framework. It allows Pilot to translate natural language commands into actionable steps using the framework's API. This guide outlines how to implement and integrate a custom testing framework driver into the Pilot ecosystem.
 
 ---
 
 ## Available Framework Drivers
 
-Copilot has several framework drivers available:
+Pilot has several framework drivers available:
 
 ### Built into this package:
 - **Puppeteer Driver**: A complete implementation for web testing using Puppeteer
 - **Playwright Driver**: A modern web testing implementation using Playwright
 
 ### Available in other packages:
-- **Detox Driver**: Mobile app testing implementation (available in the [Detox repository](https://github.com/wix/Detox/tree/master/detox/src/copilot))
+- **Detox Driver**: Mobile app testing implementation (available in the [Detox repository](https://github.com/wix/Detox/tree/master/detox/src/pilot))
 
 You can use these implementations as references when creating your own custom driver.
 
@@ -28,15 +28,15 @@ You can use these implementations as references when creating your own custom dr
 
 ## Recommended Approach for Framework Support
 
-Where possible, framework support should ideally be provided directly from the framework's codebase. For example, Detox includes support within its own repository: [Detox Copilot Driver](https://github.com/wix/Detox/tree/master/detox/src/copilot).
+Where possible, framework support should ideally be provided directly from the framework's codebase. For example, Detox includes support within its own repository: [Detox Pilot Driver](https://github.com/wix/Detox/tree/master/detox/src/pilot).
 
-If this is not feasible, or for custom efforts, feel free to reach out via our [GitHub Issues Page](https://github.com/wix-incubator/detox-copilot/issues) to discuss integration ideas before development.
+If this is not feasible, or for custom efforts, feel free to reach out via our [GitHub Issues Page](https://github.com/wix-incubator/pilot/issues) to discuss integration ideas before development.
 
 ---
 
 ## Framework Integration
 
-Copilot is designed to integrate with any testing framework. This flexibility allows developers to extend its capabilities by implementing custom drivers that align with the `TestingFrameworkDriver` interface.
+Pilot is designed to integrate with any testing framework. This flexibility allows developers to extend its capabilities by implementing custom drivers that align with the `TestingFrameworkDriver` interface.
 
 To view supported frameworks, visit our [Supported Frameworks](../pages/supported-frameworks) page.
 
@@ -77,12 +77,12 @@ Provide clear documentation and examples for each method to ensure ease of use.
 
 ### 4. **Contribute and Collaborate**
 
-Share your driver with the community by proposing your idea on the [GitHub Issues Page](https://github.com/wix-incubator/detox-copilot/issues). Once aligned, contribute your work by adding your driver to the repository and providing relevant documentation.
+Share your driver with the community by proposing your idea on the [GitHub Issues Page](https://github.com/wix-incubator/pilot/issues). Once aligned, contribute your work by adding your driver to the repository and providing relevant documentation.
 
 ---
 
 ## Additional Resources
 
 - [Framework Driver API](../API/framework-driver.md): Detailed interface and example implementation.
-- [Supported Frameworks](../pages/supported-frameworks): List of frameworks Copilot supports.
-- [GitHub Issues](https://github.com/wix-incubator/detox-copilot/issues): Collaborate and discuss new drivers.
+- [Supported Frameworks](../pages/supported-frameworks): List of frameworks Pilot supports.
+- [GitHub Issues](https://github.com/wix-incubator/pilot/issues): Collaborate and discuss new drivers.

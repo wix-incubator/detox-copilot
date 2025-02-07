@@ -34,7 +34,7 @@ describe("Example Test Suite", () => {
 
   it("perform test with pilot", async () => {
     await copilot.pilot(
-      "On `https://github.com/wix-incubator/detox-copilot`, " +
+      "On `https://github.com/wix-incubator/pilot`, " +
         "open the Commits page and summarize the latest commits. " +
         "Open the browser with GUI.",
     );

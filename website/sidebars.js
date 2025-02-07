@@ -23,9 +23,9 @@ const sidebars = {
       items: [
         'guides/integrating-with-testing-frameworks',
         'guides/technical-overview',
-        'guides/copilot-best-practices' ,
+        'guides/pilot-best-practices' ,
         'guides/implementing-custom-testing-framework-driver',
-        'guides/contributing-to-copilot-by-detox',
+        'guides/contributing-to-pilot',
       ],
     },
   ],

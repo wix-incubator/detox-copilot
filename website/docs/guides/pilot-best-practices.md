@@ -1,13 +1,13 @@
 ---
-id: copilot-best-practices
-title: Copilot Best Practices
-sidebar_label: Copilot Best Practices
+id: pilot-best-practices
+title: Pilot Best Practices
+sidebar_label: Pilot Best Practices
 sidebar_position: 3
 ---
 
-# Detox Copilot Best Practices
+# Wix Pilot Best Practices
 
-Detox Copilot allows you to write tests using natural language commands. Each step corresponds to a specific action or assertion within your app. In case you're wondering how to make the most out of this feature, here are some best practices to follow when writing your Copilot intents.
+Wix Pilot allows you to write tests using natural language commands. Each step corresponds to a specific action or assertion within your app. In case you're wondering how to make the most out of this feature, here are some best practices to follow when writing your Pilot intents.
 
 ## Step-by-Step Instructions
 
@@ -16,7 +16,7 @@ Detox Copilot allows you to write tests using natural language commands. Each st
 
 ```javascript
 it('should navigate and add a product to the cart', async () => {
-  await copilot.perform(
+  await pilot.perform(
     'Navigate to the "Products" page',
     'Tap on the "Add to Cart" button for the first product',
     'Verify that the "Added to Cart" pop-up is displayed'
@@ -26,7 +26,7 @@ it('should navigate and add a product to the cart', async () => {
 
 ## Be Specific and Clear
 
-- **Provide Clear Instructions**: The clearer your instructions, the better Copilot can interpret them.
+- **Provide Clear Instructions**: The clearer your instructions, the better Pilot can interpret them.
 - **Example**:
     - **Good**: `'Tap on the "Login" button'`
     - **Better**: `'Tap on the "Login" button located at the top right corner'`
@@ -71,6 +71,6 @@ it('should navigate and add a product to the cart', async () => {
 
 ## General Recommendations
 
-- **Flexibility**: While it's best to provide clear instructions, Copilot is designed to interpret a variety of phrasing. Different approaches can work, and you are encouraged to experiment.
-- **Feedback Loop**: Observe how Copilot interprets your instructions and adjust accordingly.
-- **Model Selection**: Choose an LLM model that best suits your application's complexity and language requirements. We recommend advanced models like **Sonnet 3.5** or **GPT-4o** for better performance.
+- **Flexibility**: While it's best to provide clear instructions, Pilot is designed to interpret a variety of phrasing. Different approaches can work, and you are encouraged to experiment.
+- **Feedback Loop**: Observe how Pilot interprets your instructions and adjust accordingly.
+- **Model Selection**: Choose an LLM model that best suits your application's complexity and language requirements. We recommend advanced models like **Sonnet 3.5** or **GPT-4** for better performance.

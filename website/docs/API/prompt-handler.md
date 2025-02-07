@@ -7,11 +7,11 @@ sidebar_position: 2
 
 # Prompt Handler
 
-In this section, we will cover how to implement a **Prompt Handler** to interact with AI services, such as OpenAI, in the context of **Copilot by Detox**.
+In this section, we will cover how to implement a **Prompt Handler** to interact with AI services, such as OpenAI, in the context of **Wix Pilot**.
 
 ## What is a Prompt Handler?
 
-A **Prompt Handler** is responsible for sending a prompt to an AI service and receiving the response. It may also handle the inclusion of additional context, such as a snapshot image, to enhance the AI's understanding of the app's UI state. Implementing a prompt handler allows **Copilot** to generate intelligent test scripts based on natural language commands.
+A **Prompt Handler** is responsible for sending a prompt to an AI service and receiving the response. It may also handle the inclusion of additional context, such as a snapshot image, to enhance the AI's understanding of the app's UI state. Implementing a prompt handler allows **Pilot** to generate intelligent test scripts based on natural language commands.
 
 ## How to Write a Prompt Handler
 
@@ -24,7 +24,7 @@ The `PromptHandler` interface includes the following methods:
 - **`runPrompt`**: Sends a prompt to the AI service and returns the generated response.
 - **`isSnapshotImageSupported`**: Checks if the AI service supports snapshot images to provide additional context.
 
-Here’s the `PromptHandler` interface:
+Here's the `PromptHandler` interface:
 
 ```typescript
 /**
@@ -47,4 +47,6 @@ export interface PromptHandler {
 ```
 
 ## Open Tasks For Contributors
-If you're interested in contributing to Copilot by Detox and adding new prompt handlers or improving the existing ones, check out the open tasks on our [GitHub repository](https://github.com/wix-incubator/detox-copilot/issues).
+If you're interested in contributing to Wix Pilot and adding new prompt handlers or improving the existing ones, check out the open tasks on our [GitHub repository](https://github.com/wix-incubator/pilot/issues).
+
+For more information or to suggest improvements, please visit our [GitHub repository](https://github.com/wix-incubator/pilot/issues).
