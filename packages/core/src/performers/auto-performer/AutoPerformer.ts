@@ -126,6 +126,12 @@ export class AutoPerformer {
         color: "whiteBright",
       });
 
+      logger.info({
+          message: `🤔 Thoughts: ${thoughts}`,
+          isBold: false,
+          color: "grey",
+      });
+
       const review: AutoReview = {
         ux: ux ? this.extractReviewOutput(ux) : undefined,
         a11y: a11y ? this.extractReviewOutput(a11y) : undefined,
@@ -190,15 +196,14 @@ export class AutoPerformer {
       const screenCapture = await this.screenCapturer.capture();
       const stepReport = await this.analyseScreenAndCreatePilotStep(
         goal,
-        previousSteps,
+        [...previousSteps],
         screenCapture,
       );
-
-      report.steps.push(stepReport);
 
       if (stepReport.goalAchieved) {
         report.summary = stepReport.summary;
         report.review = stepReport.review;
+
         logger.info(`🛬 Pilot reached goal: "${goal}"! 🎉 Summarizing:\n`, {
           message: `${stepReport.summary}`,
           isBold: true,
@@ -210,14 +215,17 @@ export class AutoPerformer {
 
       const { code, result } = await this.stepPerformer.perform(
         stepReport.plan.action,
-        pilotSteps,
+        [...pilotSteps],
         screenCapture,
       );
+
+      report.steps.push({code ,...stepReport});
 
       pilotSteps = [
         ...pilotSteps,
         { step: stepReport.plan.action, code, result },
       ];
+
       previousSteps = [
         ...previousSteps,
         {
@@ -228,8 +236,8 @@ export class AutoPerformer {
       ];
 
       if (step === maxSteps - 1) {
-        throw new Error(
-          `Failed to achieve goal after ${maxSteps} steps: ${goal}`,
+        logger.warn(
+          `🚨 Pilot reached the maximum number of steps (${maxSteps}) without reaching the goal.`,
         );
       }
     }

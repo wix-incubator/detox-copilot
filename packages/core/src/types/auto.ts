@@ -20,7 +20,7 @@ export type AutoStepReport = {
   code?: string;
   /** Indicates if the goal was achieved */
   goalAchieved: boolean;
-  /** */
+  /** Execution summary if exists */
   summary?: string;
 };
 
@@ -30,12 +30,12 @@ export type AutoStepReport = {
 export type AutoReport = {
   /** Target objective */
   goal: string;
-  /** Execution summary */
-  summary?: string;
   /** Individual step reports */
   steps: AutoStepReport[];
-  /** Final reviews */
+  /** Optional final reviews */
   review?: AutoReview;
+  /** Execution summary if exists */
+  summary?: string;
 };
 
 /**
