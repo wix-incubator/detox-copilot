@@ -13,8 +13,6 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
-      "@copilot": ["src/index"],
-      "@copilot/*": ["src/*"]
     },
     "resolveJsonModule": true
   },
@@ -24,6 +22,6 @@
     "dist",
     "./test-utils",
     "**/*.test.ts.snap",
-    "examples"
+    "**/*.test.ts",
   ]
 }
