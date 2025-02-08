@@ -1,41 +1,41 @@
-# Detox Copilot
+# Wix Pilot
 
 A flexible plugin that drives your tests with human-written commands, enhanced by the power of large language models (LLMs).
-While originally designed for Detox, Detox Copilot can be extended to **any other testing frameworks**.
+While originally designed for Detox, Pilot can be extended to **any other testing frameworks**.
 
 It provides clear APIs to perform actions and assertions within your tests while interfacing with an LLM service to enhance the testing process.
 
 ## Quick Demo
 
-Here's an example of how Copilot runs over a Detox test case:
+Here's an example of how Pilot runs over a Detox test case:
 
 <img src="copilot-demo.gif" width="800">
 
-The test case is written in a human-readable format, and Copilot translates it into Detox actions on the fly.
+The test case is written in a human-readable format, and Pilot translates it into Detox actions on the fly.
 
-**Not just Detox!** Copilot can be extended to any other testing frameworks.
+**Not just Detox!** Pilot can be extended to any other testing frameworks.
 
 ## API Overview
 
-High-level overview of the API that Detox Copilot exposes:
+High-level overview of the API that Pilot exposes:
 
 ```typescript
 /**
- * Initializes the Copilot with the given configuration.
- * Must be called before any other Copilot methods.
- * @param config The configuration for the Copilot.
+ * Initializes the Pilot with the given configuration.
+ * Must be called before any other Pilot methods.
+ * @param config The configuration for the Pilot.
  */
 init: (config: Config) => void;
 
 /**
- * Checks if the Copilot has been initialized.
- * @returns True if the Copilot has been initialized, false otherwise.
+ * Checks if the Pilot has been initialized.
+ * @returns True if the Pilot has been initialized, false otherwise.
  */
 isInitialized: () => boolean;
 
 /**
- * Start the Copilot instance.
- * @note Must be called before each flow to ensure a clean state (the Copilot uses the operations history as part of
+ * Start the Pilot instance.
+ * @note Must be called before each flow to ensure a clean state (the Pilot uses the operations history as part of
  * its context).
  */
 start: () => void;
@@ -65,22 +65,22 @@ perform: (steps: string | string[]) => Promise<any | any[]>;
 
 ### Additional Note
 
-In addition to the operations history, Copilot maintains a repository-level cache. If you need to ignore the current cache for any reason (e.g., when adding an action to the testing framework driver), you can set the environment variable `COPILOT_OVERRIDE_CACHE` to "true" before running your tests. This will ensure that the current cache is not taken into consideration and will override the existing one.
+In addition to the operations history, Pilot maintains a repository-level cache. If you need to ignore the current cache for any reason (e.g., when adding an action to the testing framework driver), you can set the environment variable `PILOT_OVERRIDE_CACHE` to "true" before running your tests. This will ensure that the current cache is not taken into consideration and will override the existing one.
 
 ```shell
-export COPILOT_OVERRIDE_CACHE=true
+export PILOT_OVERRIDE_CACHE=true
 ```
 
-If you want to disable the override after setting it to "true" and revert to using the cache, you can set `COPILOT_OVERRIDE_CACHE` to "false"
+If you want to disable the override after setting it to "true" and revert to using the cache, you can set `PILOT_OVERRIDE_CACHE` to "false"
 
 ```shell
-export COPILOT_OVERRIDE_CACHE=false
+export PILOT_OVERRIDE_CACHE=false
 ```
 
 
 ## Integration with Testing Frameworks
 
-Detox Copilot requires two main components to work:
+The Pilot requires two main components to work:
 
 ### **Prompt Handler**
 
@@ -107,7 +107,7 @@ isSnapshotImageSupported: () => boolean;
 
 An adapter that interfaces with the testing framework to execute the generated actions. For example, Detox, Appium, Espresso, XCTest or any other testing framework.
 
-In order for Copilot to work with the testing framework, the driver provides the API catalog and the JS context to execute the generated actions.
+In order for Pilot to work with the testing framework, the driver provides the API catalog and the JS context to execute the generated actions.
 
 #### `TestingFrameworkDriver` Interface
 

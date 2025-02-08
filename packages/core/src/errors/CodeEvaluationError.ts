@@ -1,6 +1,6 @@
-import { CopilotError } from "@/errors/CopilotError";
+import { PilotError } from "@/errors/PilotError";
 
-export class CodeEvaluationError extends CopilotError {
+export class CodeEvaluationError extends PilotError {
   constructor(
     message: string,
     public originalError?: Error,

@@ -7,11 +7,11 @@ sidebar_position: 3
 
 # Framework Driver
 
-In this section, we will explain how to implement custom drivers for different testing frameworks in **Copilot by Detox**. A **Framework Driver** is a crucial component that ensures **Copilot** remains agnostic to the underlying testing framework, allowing it to work seamlessly with different frameworks like Detox, Jest, Mocha, etc.
+In this section, we will explain how to implement custom drivers for different testing frameworks in **Pilot**. A **Framework Driver** is a crucial component that ensures **Pilot** remains agnostic to the underlying testing framework, allowing it to work seamlessly with different frameworks like Detox, Jest, Mocha, etc.
 
 ## What is a Framework Driver?
 
-A **Framework Driver** provides an abstraction layer between **Copilot** and the underlying testing framework. It defines the necessary methods to interact with the testing framework's API and potentially supports features such as taking snapshots of the app's UI and capturing the view hierarchy.
+A **Framework Driver** provides an abstraction layer between **Pilot** and the underlying testing framework. It defines the necessary methods to interact with the testing framework's API and potentially supports features such as taking snapshots of the app's UI and capturing the view hierarchy.
 
 By implementing a custom driver, you enable **Copilot** to communicate with your chosen testing framework, making it flexible and adaptable to a variety of testing environments.
 

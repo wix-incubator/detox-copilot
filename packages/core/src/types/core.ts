@@ -3,22 +3,22 @@ import {
   TestingFrameworkAPICatalogCategory,
 } from "@/types/framework";
 import { PromptHandler } from "@/types/prompt";
-import { PilotReport } from "@/types/pilot";
+import { AutoReport } from "@/types/auto";
 
 /**
- * Core interface for interacting with the Copilot testing automation system.
+ * Core interface for interacting with the Pilot testing automation system.
  */
-export interface CopilotFacade {
+export interface PilotFacade {
   /**
-   * Initializes the Copilot with the provided configuration.
+   * Initializes Pilot with the provided configuration.
    * Must be called once before using any other methods.
-   * @param config - Configuration settings for the Copilot
+   * @param config - Configuration settings for Pilot
    * @throws Error if called multiple times
    */
   init: (config: Config) => void;
 
   /**
-   * Checks if Copilot has been properly initialized.
+   * Checks if Pilot has been properly initialized.
    * @returns true if initialized, false otherwise
    */
   isInitialized: () => boolean;
@@ -26,7 +26,7 @@ export interface CopilotFacade {
   /**
    * Starts a new test flow session.
    * Must be called before any test operations to ensure a clean state,
-   * as Copilot uses operation history for context.
+   * as Pilot uses operation history for context.
    */
   start: () => void;
 
@@ -57,10 +57,10 @@ export interface CopilotFacade {
    * @param goal - Description of the desired end state or objective
    * @returns Detailed report of actions taken and results
    * @example
-   * await pilot('login with user "testuser" and password "pass123"')
-   * await pilot('complete purchase flow in "my store"')
+   * await autopilot('login with user "testuser" and password "pass123"')
+   * await autopilot('complete purchase flow in "my store"')
    */
-  pilot: (goal: string) => Promise<PilotReport>;
+  autopilot: (goal: string) => Promise<AutoReport>;
 
   /**
    * Extends the testing framework's API capabilities.
@@ -80,9 +80,9 @@ export type CacheMode = "full" | "lightweight" | "disabled";
 export type AnalysisMode = "fast" | "full";
 
 /**
- * Copilot behavior configuration options.
+ * Pilot behavior configuration options.
  */
-export interface CopilotOptions {
+export interface PilotOptions {
   /** Cache mode (default: 'full') */
   cacheMode?: CacheMode;
   /** Analysis mode (default: 'fast') */
@@ -90,7 +90,7 @@ export interface CopilotOptions {
 }
 
 /**
- * Complete Copilot configuration.
+ * Complete Pilot configuration.
  */
 export interface Config {
   /** Testing framework driver */
@@ -98,5 +98,17 @@ export interface Config {
   /** AI service handler */
   promptHandler: PromptHandler;
   /** Optional behavior settings */
-  options?: CopilotOptions;
+  options?: PilotOptions;
 }
+
+/**
+ * Executed test step record.
+ */
+export type PreviousStep = {
+  /** Step description */
+  step: string;
+  /** Generated test code */
+  code: string;
+  /** Step execution result */
+  result: any;
+};

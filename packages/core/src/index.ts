@@ -1,50 +1,48 @@
-import { Copilot } from "@/Copilot";
+import { Pilot } from "@/Pilot";
 import {
-  CopilotFacade,
+  PilotFacade,
   Config,
   TestingFrameworkAPICatalogCategory,
 } from "@/types";
 
-const copilot: CopilotFacade = {
+const pilot: PilotFacade = {
   init: (config: Config) => {
-    Copilot.init(config);
+    Pilot.init(config);
   },
   isInitialized: () => {
-    return Copilot.isInitialized();
+    return Pilot.isInitialized();
   },
   start: () => {
-    Copilot.getInstance().start();
+    Pilot.getInstance().start();
   },
   end: (isCacheDisabled?: boolean) => {
-    Copilot.getInstance().end(isCacheDisabled);
+    Pilot.getInstance().end(isCacheDisabled);
   },
   perform: async (...steps: string[]) => {
-    const copilotInstance = Copilot.getInstance();
+    const instance = Pilot.getInstance();
 
     let result;
     for await (const intent of steps) {
-      result = await copilotInstance.performStep(intent);
+      result = await instance.performStep(intent);
     }
 
     return result;
   },
-
-  pilot: async (goal: string) => {
-    return await Copilot.getInstance().pilot(goal);
+  autopilot: async (goal: string) => {
+    return await Pilot.getInstance().autopilot(goal);
   },
-
   extendAPICatalog: (
     categories: TestingFrameworkAPICatalogCategory[],
     context?: any,
   ) => {
-    Copilot.getInstance().extendAPICatalog(categories, context);
+    Pilot.getInstance().extendAPICatalog(categories, context);
   },
 };
 
-export default copilot;
+export default pilot;
 
 export {
-  CopilotFacade,
+  PilotFacade,
   Config,
   PromptHandler,
   TestingFrameworkDriver,

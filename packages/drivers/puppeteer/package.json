@@ -1,7 +1,7 @@
 {
     "name": "@wix-pilot/puppeteer",
     "version": "1.0.0",
-    "description": "Puppeterr driver for pilot and copilot usage",
+    "description": "Puppeteer driver for Wix Pilot usage",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -12,7 +12,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/wix-incubator/detox-copilot.git"
+        "url": "git+https://github.com/wix-incubator/pilot.git"
     },
     "scripts": {
         "build": "tsc && tsc-alias",
@@ -25,10 +25,10 @@
         "type-check": "tsc --noEmit"
     },
     "bugs": {
-        "url": "https://github.com/wix-incubator/detox-copilot/issues"
+        "url": "https://github.com/wix-incubator/pilot/issues"
     },
     "dependencies": {
-        "@wix-pilot/core": "^1.0.0"
+        "@wix-pilot/core": "^1.0.1"
     },
     "devDependencies": {
         "puppeteer": "^20.8.0",

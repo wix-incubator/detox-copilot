@@ -6,8 +6,6 @@ module.exports = {
   moduleFileExtensions: ['ts', 'js', 'json', 'node'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '^@copilot/(.*)$': '<rootDir>/src/copilot/$1',
-    '@copilot': '<rootDir>/src/copilot/index.ts',
   },
   transformIgnorePatterns: [
     'node_modules/(?!(ora|chalk|strip-ansi|ansi-regex|cli-cursor|restore-cursor|onetime|mimic-fn|is-unicode-supported|is-interactive|get-east-asian-width)/)'

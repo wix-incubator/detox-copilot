@@ -1,4 +1,4 @@
-import copilot from "@wix-pilot/core";
+import pilot from "@wix-pilot/core";
 import { PromptHandler } from "../utils/promptHandler";
 import { PlaywrightFrameworkDriver } from "../index";
 
@@ -12,7 +12,7 @@ describe("Example Test Suite", () => {
 
     frameworkDriver = new PlaywrightFrameworkDriver();
 
-    copilot.init({
+    pilot.init({
       frameworkDriver,
       promptHandler,
     });
@@ -26,15 +26,15 @@ describe("Example Test Suite", () => {
   });
 
   beforeEach(async () => {
-    copilot.start();
+    pilot.start();
   });
 
   afterEach(async () => {
-    copilot.end();
+    pilot.end();
   });
 
   it("perform test with pilot", async () => {
-    await copilot.pilot(
+    await pilot.autopilot(
       "Open https://www.wix.com/domains and search for the domain Shraga.com, is it available?",
     );
   });
