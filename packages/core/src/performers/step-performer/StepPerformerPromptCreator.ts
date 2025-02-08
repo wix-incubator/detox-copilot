@@ -4,7 +4,7 @@ import {
   TestingFrameworkAPICatalogCategory,
   TestingFrameworkAPICatalogItem,
 } from "@/types";
-import { APIFormatter } from "@/utils/APIFormatter";
+import { APIFormatter } from "@/common/APIFormatter";
 
 export class StepPerformerPromptCreator {
   private apiFormatter: APIFormatter;

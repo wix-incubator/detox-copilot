@@ -1,5 +1,5 @@
-import { ScreenCapturer } from "@/utils/ScreenCapturer";
-import { SnapshotManager } from "@/utils/SnapshotManager";
+import { ScreenCapturer } from "@/common/snapshot/ScreenCapturer";
+import { SnapshotManager } from "@/common/snapshot/SnapshotManager";
 import { PromptHandler } from "@/types";
 
 describe("ScreenCapturer", () => {

@@ -1,4 +1,4 @@
-import { APISearchPromptCreator } from "@/utils/APISearchPromptCreator";
+import { APISearchPromptCreator } from "@/common/prompts/APISearchPromptCreator";
 import { TestingFrameworkAPICatalog } from "@/types";
 
 describe("APISearchPromptCreator", () => {

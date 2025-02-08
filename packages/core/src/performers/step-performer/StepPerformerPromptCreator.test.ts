@@ -1,4 +1,4 @@
-import { StepPerformerPromptCreator } from "@/utils/performer/StepPerformerPromptCreator";
+import { StepPerformerPromptCreator } from "@/performers/step-performer/StepPerformerPromptCreator";
 import { PreviousStep, TestingFrameworkAPICatalog } from "@/types";
 import {
   bazCategory,

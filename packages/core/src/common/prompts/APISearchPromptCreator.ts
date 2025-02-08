@@ -1,5 +1,5 @@
 import { TestingFrameworkAPICatalog } from "@/types";
-import { APIFormatter } from "@/utils/APIFormatter";
+import { APIFormatter } from "@/common/APIFormatter";
 
 export class APISearchPromptCreator {
   private apiFormatter: APIFormatter;

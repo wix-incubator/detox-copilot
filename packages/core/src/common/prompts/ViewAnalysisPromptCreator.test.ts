@@ -1,4 +1,4 @@
-import { ViewAnalysisPromptCreator } from "@/utils/ViewAnalysisPromptCreator";
+import { ViewAnalysisPromptCreator } from "@/common/prompts/ViewAnalysisPromptCreator";
 import { TestingFrameworkAPICatalog } from "@/types";
 
 describe("ViewAnalysisPromptCreator", () => {
