@@ -12,8 +12,7 @@
         "lint": "npm run lint --workspaces",
         "lint:fix": "npm run lint:fix --workspaces",
         "type-check": "npm run type-check --workspaces"
-        },
-
+    },
     "devDependencies": {
         "@types/jest": "^29.5.12",
         "@typescript-eslint/eslint-plugin": "^6.21.0",

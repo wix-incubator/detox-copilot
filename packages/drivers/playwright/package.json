@@ -18,8 +18,11 @@
       "build": "tsc && tsc-alias",
       "test": "echo No tests avialable for this package",
       "test:example": "jest",
-      "bump-version": "npm version patch && git commit -am 'chore: bump version' && git push",
-      "release": "npm run test && npm run bump-version && npm run build && npm publish --access public",
+      "bump-version:patch": "npm version patch && git commit -am 'chore: bump patch version' && git push",
+      "release:patch": "npm run test && npm run bump-version:patch && npm run build && npm publish --access public",
+      "bump-version:minor": "npm version minor && git commit -am 'chore: bump minor version' && git push",
+      "release:minor": "npm run test && npm run bump-version:minor && npm run build && npm publish --access public",
+      "bump-version:major": "npm version major && git commit -am 'chore: bump major version' && git push",
       "lint": "eslint . --ext .ts",
       "lint:fix": "eslint . --ext .ts --fix",
       "type-check": "tsc --noEmit"
