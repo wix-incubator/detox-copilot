@@ -67,7 +67,7 @@ Specialized for Chrome/Chromium automation with DevTools Protocol access.
 You can add support for additional testing frameworks by implementing the `FrameworkDriver` interface:
 
 ```typescript
-import { Pilot, FrameworkDriver } from '@wix/pilot';
+import { Pilot, FrameworkDriver } from '@wix-pilot/core';
 
 class CustomFrameworkDriver implements FrameworkDriver {
   // Implement required methods

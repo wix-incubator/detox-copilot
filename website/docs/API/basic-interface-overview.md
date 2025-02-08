@@ -25,12 +25,12 @@ Throws an error if called multiple times.
 
 Basic initialization example:
 ```typescript
-import pilot from '@wix/pilot';
-import { DetoxFrameworkDriver } from '@wix/pilot-detox';
-import { OpenAIHandler } from '@wix/pilot-openai';
+import pilot from '@wix-pilot/core';
+import { PuppeteerFrameworkDriver } from '@wix-pilot/puppeteer';
+import { OpenAIHandler } from '<your-openai-handler>';
 
 pilot.init({
-  frameworkDriver: new DetoxFrameworkDriver(),
+  frameworkDriver: new PuppeteerFrameworkDriver(),
   promptHandler: new OpenAIHandler({
     apiKey: process.env.OPENAI_API_KEY
   }),
