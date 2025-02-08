@@ -127,9 +127,9 @@ export class AutoPerformer {
       });
 
       logger.info({
-          message: `🤔 Thoughts: ${thoughts}`,
-          isBold: false,
-          color: "grey",
+        message: `🤔 Thoughts: ${thoughts}`,
+        isBold: false,
+        color: "grey",
       });
 
       const review: AutoReview = {
@@ -219,7 +219,7 @@ export class AutoPerformer {
         screenCapture,
       );
 
-      report.steps.push({code ,...stepReport});
+      report.steps.push({ code, ...stepReport });
 
       pilotSteps = [
         ...pilotSteps,
