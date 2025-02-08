@@ -1,4 +1,4 @@
-import {AutoPerformerPromptCreator} from "./AutoPerformerPromptCreator";
+import { AutoPerformerPromptCreator } from "./AutoPerformerPromptCreator";
 import {
   AutoPreviousStep,
   AutoReport,
@@ -11,9 +11,12 @@ import {
   PromptHandler,
   ScreenCapturerResult,
 } from "@/types";
-import {extractTaggedOutputs, OUTPUTS_MAPPINGS,} from "@/common/extract/extractTaggedOutputs";
-import {StepPerformer} from "@/performers/step-performer/StepPerformer";
-import {ScreenCapturer} from "@/common/snapshot/ScreenCapturer";
+import {
+  extractTaggedOutputs,
+  OUTPUTS_MAPPINGS,
+} from "@/common/extract/extractTaggedOutputs";
+import { StepPerformer } from "@/performers/step-performer/StepPerformer";
+import { ScreenCapturer } from "@/common/snapshot/ScreenCapturer";
 import logger from "@/common/logger";
 
 export class AutoPerformer {

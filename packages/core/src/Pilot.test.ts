@@ -18,7 +18,7 @@ import {
 import { AutoPerformer } from "./performers/auto-performer/AutoPerformer";
 
 jest.mock("@/performers/step-performer/StepPerformer");
-jest.mock("@/utils/ScreenCapturer");
+jest.mock("@/common/snapshot/ScreenCapturer");
 jest.mock("fs");
 
 const INTENT = "tap button";

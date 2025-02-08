@@ -1,6 +1,7 @@
 import {
   Config,
-  PreviousStep, ScreenCapturerResult,
+  PreviousStep,
+  ScreenCapturerResult,
   TestingFrameworkAPICatalogCategory,
 } from "@/types";
 import { PilotError } from "@/errors/PilotError";
@@ -45,7 +46,9 @@ export class Pilot {
     );
     this.autoPerformerPromptCreator = new AutoPerformerPromptCreator();
     this.cacheHandler = new StepPerformerCacheHandler();
-    this.stepPerformerPromptCreator = new StepPerformerPromptCreator(config.frameworkDriver.apiCatalog);
+    this.stepPerformerPromptCreator = new StepPerformerPromptCreator(
+      config.frameworkDriver.apiCatalog,
+    );
     this.stepPerformer = new StepPerformer(
       config.frameworkDriver.apiCatalog.context,
       this.stepPerformerPromptCreator,
@@ -172,12 +175,13 @@ export class Pilot {
   async performStep(step: string): Promise<any> {
     this.assertIsRunning();
 
-    const screenCapture: ScreenCapturerResult = await this.screenCapturer.capture();
+    const screenCapture: ScreenCapturerResult =
+      await this.screenCapturer.capture();
 
     const { code, result } = await this.stepPerformer.perform(
-        step,
-        this.previousSteps,
-        screenCapture,
+      step,
+      this.previousSteps,
+      screenCapture,
     );
 
     this.didPerformStep(step, code, result);
