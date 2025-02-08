@@ -2,7 +2,7 @@ import { createCanvas, loadImage } from "canvas";
 import fs from "fs";
 import path from "path";
 import os from "os";
-import logger from "./logger";
+import logger from "@/common/logger";
 
 const MAX_PIXELS = 2000000;
 

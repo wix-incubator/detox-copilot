@@ -3,12 +3,12 @@ import {
   TestingFrameworkAPICatalogCategory,
 } from "@/types/framework";
 import { PromptHandler } from "@/types/prompt";
-import { PilotReport } from "@/types/pilot";
+import { AutoReport } from "@/types/auto";
 
 /**
- * Core interface for interacting with the Copilot testing automation system.
+ * Core interface for interacting with the Pilot testing automation system.
  */
-export interface CopilotFacade {
+export interface PilotFacade {
   /**
    * Initializes the Copilot with the provided configuration.
    * Must be called once before using any other methods.
@@ -57,10 +57,10 @@ export interface CopilotFacade {
    * @param goal - Description of the desired end state or objective
    * @returns Detailed report of actions taken and results
    * @example
-   * await pilot('login with user "testuser" and password "pass123"')
-   * await pilot('complete purchase flow in "my store"')
+   * await autopilot('login with user "testuser" and password "pass123"')
+   * await autopilot('complete purchase flow in "my store"')
    */
-  pilot: (goal: string) => Promise<PilotReport>;
+  autopilot: (goal: string) => Promise<AutoReport>;
 
   /**
    * Extends the testing framework's API capabilities.
@@ -100,3 +100,15 @@ export interface Config {
   /** Optional behavior settings */
   options?: CopilotOptions;
 }
+
+/**
+ * Executed test step record.
+ */
+export type PreviousStep = {
+  /** Step description */
+  step: string;
+  /** Generated test code */
+  code: string;
+  /** Step execution result */
+  result: any;
+};

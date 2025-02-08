@@ -1,13 +1,13 @@
-import { PilotPreviousStep, PilotReviewSectionType } from "@/types";
+import { AutoPreviousStep, AutoReviewSectionType } from "@/types";
 
-export class PilotPromptCreator {
+export class AutoPerformerPromptCreator {
   constructor() {}
 
   createPrompt(
     goal: string,
     viewHierarchy: string,
     isSnapshotImageAttached: boolean,
-    previousSteps: PilotPreviousStep[],
+    previousSteps: AutoPreviousStep[],
   ): string {
     return [
       this.createBasePrompt(),
@@ -45,7 +45,7 @@ export class PilotPromptCreator {
     goal: string,
     viewHierarchy: string,
     isSnapshotImageAttached: boolean,
-    previousSteps: PilotPreviousStep[],
+    previousSteps: AutoPreviousStep[],
   ): string[] {
     const context = [
       "## Context",
@@ -91,7 +91,7 @@ export class PilotPromptCreator {
             if (previousStep.review) {
               for (const sectionType of Object.keys(
                 previousStep.review,
-              ) as PilotReviewSectionType[]) {
+              ) as AutoReviewSectionType[]) {
                 const sectionReview = previousStep.review[sectionType];
                 if (sectionReview) {
                   stepDetails.push(
@@ -122,7 +122,7 @@ export class PilotPromptCreator {
     return context;
   }
 
-  private getSectionName(sectionType: PilotReviewSectionType): string {
+  private getSectionName(sectionType: AutoReviewSectionType): string {
     switch (sectionType) {
       case "ux":
         return "UX";

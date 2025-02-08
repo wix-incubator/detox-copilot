@@ -1,5 +1,5 @@
-import { extractOutputs } from "./extractOutputs";
-import { OutputsMapping } from "./extractOutputs";
+import { extractTaggedOutputs } from "./extractTaggedOutputs";
+import { OutputsMapping } from "./extractTaggedOutputs";
 
 describe("extractOutputs", () => {
   it("should extract outputs from text", () => {
@@ -16,7 +16,7 @@ describe("extractOutputs", () => {
       thoughts: { tag: "THOUGHTS", isRequired: true },
       action: { tag: "ACTION", isRequired: true },
     };
-    const outputs = extractOutputs({ text: textToBeParsed, outputsMapper });
+    const outputs = extractTaggedOutputs({ text: textToBeParsed, outputsMapper });
     expect(outputs).toEqual({
       thoughts: "I think this is great",
       action: "Tap on GREAT button",
@@ -40,7 +40,7 @@ describe("extractOutputs", () => {
       thoughts: { tag: "THOUGHTS", isRequired: true },
       action: { tag: "ACTION", isRequired: true },
     };
-    const outputs = extractOutputs({ text: textToBeParsed, outputsMapper });
+    const outputs = extractTaggedOutputs({ text: textToBeParsed, outputsMapper });
     expect(outputs).toEqual({
       thoughts: "I think this is great",
       action: "Tap on GREAT button",
@@ -63,7 +63,7 @@ describe("extractOutputs", () => {
       action2: { tag: "ACTION2", isRequired: true },
     };
     expect(() =>
-      extractOutputs({ text: textToBeParsed, outputsMapper }),
+      extractTaggedOutputs({ text: textToBeParsed, outputsMapper }),
     ).toThrowError("Missing field for required tag <ACTION2>");
   });
 
@@ -82,7 +82,7 @@ describe("extractOutputs", () => {
       action: { tag: "ACTION", isRequired: true },
       action2: { tag: "ACTION2", isRequired: false },
     };
-    const outputs = extractOutputs({ text: textToBeParsed, outputsMapper });
+    const outputs = extractTaggedOutputs({ text: textToBeParsed, outputsMapper });
     expect(outputs).toEqual({
       thoughts: "I think this is great",
       action: "Tap on GREAT button",

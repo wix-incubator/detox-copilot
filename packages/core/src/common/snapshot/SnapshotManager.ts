@@ -1,5 +1,5 @@
 import { TestingFrameworkDriver } from "@/types";
-import { SnapshotComparator } from "@/utils/SnapshotComparator";
+import { SnapshotComparator } from "./comparator/SnapshotComparator";
 import crypto from "crypto";
 
 const DEFAULT_POLL_INTERVAL = 500; // ms

@@ -1,6 +1,6 @@
 import { CodeEvaluationError } from "@/errors/CodeEvaluationError";
 import { CodeEvaluationResult } from "@/types";
-import logger from "@/utils/logger";
+import logger from "@/common/logger";
 
 export class CodeEvaluator {
   async evaluate(

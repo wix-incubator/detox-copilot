@@ -1,33 +1,21 @@
-/**
- * Executed test step record.
- */
-export type PreviousStep = {
-  /** Step description */
-  step: string;
-  /** Generated test code */
-  code: string;
-  /** Step execution result */
-  result: any;
-};
-
 /** Review section types */
-export type PilotReviewSectionType = "ux" | "a11y" | "i18n";
+export type AutoReviewSectionType = "ux" | "a11y" | "i18n";
 
-/** Complete pilot review */
-export type PilotReview = {
-  [key in PilotReviewSectionType]?: PilotReviewSection;
+/** Complete Autopilot review */
+export type AutoReview = {
+  [key in AutoReviewSectionType]?: AutoReviewSection;
 };
 
 /**
- * Single pilot step execution report.
+ * Single Autopilot step execution report.
  */
-export type PilotStepReport = {
+export type AutoStepReport = {
   /** Screen name of the current view */
   screenDescription: string;
   /** Action plan and reasoning */
-  plan: PilotStepPlan;
+  plan: AutoStepPlan;
   /** Optional reviews */
-  review?: PilotReview;
+  review?: AutoReview;
   /** Generated code */
   code?: string;
   /** Indicates if the goal was achieved */
@@ -37,23 +25,23 @@ export type PilotStepReport = {
 };
 
 /**
- * Complete pilot execution report.
+ * Complete Autopilot execution report.
  */
-export type PilotReport = {
+export type AutoReport = {
   /** Target objective */
   goal: string;
   /** Execution summary */
   summary?: string;
   /** Individual step reports */
-  steps: PilotStepReport[];
+  steps: AutoStepReport[];
   /** Final reviews */
-  review?: PilotReview;
+  review?: AutoReview;
 };
 
 /**
  * Pilot step planning output.
  */
-export type PilotStepPlan = {
+export type AutoStepPlan = {
   /** Planned action */
   action: string;
   /** Reasoning process */
@@ -63,7 +51,7 @@ export type PilotStepPlan = {
 /**
  * Review section content.
  */
-export type PilotReviewSection = {
+export type AutoReviewSection = {
   /** Overall assessment */
   summary: string;
   /** Specific observations */
@@ -75,11 +63,11 @@ export type PilotReviewSection = {
 /**
  * Previous pilot step record.
  */
-export type PilotPreviousStep = {
+export type AutoPreviousStep = {
   /** Screen description */
   screenDescription: string;
   /** Step description */
   step: string;
   /** Optional reviews */
-  review?: PilotReview;
+  review?: AutoReview;
 };

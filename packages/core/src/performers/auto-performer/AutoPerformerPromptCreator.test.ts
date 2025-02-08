@@ -1,11 +1,11 @@
-import { PilotPromptCreator } from "./PilotPromptCreator";
-import { PilotPreviousStep } from "@/types";
+import { AutoPerformerPromptCreator } from "./AutoPerformerPromptCreator";
+import { AutoPreviousStep } from "@/types";
 
 describe("PilotPromptCreator", () => {
-  let promptCreator: PilotPromptCreator;
+  let promptCreator: AutoPerformerPromptCreator;
 
   beforeEach(() => {
-    promptCreator = new PilotPromptCreator();
+    promptCreator = new AutoPerformerPromptCreator();
   });
 
   it("should create a prompt for an intent correctly", () => {
@@ -18,7 +18,7 @@ describe("PilotPromptCreator", () => {
 
   it("should include previous intents in the context", () => {
     const intent = "tap button";
-    const previousSteps: PilotPreviousStep[] = [
+    const previousSteps: AutoPreviousStep[] = [
       {
         screenDescription: "default 1",
         step: "navigate to login screen",

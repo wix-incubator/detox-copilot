@@ -1,14 +1,14 @@
-import { CacheHandler } from "./CacheHandler";
-import { mockCache, mockedCacheFile } from "../test-utils/cache";
+import { StepPerformerCacheHandler } from "./StepPerformerCacheHandler";
+import { mockCache, mockedCacheFile } from "../../test-utils/cache";
 
 jest.mock("fs");
 
 describe("CacheHandler", () => {
-  let cacheHandler: CacheHandler;
+  let cacheHandler: StepPerformerCacheHandler;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    cacheHandler = new CacheHandler();
+    cacheHandler = new StepPerformerCacheHandler();
   });
 
   describe("cache and file operations", () => {

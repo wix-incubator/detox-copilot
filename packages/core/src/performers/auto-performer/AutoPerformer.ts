@@ -1,31 +1,31 @@
-import { PilotPromptCreator } from "@/utils/PilotPromptCreator";
+import { AutoPerformerPromptCreator } from "./AutoPerformerPromptCreator";
 import {
   PromptHandler,
-  PilotReport,
-  PilotStepReport,
-  PilotStepPlan,
+  AutoReport,
+  AutoStepReport,
+  AutoStepPlan,
   ScreenCapturerResult,
-  PilotReviewSection,
-  PilotPreviousStep,
-  PilotReview,
+  AutoReviewSection,
+  AutoPreviousStep,
+  AutoReview,
   PreviousStep,
   LoggerMessageColor,
 } from "@/types";
-import { extractOutputs, OUTPUTS_MAPPINGS } from "@/utils/extractOutputs";
-import { CopilotStepPerformer } from "@/actions/CopilotStepPerformer";
-import { ScreenCapturer } from "@/utils/ScreenCapturer";
-import logger from "@/utils/logger";
+import { extractTaggedOutputs, OUTPUTS_MAPPINGS } from "@/common/extract/extractTaggedOutputs";
+import { StepPerformer } from "@/performers/step-performer/StepPerformer";
+import { ScreenCapturer } from "@/common/snapshot/ScreenCapturer";
+import logger from "@/common/logger";
 
-export class PilotPerformer {
+export class AutoPerformer {
   constructor(
-    private promptCreator: PilotPromptCreator,
-    private copilotStepPerformer: CopilotStepPerformer,
+    private promptCreator: AutoPerformerPromptCreator,
+    private copilotStepPerformer: StepPerformer,
     private promptHandler: PromptHandler,
     private screenCapturer: ScreenCapturer,
   ) {}
 
-  private extractReviewOutput(text: string): PilotReviewSection {
-    const { summary, findings, score } = extractOutputs({
+  private extractReviewOutput(text: string): AutoReviewSection {
+    const { summary, findings, score } = extractTaggedOutputs({
       text,
       outputsMapper: OUTPUTS_MAPPINGS.PILOT_REVIEW_SECTION,
     });
@@ -40,7 +40,7 @@ export class PilotPerformer {
   }
 
   private logReviewSection(
-    review: PilotReviewSection,
+    review: AutoReviewSection,
     type: "ux" | "a11y" | "i18n",
   ) {
     const config: {
@@ -84,9 +84,9 @@ export class PilotPerformer {
 
   async analyseScreenAndCreateCopilotStep(
     goal: string,
-    previous: PilotPreviousStep[] = [],
+    previous: AutoPreviousStep[] = [],
     screenCapture: ScreenCapturerResult,
-  ): Promise<PilotStepReport> {
+  ): Promise<AutoStepReport> {
     const analysisLoggerSpinner = logger.startSpinner(
       "🤔 Thinking on next step",
     );
@@ -105,7 +105,7 @@ export class PilotPerformer {
         await this.promptHandler.runPrompt(prompt, snapshot);
 
       const { screenDescription, thoughts, action, ux, a11y, i18n } =
-        extractOutputs({
+        extractTaggedOutputs({
           text: generatedPilotTaskDetails,
           outputsMapper: OUTPUTS_MAPPINGS.PILOT_STEP,
         });
@@ -116,8 +116,8 @@ export class PilotPerformer {
         color: "whiteBright",
       });
 
-      const plan: PilotStepPlan = { action, thoughts };
-      const review: PilotReview = {
+      const plan: AutoStepPlan = { action, thoughts };
+      const review: AutoReview = {
         ux: this.extractReviewOutput(ux),
         a11y: this.extractReviewOutput(a11y),
         i18n: this.extractReviewOutput(i18n),
@@ -136,7 +136,7 @@ export class PilotPerformer {
       const goalAchieved = action === "success";
 
       const summary = goalAchieved
-        ? extractOutputs({
+        ? extractTaggedOutputs({
             text: thoughts,
             outputsMapper: OUTPUTS_MAPPINGS.PILOT_SUMMARY,
           }).summary
@@ -152,11 +152,11 @@ export class PilotPerformer {
     }
   }
 
-  async perform(goal: string): Promise<PilotReport> {
+  async perform(goal: string): Promise<AutoReport> {
     const maxSteps = 100;
-    let previousSteps: PilotPreviousStep[] = [];
+    let previousSteps: AutoPreviousStep[] = [];
     let copilotSteps: PreviousStep[] = [];
-    const report: PilotReport = { goal, steps: [] };
+    const report: AutoReport = { goal, steps: [] };
 
     logger.info(
       {
@@ -202,7 +202,7 @@ export class PilotPerformer {
         { screenDescription, step: plan.action, review },
       ];
 
-      const stepReport: PilotStepReport = {
+      const stepReport: AutoStepReport = {
         screenDescription,
         plan,
         review,

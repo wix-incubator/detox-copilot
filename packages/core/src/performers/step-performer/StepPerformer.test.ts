@@ -1,8 +1,8 @@
-import { CopilotStepPerformer } from "@/actions/CopilotStepPerformer";
-import { PromptCreator } from "@/utils/PromptCreator";
-import { CodeEvaluator } from "@/utils/CodeEvaluator";
-import { CacheHandler } from "@/utils/CacheHandler";
-import { SnapshotComparator } from "@/utils/SnapshotComparator";
+import { StepPerformer } from "@/performers/step-performer/StepPerformer";
+import { StepPerformerPromptCreator } from "./StepPerformerPromptCreator";
+import { CodeEvaluator } from "@/common/CodeEvaluator";
+import { StepPerformerCacheHandler } from "@/performers/step-performer/StepPerformerCacheHandler";
+import { SnapshotComparator } from "@/common/snapshot/comparator/SnapshotComparator";
 import {
   PromptHandler,
   TestingFrameworkAPICatalog,
@@ -15,10 +15,10 @@ import {
   dummyContext,
   dummyBarContext1,
   dummyBarContext2,
-} from "../test-utils/APICatalogTestUtils";
-import { APISearchPromptCreator } from "@/utils/APISearchPromptCreator";
-import { ViewAnalysisPromptCreator } from "@/utils/ViewAnalysisPromptCreator";
-import logger from "@/utils/logger";
+} from "@/test-utils/APICatalogTestUtils";
+import { APISearchPromptCreator } from "@/common/prompts/APISearchPromptCreator";
+import { ViewAnalysisPromptCreator } from "@/common/prompts/ViewAnalysisPromptCreator";
+import logger from "@/common/logger";
 
 jest.mock("fs");
 jest.mock("crypto");
@@ -34,14 +34,14 @@ const CACHE_VALUE = [
 ];
 
 describe("CopilotStepPerformer", () => {
-  let copilotStepPerformer: CopilotStepPerformer;
+  let copilotStepPerformer: StepPerformer;
   let mockContext: jest.Mocked<any>;
-  let mockPromptCreator: jest.Mocked<PromptCreator>;
+  let mockPromptCreator: jest.Mocked<StepPerformerPromptCreator>;
   let mockApiSearchPromptCreator: jest.Mocked<APISearchPromptCreator>;
   let mockViewAnalysisPromptCreator: jest.Mocked<ViewAnalysisPromptCreator>;
   let mockCodeEvaluator: jest.Mocked<CodeEvaluator>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
-  let mockCacheHandler: jest.Mocked<CacheHandler>;
+  let mockCacheHandler: jest.Mocked<StepPerformerCacheHandler>;
   let mockSnapshotComparator: jest.Mocked<SnapshotComparator>;
   let uuidCounter = 0;
 
@@ -66,7 +66,7 @@ describe("CopilotStepPerformer", () => {
       createContext: jest.fn(),
       createAPIInfo: jest.fn(),
       extendAPICategories: jest.fn(),
-    } as unknown as jest.Mocked<PromptCreator>;
+    } as unknown as jest.Mocked<StepPerformerPromptCreator>;
 
     mockApiSearchPromptCreator = {
       createPrompt: jest.fn(),
@@ -94,14 +94,14 @@ describe("CopilotStepPerformer", () => {
       clearTemporaryCache: jest.fn(),
       getStepFromCache: jest.fn(),
       getFromTemporaryCache: jest.fn(),
-    } as unknown as jest.Mocked<CacheHandler>;
+    } as unknown as jest.Mocked<StepPerformerCacheHandler>;
 
     mockSnapshotComparator = {
       generateHashes: jest.fn(),
       compareSnapshot: jest.fn(),
     } as unknown as jest.Mocked<SnapshotComparator>;
 
-    copilotStepPerformer = new CopilotStepPerformer(
+    copilotStepPerformer = new StepPerformer(
       mockContext,
       mockPromptCreator,
       mockApiSearchPromptCreator,
@@ -504,7 +504,7 @@ describe("CopilotStepPerformer", () => {
         },
       );
 
-      copilotStepPerformer = new CopilotStepPerformer(
+      copilotStepPerformer = new StepPerformer(
         mockContext,
         mockPromptCreator,
         mockApiSearchPromptCreator,
@@ -557,7 +557,7 @@ describe("CopilotStepPerformer", () => {
         isSnapshotImageAttached: true,
       };
 
-      copilotStepPerformer = new CopilotStepPerformer(
+      copilotStepPerformer = new StepPerformer(
         mockContext,
         mockPromptCreator,
         mockApiSearchPromptCreator,
@@ -594,7 +594,7 @@ describe("CopilotStepPerformer", () => {
         .mockResolvedValueOnce(apiSearchResult)
         .mockResolvedValueOnce(PROMPT_RESULT);
 
-      copilotStepPerformer = new CopilotStepPerformer(
+      copilotStepPerformer = new StepPerformer(
         mockContext,
         mockPromptCreator,
         mockApiSearchPromptCreator,
@@ -641,7 +641,7 @@ describe("CopilotStepPerformer", () => {
     it("should skip analysis in fast mode", async () => {
       setupMocks();
 
-      copilotStepPerformer = new CopilotStepPerformer(
+      copilotStepPerformer = new StepPerformer(
         mockContext,
         mockPromptCreator,
         mockApiSearchPromptCreator,

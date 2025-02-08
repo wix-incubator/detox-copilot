@@ -1,4 +1,4 @@
-import { APIFormatter } from "@/utils/APIFormatter";
+import { APIFormatter } from "./APIFormatter";
 import { TestingFrameworkAPICatalog } from "@/types";
 
 describe("APIFormatter", () => {

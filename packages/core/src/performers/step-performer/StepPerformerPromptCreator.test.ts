@@ -1,4 +1,4 @@
-import { PromptCreator } from "@/utils/PromptCreator";
+import { StepPerformerPromptCreator } from "@/utils/performer/StepPerformerPromptCreator";
 import { PreviousStep, TestingFrameworkAPICatalog } from "@/types";
 import {
   bazCategory,
@@ -57,7 +57,7 @@ const mockAPI: TestingFrameworkAPICatalog = {
 
 describe("PromptCreator constructor", () => {
   it("should merge redundant categories", () => {
-    const promptCreator = new PromptCreator(promptCreatorConstructorMockAPI);
+    const promptCreator = new StepPerformerPromptCreator(promptCreatorConstructorMockAPI);
     const intent = "expect button to be visible";
     const viewHierarchy =
       '<View><Button testID="submit" title="Submit" /></View>';
@@ -74,10 +74,10 @@ describe("PromptCreator constructor", () => {
 });
 
 describe("PromptCreator", () => {
-  let promptCreator: PromptCreator;
+  let promptCreator: StepPerformerPromptCreator;
 
   beforeEach(() => {
-    promptCreator = new PromptCreator(mockAPI);
+    promptCreator = new StepPerformerPromptCreator(mockAPI);
   });
 
   it("should create a prompt for an intent correctly", () => {

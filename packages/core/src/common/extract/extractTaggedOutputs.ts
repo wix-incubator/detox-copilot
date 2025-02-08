@@ -24,7 +24,7 @@ export const OUTPUTS_MAPPINGS: Record<string, OutputsMapping> = {
   },
 };
 
-export function extractOutputs<M extends OutputsMapping>({
+export function extractTaggedOutputs<M extends OutputsMapping>({
   text,
   outputsMapper,
 }: {

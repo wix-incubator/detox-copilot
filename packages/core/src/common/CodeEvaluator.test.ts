@@ -1,4 +1,4 @@
-import { CodeEvaluator } from "@/utils/CodeEvaluator";
+import { CodeEvaluator } from "./CodeEvaluator";
 
 describe("CodeEvaluator", () => {
   let codeEvaluator: CodeEvaluator;

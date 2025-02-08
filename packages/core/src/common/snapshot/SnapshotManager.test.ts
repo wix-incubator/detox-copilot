@@ -1,6 +1,6 @@
 import { SnapshotManager } from "./SnapshotManager";
 import { TestingFrameworkDriver } from "@/types";
-import { SnapshotComparator } from "@/utils/SnapshotComparator";
+import { SnapshotComparator } from "./comparator/SnapshotComparator";
 import crypto from "crypto";
 
 // Mock the crypto module

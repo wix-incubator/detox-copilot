@@ -1,17 +1,17 @@
-import copilot from "@/index";
+import pilot from "@/index";
 import fs from "fs";
 import { Pilot } from "@/Pilot";
 import {
   PromptHandler,
   TestingFrameworkDriver,
-  PilotReport,
+  AutoReport,
   CacheValues,
   SnapshotHashObject,
 } from "@/types";
 import * as crypto from "crypto";
 import { mockedCacheFile, mockCache } from "@/test-utils/cache";
-import { PromptCreator } from "@/utils/PromptCreator";
-import { CopilotStepPerformer } from "@/actions/CopilotStepPerformer";
+import { StepPerformerPromptCreator } from "@/utils/performer/StepPerformerPromptCreator";
+import { StepPerformer } from "@/performers/step-performer/StepPerformer";
 import {
   bazCategory,
   barCategory1,
@@ -71,12 +71,12 @@ describe("Copilot Integration Tests", () => {
 
   describe("Initialization", () => {
     it("should throw an error when perform is called before initialization", async () => {
-      await expect(copilot.perform("Some action")).rejects.toThrow();
+      await expect(pilot.perform("Some action")).rejects.toThrow();
     });
 
     it("should initialize successfully", () => {
       expect(() => {
-        copilot.init({
+        pilot.init({
           frameworkDriver: mockFrameworkDriver,
           promptHandler: mockPromptHandler,
         });
@@ -84,32 +84,32 @@ describe("Copilot Integration Tests", () => {
     });
 
     it("should return false when isInitialized is called before initialization", () => {
-      expect(copilot.isInitialized()).toBe(false);
+      expect(pilot.isInitialized()).toBe(false);
     });
 
     it("should return true when isInitialized is called after initialization", () => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
 
-      expect(copilot.isInitialized()).toBe(true);
+      expect(pilot.isInitialized()).toBe(true);
     });
   });
 
   describe("Single Step Operations", () => {
     beforeEach(() => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
-      copilot.start();
+      pilot.start();
     });
 
     it("should successfully perform an action", async () => {
       mockPromptHandler.runPrompt.mockResolvedValue("// No operation");
       await expect(
-        copilot.perform("Tap on the login button"),
+        pilot.perform("Tap on the login button"),
       ).resolves.not.toThrow();
 
       expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalled();
@@ -124,7 +124,7 @@ describe("Copilot Integration Tests", () => {
       mockPromptHandler.runPrompt.mockResolvedValue("// No operation");
 
       await expect(
-        copilot.perform("The welcome message should be visible"),
+        pilot.perform("The welcome message should be visible"),
       ).resolves.not.toThrow();
 
       expect(mockFrameworkDriver.captureSnapshotImage).toHaveBeenCalled();
@@ -141,7 +141,7 @@ describe("Copilot Integration Tests", () => {
       );
 
       await expect(
-        copilot.perform("Tap on a non-existent button"),
+        pilot.perform("Tap on a non-existent button"),
       ).rejects.toThrow("Element not found");
     });
 
@@ -151,7 +151,7 @@ describe("Copilot Integration Tests", () => {
       );
 
       await expect(
-        copilot.perform("The welcome message should be visible"),
+        pilot.perform("The welcome message should be visible"),
       ).rejects.toThrow("Element not found");
     });
 
@@ -159,18 +159,18 @@ describe("Copilot Integration Tests", () => {
       mockPromptHandler.runPrompt.mockResolvedValue("foobar");
 
       await expect(
-        copilot.perform("The welcome message should be visible"),
+        pilot.perform("The welcome message should be visible"),
       ).rejects.toThrow(/foobar is not defined/);
     });
   });
 
   describe("Multiple Step Operations", () => {
     beforeEach(() => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
-      copilot.start();
+      pilot.start();
     });
 
     it("should perform multiple steps using spread operator", async () => {
@@ -179,7 +179,7 @@ describe("Copilot Integration Tests", () => {
         .mockResolvedValueOnce("// Enter username")
         .mockResolvedValueOnce("// Enter password");
 
-      await copilot.perform(
+      await pilot.perform(
         "Tap on the login button",
         'Enter username "testuser"',
         'Enter password "password123"',
@@ -202,7 +202,7 @@ describe("Copilot Integration Tests", () => {
         .mockResolvedValueOnce("// Enter password");
 
       await expect(
-        copilot.perform(
+        pilot.perform(
           "Tap on the login button",
           'Enter username "testuser"',
           'Enter password "password123"',
@@ -219,17 +219,17 @@ describe("Copilot Integration Tests", () => {
 
   describe("Error Handling", () => {
     beforeEach(() => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
-      copilot.start();
+      pilot.start();
     });
 
     it("should throw error when PromptHandler fails", async () => {
       mockPromptHandler.runPrompt.mockRejectedValue(new Error("API error"));
 
-      await expect(copilot.perform("Perform action")).rejects.toThrow(
+      await expect(pilot.perform("Perform action")).rejects.toThrow(
         "API error",
       );
     });
@@ -239,7 +239,7 @@ describe("Copilot Integration Tests", () => {
         new Error("Snapshot error"),
       );
 
-      await expect(copilot.perform("Perform action")).rejects.toThrow(
+      await expect(pilot.perform("Perform action")).rejects.toThrow(
         "Snapshot error",
       );
     });
@@ -249,7 +249,7 @@ describe("Copilot Integration Tests", () => {
         new Error("Hierarchy error"),
       );
 
-      await expect(copilot.perform("Perform action")).rejects.toThrow(
+      await expect(pilot.perform("Perform action")).rejects.toThrow(
         "Hierarchy error",
       );
     });
@@ -257,24 +257,24 @@ describe("Copilot Integration Tests", () => {
 
   describe("Context Management", () => {
     beforeEach(() => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
-      copilot.start();
+      pilot.start();
     });
 
     it("should reset context when end is called", async () => {
       mockPromptHandler.runPrompt.mockResolvedValueOnce("// Login action");
-      await copilot.perform("Log in to the application");
+      await pilot.perform("Log in to the application");
 
-      copilot.end();
-      copilot.start();
+      pilot.end();
+      pilot.start();
 
       mockPromptHandler.runPrompt.mockResolvedValueOnce(
         "// New action after reset",
       );
-      await copilot.perform("Perform action after reset");
+      await pilot.perform("Perform action after reset");
 
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(2);
       expect(mockPromptHandler.runPrompt.mock.calls[1][0]).not.toContain(
@@ -287,19 +287,19 @@ describe("Copilot Integration Tests", () => {
         .mockResolvedValueOnce("// Action 1")
         .mockResolvedValueOnce("// Action 2");
 
-      await copilot.perform("Action 1");
-      await copilot.perform("Action 2");
+      await pilot.perform("Action 1");
+      await pilot.perform("Action 2");
 
       const lastCallArgsBeforeReset =
         mockPromptHandler.runPrompt.mock.calls[1][0];
       expect(lastCallArgsBeforeReset).toContain("Action 1");
       expect(lastCallArgsBeforeReset).toContain("Action 2");
 
-      copilot.end();
-      copilot.start();
+      pilot.end();
+      pilot.start();
 
       mockPromptHandler.runPrompt.mockResolvedValueOnce("// New action");
-      await copilot.perform("New action after reset");
+      await pilot.perform("New action after reset");
 
       const lastCallArgsAfterReset =
         mockPromptHandler.runPrompt.mock.calls[2][0];
@@ -311,18 +311,18 @@ describe("Copilot Integration Tests", () => {
 
   describe("Caching Behavior", () => {
     beforeEach(() => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
-      copilot.start();
+      pilot.start();
     });
 
     it("should create cache file if it does not exist", async () => {
       mockPromptHandler.runPrompt.mockResolvedValue("// Perform action");
 
-      await copilot.perform("Perform action");
-      copilot.end(false);
+      await pilot.perform("Perform action");
+      pilot.end(false);
 
       expect(mockedCacheFile).toEqual({
         '{"step":"Perform action","previous":[]}': expect.arrayContaining([
@@ -342,7 +342,7 @@ describe("Copilot Integration Tests", () => {
         ],
       });
 
-      await copilot.perform("Cached action");
+      await pilot.perform("Cached action");
 
       expect(mockPromptHandler.runPrompt).not.toHaveBeenCalled();
     });
@@ -358,7 +358,7 @@ describe("Copilot Integration Tests", () => {
         ],
       });
 
-      await copilot.perform("Cached action");
+      await pilot.perform("Cached action");
 
       expect(mockPromptHandler.runPrompt).not.toHaveBeenCalled();
     });
@@ -366,8 +366,8 @@ describe("Copilot Integration Tests", () => {
     it("should update cache file after performing new action", async () => {
       mockPromptHandler.runPrompt.mockResolvedValue("// New action code");
 
-      await copilot.perform("New action");
-      copilot.end();
+      await pilot.perform("New action");
+      pilot.end();
 
       expect(mockedCacheFile).toEqual({
         '{"step":"New action","previous":[]}': expect.arrayContaining([
@@ -388,7 +388,7 @@ describe("Copilot Integration Tests", () => {
       });
       mockPromptHandler.runPrompt.mockResolvedValue("// New action code");
 
-      await copilot.perform("Action with read error");
+      await pilot.perform("Action with read error");
 
       expect(mockPromptHandler.runPrompt).toHaveBeenCalled();
     });
@@ -401,18 +401,18 @@ describe("Copilot Integration Tests", () => {
       mockPromptHandler.runPrompt.mockResolvedValue("// Action code");
 
       await expect(
-        copilot.perform("Action with write error"),
+        pilot.perform("Action with write error"),
       ).resolves.not.toThrow();
     });
   });
 
   describe("Feature Support", () => {
     beforeEach(() => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
-      copilot.start();
+      pilot.start();
     });
 
     it("should work without snapshot images when not supported", async () => {
@@ -421,7 +421,7 @@ describe("Copilot Integration Tests", () => {
         "// Perform action without snapshot",
       );
 
-      await copilot.perform("Perform action without snapshot support");
+      await pilot.perform("Perform action without snapshot support");
 
       expect(mockFrameworkDriver.captureSnapshotImage).not.toHaveBeenCalled();
       expect(mockFrameworkDriver.captureViewHierarchyString).toHaveBeenCalled();
@@ -435,27 +435,27 @@ describe("Copilot Integration Tests", () => {
   describe("API Catalog Extension", () => {
     beforeEach(() => {
       jest.clearAllMocks();
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
-      copilot.start();
+      pilot.start();
     });
 
     it("should call relevant functions to extend the catalog", () => {
       const spyPromptCreator = jest.spyOn(
-        PromptCreator.prototype,
+        StepPerformerPromptCreator.prototype,
         "extendAPICategories",
       );
       const spyCopilotStepPerformer = jest.spyOn(
-        CopilotStepPerformer.prototype,
+        StepPerformer.prototype,
         "extendJSContext",
       );
 
-      copilot.extendAPICatalog([bazCategory]);
+      pilot.extendAPICatalog([bazCategory]);
       expect(spyPromptCreator).toHaveBeenCalledTimes(1);
 
-      copilot.extendAPICatalog([barCategory1], dummyContext);
+      pilot.extendAPICatalog([barCategory1], dummyContext);
       expect(spyPromptCreator).toHaveBeenCalledTimes(2);
       expect(spyCopilotStepPerformer).toHaveBeenCalledTimes(1);
     });
@@ -495,7 +495,7 @@ describe("Copilot Integration Tests", () => {
 
     it("should perform pilot flow and return a pilot report", async () => {
       const goal = "Complete the login flow";
-      const mockPilotReport: PilotReport = {
+      const mockPilotReport: AutoReport = {
         summary: "All steps completed successfully",
         goal: goal,
         steps: [
@@ -539,7 +539,7 @@ describe("Copilot Integration Tests", () => {
         .spyOn(copilotInstance["pilotPerformer"], "perform")
         .mockResolvedValue(mockPilotReport);
 
-      const result = await copilotInstance.pilot(goal);
+      const result = await copilotInstance.autopilot(goal);
 
       expect(spyPilotPerformerPerform).toHaveBeenCalledTimes(1);
       expect(spyPilotPerformerPerform).toHaveBeenCalledWith(goal);
@@ -555,7 +555,7 @@ describe("Copilot Integration Tests", () => {
         .spyOn(copilotInstance["pilotPerformer"], "perform")
         .mockRejectedValue(new Error(errorMessage));
 
-      await expect(copilotInstance.pilot(goal)).rejects.toThrow(errorMessage);
+      await expect(copilotInstance.autopilot(goal)).rejects.toThrow(errorMessage);
 
       expect(spyPilotPerformerPerform).toHaveBeenCalledTimes(1);
       expect(spyPilotPerformerPerform).toHaveBeenCalledWith(goal);
@@ -568,14 +568,14 @@ describe("Copilot Integration Tests", () => {
     });
 
     it("should use full cache mode by default", async () => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
-      copilot.start();
+      pilot.start();
 
-      await copilot.perform("Tap on the login button");
-      copilot.end();
+      await pilot.perform("Tap on the login button");
+      pilot.end();
 
       const firstCacheValue = Object.values(
         (mockedCacheFile as Record<string, CacheValues>) || {},
@@ -587,17 +587,17 @@ describe("Copilot Integration Tests", () => {
     });
 
     it("should not include view hierarchy in cache value when using lightweight mode", async () => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
         options: {
           cacheMode: "lightweight",
         },
       });
-      copilot.start();
+      pilot.start();
 
-      await copilot.perform("Tap on the login button");
-      copilot.end();
+      await pilot.perform("Tap on the login button");
+      pilot.end();
       const firstCacheValue = Object.values(
         (mockedCacheFile as Record<string, CacheValues>) || {},
       )[0][0];
@@ -607,23 +607,23 @@ describe("Copilot Integration Tests", () => {
     });
 
     it("should not use cache when cache mode is disabled", async () => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
         options: {
           cacheMode: "disabled",
         },
       });
-      copilot.start();
+      pilot.start();
 
       // First call
-      await copilot.perform("Tap on the login button");
-      copilot.end();
+      await pilot.perform("Tap on the login button");
+      pilot.end();
 
       // Second call with same intent
-      copilot.start();
-      await copilot.perform("Tap on the login button");
-      copilot.end();
+      pilot.start();
+      await pilot.perform("Tap on the login button");
+      pilot.end();
 
       // Should call runPrompt twice since cache is disabled
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(2);
@@ -636,20 +636,20 @@ describe("Copilot Integration Tests", () => {
     });
 
     it("should perform fast analysis by default", async () => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
 
-      copilot.start();
-      await copilot.perform("Tap on the login button");
-      copilot.end();
+      pilot.start();
+      await pilot.perform("Tap on the login button");
+      pilot.end();
 
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(1);
     });
 
     it("should perform fast analysis when specified", async () => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
         options: {
@@ -657,15 +657,15 @@ describe("Copilot Integration Tests", () => {
         },
       });
 
-      copilot.start();
-      await copilot.perform("Tap on the login button");
-      copilot.end();
+      pilot.start();
+      await pilot.perform("Tap on the login button");
+      pilot.end();
 
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(1);
     });
 
     it("should perform full analysis when specified", async () => {
-      copilot.init({
+      pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
         options: {
@@ -673,9 +673,9 @@ describe("Copilot Integration Tests", () => {
         },
       });
 
-      copilot.start();
-      await copilot.perform("Tap on the login button");
-      copilot.end();
+      pilot.start();
+      await pilot.perform("Tap on the login button");
+      pilot.end();
 
       // requires several prompts to be run
       expect(mockPromptHandler.runPrompt).toHaveBeenCalledTimes(3);

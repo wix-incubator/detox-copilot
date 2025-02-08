@@ -3,7 +3,7 @@ import type {
   SnapshotHashing,
   SnapshotHashObject,
 } from "@/types";
-import { BlockHash } from "@/utils/snapshotHashing/BlockHash";
+import { BlockHash } from "./BlockHash";
 
 export class SnapshotComparator {
   private readonly hashingAlgorithms: Map<HashingAlgorithm, SnapshotHashing> =

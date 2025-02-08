@@ -1,33 +1,33 @@
 import { Pilot } from "@/Pilot";
-import { CopilotStepPerformer } from "@/actions/CopilotStepPerformer";
-import { CopilotError } from "@/errors/CopilotError";
+import { StepPerformer } from "@/performers/step-performer/StepPerformer";
+import { PilotError } from "@/errors/PilotError";
 import {
   Config,
   ScreenCapturerResult,
   PromptHandler,
-  PilotStepReport,
+  AutoStepReport,
 } from "@/types";
 import { mockCache, mockedCacheFile } from "./test-utils/cache";
-import { ScreenCapturer } from "@/utils/ScreenCapturer";
+import { ScreenCapturer } from "@/common/snapshot/ScreenCapturer";
 import {
   bazCategory,
   barCategory2,
   barCategory1,
   dummyContext,
 } from "./test-utils/APICatalogTestUtils";
-import { PilotPerformer } from "./actions/PilotPerformer";
+import { AutoPerformer } from "./performers/auto-performer/AutoPerformer";
 
-jest.mock("@/actions/CopilotStepPerformer");
+jest.mock("@/performers/step-performer/StepPerformer");
 jest.mock("@/utils/ScreenCapturer");
 jest.mock("fs");
 
 const INTENT = "tap button";
 
-describe("Copilot", () => {
+describe("Pilot", () => {
   let mockConfig: Config;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
   let mockFrameworkDriver: any;
-  let mockPilotPerformer: jest.Mocked<PilotPerformer>;
+  let mockPilotPerformer: jest.Mocked<AutoPerformer>;
   let screenCapture: ScreenCapturerResult;
 
   beforeEach(() => {
@@ -55,7 +55,7 @@ describe("Copilot", () => {
     };
 
     jest
-      .spyOn(PilotPerformer.prototype, "perform")
+      .spyOn(AutoPerformer.prototype, "perform")
       .mockImplementation(mockPilotPerformer.perform);
 
     screenCapture = {
@@ -69,7 +69,7 @@ describe("Copilot", () => {
     ScreenCapturer.prototype.capture = jest
       .fn()
       .mockResolvedValue(screenCapture);
-    (CopilotStepPerformer.prototype.perform as jest.Mock).mockResolvedValue({
+    (StepPerformer.prototype.perform as jest.Mock).mockResolvedValue({
       code: "code",
       result: true,
     });
@@ -92,7 +92,7 @@ describe("Copilot", () => {
     });
 
     it("should throw CopilotError if getInstance is called before init", () => {
-      expect(() => Pilot.getInstance()).toThrow(CopilotError);
+      expect(() => Pilot.getInstance()).toThrow(PilotError);
       expect(() => Pilot.getInstance()).toThrow(
         "Copilot has not been initialized. Please call the `init()` method before using it.",
       );
@@ -139,7 +139,7 @@ describe("Copilot", () => {
       instance.start();
       await instance.performStep(INTENT);
 
-      expect(CopilotStepPerformer.prototype.perform).toHaveBeenCalledWith(
+      expect(StepPerformer.prototype.perform).toHaveBeenCalledWith(
         INTENT,
         [],
         screenCapture,
@@ -166,7 +166,7 @@ describe("Copilot", () => {
       await instance.performStep(intent1);
       await instance.performStep(intent2);
 
-      expect(CopilotStepPerformer.prototype.perform).toHaveBeenLastCalledWith(
+      expect(StepPerformer.prototype.perform).toHaveBeenLastCalledWith(
         intent2,
         [
           {
@@ -193,7 +193,7 @@ describe("Copilot", () => {
       instance.start();
       await instance.performStep(intent2);
 
-      expect(CopilotStepPerformer.prototype.perform).toHaveBeenLastCalledWith(
+      expect(StepPerformer.prototype.perform).toHaveBeenLastCalledWith(
         intent2,
         [],
         screenCapture,
@@ -351,7 +351,7 @@ describe("Copilot", () => {
 
       mockPilotPerformer.perform.mockResolvedValue(mockPilotResult);
 
-      const pilotResult = await instance.pilot(goal);
+      const pilotResult = await instance.autopilot(goal);
 
       expect(instance["pilotPerformer"].perform).toHaveBeenCalledWith(goal);
       expect(pilotResult).toEqual(mockPilotResult);
@@ -364,7 +364,7 @@ describe("Copilot", () => {
       const instance = Pilot.getInstance();
       const goal = "Test the login flow";
 
-      const pilotOutputStep1: PilotStepReport = {
+      const pilotOutputStep1: AutoStepReport = {
         screenDescription: "Login Screen",
         plan: {
           thoughts: "Step 1 thoughts",
@@ -385,7 +385,7 @@ describe("Copilot", () => {
         goalAchieved: false,
       };
 
-      const pilotOutputSuccess: PilotStepReport = {
+      const pilotOutputSuccess: AutoStepReport = {
         screenDescription: "Home Screen",
         plan: {
           thoughts: "Completed successfully",
@@ -422,7 +422,7 @@ describe("Copilot", () => {
         review: pilotOutputSuccess.review,
       });
 
-      const result = await instance.pilot(goal);
+      const result = await instance.autopilot(goal);
 
       expect(instance["pilotPerformer"].perform).toHaveBeenCalledWith(goal);
       expect(result).toEqual({

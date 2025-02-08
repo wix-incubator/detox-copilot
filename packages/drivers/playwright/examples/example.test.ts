@@ -34,7 +34,7 @@ describe("Example Test Suite", () => {
   });
 
   it("perform test with pilot", async () => {
-    await copilot.pilot(
+    await copilot.autopilot(
       "Open https://www.wix.com/domains and search for the domain Shraga.com, is it available?",
     );
   });

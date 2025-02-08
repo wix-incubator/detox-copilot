@@ -6,7 +6,7 @@ import {
 } from "@/types";
 import { APIFormatter } from "@/utils/APIFormatter";
 
-export class PromptCreator {
+export class StepPerformerPromptCreator {
   private apiFormatter: APIFormatter;
 
   constructor(public readonly apiCatalog: TestingFrameworkAPICatalog) {

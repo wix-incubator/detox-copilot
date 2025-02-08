@@ -1,4 +1,4 @@
-export class CopilotError extends Error {
+export class PilotError extends Error {
   constructor(
     message: string,
     public originalError?: Error,

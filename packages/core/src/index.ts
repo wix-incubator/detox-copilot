@@ -1,11 +1,11 @@
 import { Pilot } from "@/Pilot";
 import {
-  CopilotFacade,
+  PilotFacade,
   Config,
   TestingFrameworkAPICatalogCategory,
 } from "@/types";
 
-const copilot: CopilotFacade = {
+const pilot: PilotFacade = {
   init: (config: Config) => {
     Pilot.init(config);
   },
@@ -19,20 +19,18 @@ const copilot: CopilotFacade = {
     Pilot.getInstance().end(isCacheDisabled);
   },
   perform: async (...steps: string[]) => {
-    const copilotInstance = Pilot.getInstance();
+    const instance = Pilot.getInstance();
 
     let result;
     for await (const intent of steps) {
-      result = await copilotInstance.performStep(intent);
+      result = await instance.performStep(intent);
     }
 
     return result;
   },
-
-  pilot: async (goal: string) => {
-    return await Pilot.getInstance().pilot(goal);
+  autopilot: async (goal: string) => {
+    return await Pilot.getInstance().autopilot(goal);
   },
-
   extendAPICatalog: (
     categories: TestingFrameworkAPICatalogCategory[],
     context?: any,
@@ -41,10 +39,10 @@ const copilot: CopilotFacade = {
   },
 };
 
-export default copilot;
+export default pilot;
 
 export {
-  CopilotFacade,
+  PilotFacade,
   Config,
   PromptHandler,
   TestingFrameworkDriver,

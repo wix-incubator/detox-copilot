@@ -1,6 +1,6 @@
-import { SnapshotManager } from "@/utils/SnapshotManager";
+import { SnapshotManager } from "./SnapshotManager";
 import { PromptHandler, ScreenCapturerResult } from "@/types";
-import logger from "@/utils/logger";
+import logger from "@/common/logger";
 
 export class ScreenCapturer {
   constructor(

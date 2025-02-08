@@ -1,4 +1,4 @@
-import { TestingFrameworkAPICatalog, PreviousStep } from "../types";
+import { TestingFrameworkAPICatalog, PreviousStep } from "../../types";
 
 export class ViewAnalysisPromptCreator {
   constructor(private apiCatalog: TestingFrameworkAPICatalog) {}

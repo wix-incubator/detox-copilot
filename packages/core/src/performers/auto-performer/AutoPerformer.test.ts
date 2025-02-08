@@ -1,14 +1,14 @@
-import { PilotPerformer } from "@/actions/PilotPerformer";
-import { PilotPromptCreator } from "@/utils/PilotPromptCreator";
+import { AutoPerformer } from "@/performers/auto-performer/AutoPerformer";
+import { AutopilotPromptCreator } from "@/utils/autopilot/AutopilotPromptCreator";
 import { ScreenCapturer } from "@/utils/ScreenCapturer";
 import {
-  PilotPreviousStep,
+  AutoPreviousStep,
   PromptHandler,
   ScreenCapturerResult,
-  PilotStepReport,
-  PilotReport,
+  AutoStepReport,
+  AutoReport,
 } from "@/types";
-import { CopilotStepPerformer } from "@/actions/CopilotStepPerformer";
+import { StepPerformer } from "@/performers/step-performer/StepPerformer";
 
 const GOAL = "tap button";
 const VIEW_HIERARCHY = "<view></view>";
@@ -65,10 +65,10 @@ The review of i18n
 const SNAPSHOT_DATA = "snapshot_data";
 
 describe("PilotPerformer", () => {
-  let pilotPerformer: PilotPerformer;
-  let mockPromptCreator: jest.Mocked<PilotPromptCreator>;
+  let pilotPerformer: AutoPerformer;
+  let mockPromptCreator: jest.Mocked<AutopilotPromptCreator>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
-  let mockCopilotStepPerformer: jest.Mocked<CopilotStepPerformer>;
+  let mockCopilotStepPerformer: jest.Mocked<StepPerformer>;
   let mockScreenCapturer: jest.Mocked<ScreenCapturer>;
   let mockCaptureResult: ScreenCapturerResult;
 
@@ -78,7 +78,7 @@ describe("PilotPerformer", () => {
     // Create mock instances of dependencies
     mockPromptCreator = {
       createPrompt: jest.fn(),
-    } as unknown as jest.Mocked<PilotPromptCreator>;
+    } as unknown as jest.Mocked<AutopilotPromptCreator>;
 
     mockPromptHandler = {
       runPrompt: jest.fn(),
@@ -87,7 +87,7 @@ describe("PilotPerformer", () => {
 
     mockCopilotStepPerformer = {
       perform: jest.fn(),
-    } as unknown as jest.Mocked<CopilotStepPerformer>;
+    } as unknown as jest.Mocked<StepPerformer>;
 
     // Create mock for capture function
     mockScreenCapturer = {
@@ -95,7 +95,7 @@ describe("PilotPerformer", () => {
     } as unknown as jest.Mocked<ScreenCapturer>;
 
     // Instantiate PilotPerformer with the mocks
-    pilotPerformer = new PilotPerformer(
+    pilotPerformer = new AutoPerformer(
       mockPromptCreator,
       mockCopilotStepPerformer,
       mockPromptHandler,
@@ -276,7 +276,7 @@ describe("PilotPerformer", () => {
 
   it("should perform an intent successfully with previous intents", async () => {
     const intent = "current intent";
-    const previousIntents: PilotPreviousStep[] = [
+    const previousIntents: AutoPreviousStep[] = [
       {
         screenDescription: "default",
         step: "previous intent",
@@ -349,7 +349,7 @@ describe("PilotPerformer", () => {
 
   describe("perform", () => {
     it("should perform multiple steps until success is returned", async () => {
-      const pilotOutputStep1: PilotStepReport = {
+      const pilotOutputStep1: AutoStepReport = {
         screenDescription: "Screen 1",
         plan: {
           thoughts: "Step 1 thoughts",
@@ -375,7 +375,7 @@ describe("PilotPerformer", () => {
         goalAchieved: false,
       };
 
-      const pilotOutputSuccess: PilotStepReport = {
+      const pilotOutputSuccess: AutoStepReport = {
         screenDescription: "Screen 2",
         plan: {
           thoughts: "Completed successfully",
@@ -427,7 +427,7 @@ describe("PilotPerformer", () => {
       expect(mockScreenCapturer.capture).toHaveBeenCalledTimes(2);
       expect(analyseScreenAndCreateCopilotStep).toHaveBeenCalledTimes(2);
 
-      const expectedReport: PilotReport = {
+      const expectedReport: AutoReport = {
         summary: "all was good",
         goal: GOAL,
         steps: [

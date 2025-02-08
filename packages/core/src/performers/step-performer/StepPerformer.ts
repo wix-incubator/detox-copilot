@@ -1,9 +1,9 @@
-import { PromptCreator } from "@/utils/PromptCreator";
-import { CodeEvaluator } from "@/utils/CodeEvaluator";
-import { APISearchPromptCreator } from "@/utils/APISearchPromptCreator";
-import { ViewAnalysisPromptCreator } from "@/utils/ViewAnalysisPromptCreator";
-import { CacheHandler } from "@/utils/CacheHandler";
-import { SnapshotComparator } from "@/utils/SnapshotComparator";
+import { StepPerformerPromptCreator } from "./StepPerformerPromptCreator";
+import { CodeEvaluator } from "@/common/CodeEvaluator";
+import { APISearchPromptCreator } from "@/common/prompts/APISearchPromptCreator";
+import { ViewAnalysisPromptCreator } from "@/common/prompts/ViewAnalysisPromptCreator";
+import { StepPerformerCacheHandler } from "@/performers/step-performer/StepPerformerCacheHandler";
+import { SnapshotComparator } from "@/common/snapshot/comparator/SnapshotComparator";
 import {
   AnalysisMode,
   CacheMode,
@@ -15,22 +15,22 @@ import {
   type SingleCacheValue,
 } from "@/types";
 import * as crypto from "crypto";
-import { extractCodeBlock } from "@/utils/extractCodeBlock";
-import logger from "@/utils/logger";
+import { extractCodeBlock } from "@/common/extract/extractCodeBlock";
+import logger from "@/common/logger";
 
-export class CopilotStepPerformer {
+export class StepPerformer {
   private readonly cacheMode: CacheMode;
   private readonly analysisMode: AnalysisMode;
   private sharedContext: Record<string, any> = {};
 
   constructor(
     private context: any,
-    private promptCreator: PromptCreator,
+    private promptCreator: StepPerformerPromptCreator,
     private apiSearchPromptCreator: APISearchPromptCreator,
     private viewAnalysisPromptCreator: ViewAnalysisPromptCreator,
     private codeEvaluator: CodeEvaluator,
     private promptHandler: PromptHandler,
-    private cacheHandler: CacheHandler,
+    private cacheHandler: StepPerformerCacheHandler,
     private snapshotComparator: SnapshotComparator,
     cacheMode: CacheMode = "full",
     analysisMode: AnalysisMode = "fast",

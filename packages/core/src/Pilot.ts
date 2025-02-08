@@ -1,23 +1,23 @@
-import { CopilotError } from "@/errors/CopilotError";
-import { PromptCreator } from "./utils/PromptCreator";
-import { CodeEvaluator } from "./utils/CodeEvaluator";
-import { SnapshotManager } from "./utils/SnapshotManager";
-import { CopilotStepPerformer } from "./actions/CopilotStepPerformer";
+import { PilotError } from "@/errors/PilotError";
+import { StepPerformerPromptCreator } from "@/performers/step-performer/StepPerformerPromptCreator";
+import { CodeEvaluator } from "@/common/CodeEvaluator";
+import { SnapshotManager } from "@/common/snapshot/SnapshotManager";
+import { StepPerformer } from "./performers/step-performer/StepPerformer";
 import {
   Config,
   PreviousStep,
   TestingFrameworkAPICatalogCategory,
-  PilotReport,
+  AutoReport,
   ScreenCapturerResult,
 } from "./types";
-import { CacheHandler } from "@/utils/CacheHandler";
-import { SnapshotComparator } from "./utils/SnapshotComparator";
-import { PilotPerformer } from "./actions/PilotPerformer";
-import { PilotPromptCreator } from "./utils/PilotPromptCreator";
-import { ScreenCapturer } from "./utils/ScreenCapturer";
-import { APISearchPromptCreator } from "./utils/APISearchPromptCreator";
-import { ViewAnalysisPromptCreator } from "./utils/ViewAnalysisPromptCreator";
-import downscaleImage from "./utils/downscaleImage";
+import { StepPerformerCacheHandler } from "@/performers/step-performer/StepPerformerCacheHandler";
+import { SnapshotComparator } from "@/common/snapshot/comparator/SnapshotComparator";
+import { AutoPerformer } from "./performers/auto-performer/AutoPerformer";
+import { AutoPerformerPromptCreator } from "@/performers/auto-performer/AutoPerformerPromptCreator";
+import { ScreenCapturer } from "@/common/snapshot/ScreenCapturer";
+import { APISearchPromptCreator } from "@/common/prompts/APISearchPromptCreator";
+import { ViewAnalysisPromptCreator } from "@/common/prompts/ViewAnalysisPromptCreator";
+import downscaleImage from "@/common/snapshot/downscaleImage";
 
 /**
  * The main Pilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
@@ -27,20 +27,20 @@ export class Pilot {
   // Singleton instance of Pilot
   static instance?: Pilot;
 
-  private readonly promptCreator: PromptCreator;
+  private readonly stepPerformerPromptCreator: StepPerformerPromptCreator;
   private readonly apiSearchPromptCreator: APISearchPromptCreator;
   private readonly codeEvaluator: CodeEvaluator;
   private readonly snapshotManager: SnapshotManager;
   private previousSteps: PreviousStep[] = [];
-  private copilotStepPerformer: CopilotStepPerformer;
-  private cacheHandler: CacheHandler;
+  private stepPerformer: StepPerformer;
+  private cacheHandler: StepPerformerCacheHandler;
   private isRunning: boolean = false;
-  private pilotPerformer: PilotPerformer;
-  private pilotPromptCreator: PilotPromptCreator;
+  private autoPerformer: AutoPerformer;
+  private autoPerformerPromptCreator: AutoPerformerPromptCreator;
   private screenCapturer: ScreenCapturer;
 
   private constructor(config: Config) {
-    this.promptCreator = new PromptCreator(config.frameworkDriver.apiCatalog);
+    this.stepPerformerPromptCreator = new StepPerformerPromptCreator(config.frameworkDriver.apiCatalog);
     this.apiSearchPromptCreator = new APISearchPromptCreator(
       config.frameworkDriver.apiCatalog,
     );
@@ -51,15 +51,15 @@ export class Pilot {
       snapshotComparator,
       downscaleImage,
     );
-    this.pilotPromptCreator = new PilotPromptCreator();
-    this.cacheHandler = new CacheHandler();
+    this.autoPerformerPromptCreator = new AutoPerformerPromptCreator();
+    this.cacheHandler = new StepPerformerCacheHandler();
     this.screenCapturer = new ScreenCapturer(
       this.snapshotManager,
       config.promptHandler,
     );
-    this.copilotStepPerformer = new CopilotStepPerformer(
+    this.stepPerformer = new StepPerformer(
       config.frameworkDriver.apiCatalog.context,
-      this.promptCreator,
+      this.stepPerformerPromptCreator,
       this.apiSearchPromptCreator,
       new ViewAnalysisPromptCreator(config.frameworkDriver.apiCatalog),
       this.codeEvaluator,
@@ -69,9 +69,9 @@ export class Pilot {
       config.options?.cacheMode,
       config.options?.analysisMode,
     );
-    this.pilotPerformer = new PilotPerformer(
-      this.pilotPromptCreator,
-      this.copilotStepPerformer,
+    this.autoPerformer = new AutoPerformer(
+      this.autoPerformerPromptCreator,
+      this.stepPerformer,
       config.promptHandler,
       this.screenCapturer,
     );
@@ -87,7 +87,7 @@ export class Pilot {
    */
   static getInstance(): Pilot {
     if (!Pilot.instance) {
-      throw new CopilotError(
+      throw new PilotError(
         "Copilot has not been initialized. Please call the `init()` method before using it.",
       );
     }
@@ -96,12 +96,12 @@ export class Pilot {
   }
 
   /**
-   * Initializes the Copilot with the provided configuration, must be called before using Copilot.
-   * @param config The configuration options for Copilot.
+   * Initializes the Pilot with the provided configuration, must be called before using it.
+   * @param config The configuration options for Pilot.
    */
   static init(config: Config): void {
     if (Pilot.instance) {
-      throw new CopilotError(
+      throw new PilotError(
         "Copilot has already been initialized. Please call the `init()` method only once.",
       );
     }
@@ -115,13 +115,13 @@ export class Pilot {
    */
   async performStep(step: string): Promise<any> {
     if (!this.isRunning) {
-      throw new CopilotError(
+      throw new PilotError(
         "Copilot is not running. Please call the `start()` method before performing any steps.",
       );
     }
     const screenCapture: ScreenCapturerResult =
       await this.screenCapturer.capture();
-    const { code, result } = await this.copilotStepPerformer.perform(
+    const { code, result } = await this.stepPerformer.perform(
       step,
       this.previousSteps,
       screenCapture,
@@ -136,7 +136,7 @@ export class Pilot {
    */
   start(): void {
     if (this.isRunning) {
-      throw new CopilotError(
+      throw new PilotError(
         "Copilot was already started. Please call the `end()` method before starting a new test flow.",
       );
     }
@@ -152,7 +152,7 @@ export class Pilot {
    */
   end(isCacheDisabled: boolean = false): void {
     if (!this.isRunning) {
-      throw new CopilotError(
+      throw new PilotError(
         "Copilot is not running. Please call the `start()` method before ending the test flow.",
       );
     }
@@ -171,8 +171,8 @@ export class Pilot {
     categories: TestingFrameworkAPICatalogCategory[],
     context?: any,
   ): void {
-    this.promptCreator.extendAPICategories(categories);
-    if (context) this.copilotStepPerformer.extendJSContext(context);
+    this.stepPerformerPromptCreator.extendAPICategories(categories);
+    if (context) this.stepPerformer.extendJSContext(context);
   }
 
   private didPerformStep(step: string, code: string, result: any): void {
@@ -190,7 +190,7 @@ export class Pilot {
    * @param goal A string which describes the flow should be executed.
    * @returns pilot report with info about the actions thoughts ect ...
    */
-  async pilot(goal: string): Promise<PilotReport> {
-    return await this.pilotPerformer.perform(goal);
+  async autopilot(goal: string): Promise<AutoReport> {
+    return await this.autoPerformer.perform(goal);
   }
 }
