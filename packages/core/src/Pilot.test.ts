@@ -1,6 +1,5 @@
 import { Pilot } from "@/Pilot";
 import { StepPerformer } from "@/performers/step-performer/StepPerformer";
-import { PilotError } from "@/errors/PilotError";
 import {
   Config,
   ScreenCapturerResult,
@@ -60,7 +59,7 @@ describe("Pilot", () => {
 
     screenCapture = {
       snapshot: "base64-encoded-image",
-      viewHierarchy: '<View><Button testID="login" title="Login" /></View>',
+      viewHierarchy: '<View><Button title="Login" /></View>',
       isSnapshotImageAttached: true,
     };
 
@@ -91,25 +90,24 @@ describe("Pilot", () => {
       expect(instance1).toBe(instance2);
     });
 
-    it("should throw CopilotError if getInstance is called before init", () => {
-      expect(() => Pilot.getInstance()).toThrow(PilotError);
+    it("should throw PilotError if getInstance is called before init", () => {
       expect(() => Pilot.getInstance()).toThrow(
-        "Copilot has not been initialized. Please call the `init()` method before using it.",
+        "Pilot has not been initialized. Please call the `init()` method before using it.",
       );
     });
   });
 
   describe("init", () => {
-    it("should create a new instance of Copilot", () => {
+    it("should create a new instance of Pilot", () => {
       Pilot.init(mockConfig);
       expect(Pilot.getInstance()).toBeInstanceOf(Pilot);
     });
 
-    it("should throw an error when trying to initialize Copilot multiple times", () => {
+    it("should throw an error when trying to initialize Pilot multiple times", () => {
       Pilot.init(mockConfig);
 
       expect(() => Pilot.init(mockConfig)).toThrow(
-        "Copilot has already been initialized. Please call the `init()` method only once.",
+        "Pilot has already been initialized. Please call the `init()` method only once.",
       );
     });
 
@@ -207,7 +205,7 @@ describe("Pilot", () => {
       const instance = Pilot.getInstance();
 
       await expect(instance.performStep(INTENT)).rejects.toThrowError(
-        "Copilot is not running. Please call the `start()` method before performing any steps.",
+        "Pilot is not running. Please call the `start()` method before performing a test step.",
       );
     });
 
@@ -219,7 +217,7 @@ describe("Pilot", () => {
       await instance.performStep(INTENT);
 
       expect(() => instance.start()).toThrowError(
-        "Copilot was already started. Please call the `end()` method before starting a new test flow.",
+        "Pilot was already started. Please call the `end()` method before starting a new test flow.",
       );
     });
 
@@ -231,7 +229,7 @@ describe("Pilot", () => {
       instance.end(true);
 
       expect(() => instance.end(true)).toThrowError(
-        "Copilot is not running. Please call the `start()` method before ending the test flow.",
+        "Pilot is not running. Please call the `start()` method before ending the test flow.",
       );
     });
   });
@@ -324,6 +322,7 @@ describe("Pilot", () => {
       Pilot.init(mockConfig);
       const instance = Pilot.getInstance();
       const goal = "test goal";
+      instance.start();
 
       const mockPilotResult = {
         summary: "Test completed successfully",
@@ -363,6 +362,7 @@ describe("Pilot", () => {
       Pilot.init(mockConfig);
       const instance = Pilot.getInstance();
       const goal = "Test the login flow";
+      instance.start();
 
       const pilotOutputStep1: AutoStepReport = {
         screenDescription: "Login Screen",

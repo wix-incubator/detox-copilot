@@ -482,7 +482,7 @@ describe("CopilotStepPerformer", () => {
 
       copilotStepPerformer.extendJSContext(dummyBarContext2);
       expect(logger.warn).toHaveBeenCalledWith(
-        "Copilot's variable from context `bar` is overridden by a new value from `extendJSContext`",
+        "Pilot's variable from context `bar` is overridden by a new value from `extendJSContext`",
       );
 
       await copilotStepPerformer.perform(INTENT, [], screenCapture, 2);
