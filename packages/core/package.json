@@ -4,9 +4,11 @@
   "description": "A flexible plugin that drives your tests with human-written commands, enhanced by the power of large language models (LLMs)",
   "keywords": [
     "pilot",
-    "detox",
-    "copilot",
-    "ai"
+    "testing",
+    "automation",
+    "ai",
+    "wix",
+    "test-automation"
   ],
   "author": "Asaf Korem <asaf.korem@gmail.com>",
   "homepage": "https://github.com/wix-incubator/pilot",
