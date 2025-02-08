@@ -1,22 +1,21 @@
-import { PilotError } from "@/errors/PilotError";
-import { StepPerformerPromptCreator } from "@/performers/step-performer/StepPerformerPromptCreator";
-import { CodeEvaluator } from "@/common/CodeEvaluator";
-import { SnapshotManager } from "@/common/snapshot/SnapshotManager";
-import { StepPerformer } from "./performers/step-performer/StepPerformer";
 import {
   Config,
-  PreviousStep,
+  PreviousStep, ScreenCapturerResult,
   TestingFrameworkAPICatalogCategory,
-  AutoReport,
-  ScreenCapturerResult,
-} from "./types";
+} from "@/types";
+import { PilotError } from "@/errors/PilotError";
+import { StepPerformer } from "@/performers/step-performer/StepPerformer";
 import { StepPerformerCacheHandler } from "@/performers/step-performer/StepPerformerCacheHandler";
-import { SnapshotComparator } from "@/common/snapshot/comparator/SnapshotComparator";
-import { AutoPerformer } from "./performers/auto-performer/AutoPerformer";
+import { AutoPerformer } from "@/performers/auto-performer/AutoPerformer";
 import { AutoPerformerPromptCreator } from "@/performers/auto-performer/AutoPerformerPromptCreator";
-import { ScreenCapturer } from "@/common/snapshot/ScreenCapturer";
+import { AutoReport } from "@/types/auto";
+import { StepPerformerPromptCreator } from "@/performers/step-performer/StepPerformerPromptCreator";
 import { APISearchPromptCreator } from "@/common/prompts/APISearchPromptCreator";
 import { ViewAnalysisPromptCreator } from "@/common/prompts/ViewAnalysisPromptCreator";
+import { CodeEvaluator } from "@/common/CodeEvaluator";
+import { SnapshotComparator } from "@/common/snapshot/comparator/SnapshotComparator";
+import { SnapshotManager } from "@/common/snapshot/SnapshotManager";
+import { ScreenCapturer } from "@/common/snapshot/ScreenCapturer";
 import downscaleImage from "@/common/snapshot/downscaleImage";
 
 /**
@@ -27,24 +26,17 @@ export class Pilot {
   // Singleton instance of Pilot
   static instance?: Pilot;
 
-  private readonly stepPerformerPromptCreator: StepPerformerPromptCreator;
-  private readonly apiSearchPromptCreator: APISearchPromptCreator;
-  private readonly codeEvaluator: CodeEvaluator;
   private readonly snapshotManager: SnapshotManager;
   private previousSteps: PreviousStep[] = [];
+  private stepPerformerPromptCreator: StepPerformerPromptCreator;
   private stepPerformer: StepPerformer;
   private cacheHandler: StepPerformerCacheHandler;
-  private isRunning: boolean = false;
+  private running: boolean = false;
   private autoPerformer: AutoPerformer;
   private autoPerformerPromptCreator: AutoPerformerPromptCreator;
   private screenCapturer: ScreenCapturer;
 
   private constructor(config: Config) {
-    this.stepPerformerPromptCreator = new StepPerformerPromptCreator(config.frameworkDriver.apiCatalog);
-    this.apiSearchPromptCreator = new APISearchPromptCreator(
-      config.frameworkDriver.apiCatalog,
-    );
-    this.codeEvaluator = new CodeEvaluator();
     const snapshotComparator = new SnapshotComparator();
     this.snapshotManager = new SnapshotManager(
       config.frameworkDriver,
@@ -57,38 +49,35 @@ export class Pilot {
       this.snapshotManager,
       config.promptHandler,
     );
+    this.stepPerformerPromptCreator = new StepPerformerPromptCreator(config.frameworkDriver.apiCatalog);
     this.stepPerformer = new StepPerformer(
       config.frameworkDriver.apiCatalog.context,
       this.stepPerformerPromptCreator,
-      this.apiSearchPromptCreator,
+      new APISearchPromptCreator(config.frameworkDriver.apiCatalog),
       new ViewAnalysisPromptCreator(config.frameworkDriver.apiCatalog),
-      this.codeEvaluator,
+      new CodeEvaluator(),
       config.promptHandler,
       this.cacheHandler,
-      snapshotComparator,
+      new SnapshotComparator(),
       config.options?.cacheMode,
       config.options?.analysisMode,
     );
     this.autoPerformer = new AutoPerformer(
       this.autoPerformerPromptCreator,
-      this.stepPerformer,
       config.promptHandler,
+      this.stepPerformer,
       this.screenCapturer,
     );
   }
 
-  static isInitialized(): boolean {
-    return !!Pilot.instance;
-  }
-
   /**
-   * Gets the singleton instance of Copilot.
-   * @returns The Copilot instance.
+   * Gets the singleton instance of Pilot.
+   * @returns The Pilot instance.
    */
-  static getInstance(): Pilot {
+  public static getInstance(): Pilot {
     if (!Pilot.instance) {
       throw new PilotError(
-        "Copilot has not been initialized. Please call the `init()` method before using it.",
+        "Pilot has not been initialized. Please call the `init()` method before using it.",
       );
     }
 
@@ -96,13 +85,15 @@ export class Pilot {
   }
 
   /**
-   * Initializes the Pilot with the provided configuration, must be called before using it.
+   * Initializes Pilot with the provided configuration.
+   * Must be called before using any other methods.
    * @param config The configuration options for Pilot.
+   * @throws Error if called multiple times
    */
-  static init(config: Config): void {
+  public static init(config: Config): void {
     if (Pilot.instance) {
       throw new PilotError(
-        "Copilot has already been initialized. Please call the `init()` method only once.",
+        "Pilot has already been initialized. Please call the `init()` method only once.",
       );
     }
 
@@ -110,54 +101,52 @@ export class Pilot {
   }
 
   /**
-   * Performs a test step based on the given prompt.
-   * @param step The step describing the operation to perform.
+   * Checks if Pilot has been properly initialized.
+   * @returns true if initialized, false otherwise
    */
-  async performStep(step: string): Promise<any> {
-    if (!this.isRunning) {
-      throw new PilotError(
-        "Copilot is not running. Please call the `start()` method before performing any steps.",
-      );
-    }
-    const screenCapture: ScreenCapturerResult =
-      await this.screenCapturer.capture();
-    const { code, result } = await this.stepPerformer.perform(
-      step,
-      this.previousSteps,
-      screenCapture,
-    );
-    this.didPerformStep(step, code, result);
-    return result;
+  public static isInitialized(): boolean {
+    return !!Pilot.instance;
   }
 
   /**
-   * Starts the Copilot by clearing the previous steps and temporary cache.
-   * @note This must be called before starting a new test flow, in order to clean context from previous tests.
+   * Checks if Pilot is currently running a test flow.
+   * @returns true if running, false otherwise
    */
-  start(): void {
-    if (this.isRunning) {
+  private assertIsRunning() {
+    if (!this.running) {
       throw new PilotError(
-        "Copilot was already started. Please call the `end()` method before starting a new test flow.",
+        "Pilot is not running. Please call the `start()` method before performing a test step.",
+      );
+    }
+  }
+
+  /**
+   * Starts Pilot by clearing the previous steps and temporary cache.
+   */
+  public start(): void {
+    if (this.running) {
+      throw new PilotError(
+        "Pilot was already started. Please call the `end()` method before starting a new test flow.",
       );
     }
 
-    this.isRunning = true;
+    this.running = true;
     this.previousSteps = [];
     this.cacheHandler.clearTemporaryCache();
   }
 
   /**
-   * Ends the Copilot test flow and optionally saves the temporary cache to the main cache.
-   * @param isCacheDisabled -  boolean flag indicating whether the temporary cache data should be saved to the main cache.
+   * Ends the Pilot test flow and optionally saves the temporary cache to the main cache.
+   * @param isCacheDisabled If true, temporary cache data won't be persisted
    */
-  end(isCacheDisabled: boolean = false): void {
-    if (!this.isRunning) {
+  public end(isCacheDisabled = false): void {
+    if (!this.running) {
       throw new PilotError(
-        "Copilot is not running. Please call the `start()` method before ending the test flow.",
+        "Pilot is not running. Please call the `start()` method before ending the test flow.",
       );
     }
 
-    this.isRunning = false;
+    this.running = false;
 
     if (!isCacheDisabled) this.cacheHandler.flushTemporaryCache();
   }
@@ -175,6 +164,26 @@ export class Pilot {
     if (context) this.stepPerformer.extendJSContext(context);
   }
 
+  /**
+   * Performs a single test step using the provided intent.
+   * @param step The intent describing the test step to perform.
+   * @returns The result of the test step.
+   */
+  async performStep(step: string): Promise<any> {
+    this.assertIsRunning();
+
+    const screenCapture: ScreenCapturerResult = await this.screenCapturer.capture();
+
+    const { code, result } = await this.stepPerformer.perform(
+        step,
+        this.previousSteps,
+        screenCapture,
+    );
+
+    this.didPerformStep(step, code, result);
+    return result;
+  }
+
   private didPerformStep(step: string, code: string, result: any): void {
     this.previousSteps = [
       ...this.previousSteps,
@@ -185,12 +194,14 @@ export class Pilot {
       },
     ];
   }
+
   /**
    * Performs an entire test flow using the provided goal.
    * @param goal A string which describes the flow should be executed.
-   * @returns pilot report with info about the actions thoughts ect ...
+   * @returns pilot report with info about the actions thoughts etc ...
    */
   async autopilot(goal: string): Promise<AutoReport> {
+    this.assertIsRunning();
     return await this.autoPerformer.perform(goal);
   }
 }

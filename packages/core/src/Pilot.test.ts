@@ -257,7 +257,7 @@ describe("Pilot", () => {
       const instance = Pilot.getInstance();
 
       const spyCopilotStepPerformer = jest.spyOn(
-        instance["copilotStepPerformer"],
+        instance["stepPerformer"],
         "extendJSContext",
       );
 
@@ -274,7 +274,7 @@ describe("Pilot", () => {
       const instance = Pilot.getInstance();
 
       const spyCopilotStepPerformer = jest.spyOn(
-        instance["copilotStepPerformer"],
+        instance["stepPerformer"],
         "extendJSContext",
       );
 
@@ -291,7 +291,7 @@ describe("Pilot", () => {
       const instance = Pilot.getInstance();
 
       const spyCopilotStepPerformer = jest.spyOn(
-        instance["copilotStepPerformer"],
+        instance["stepPerformer"],
         "extendJSContext",
       );
 
@@ -353,7 +353,7 @@ describe("Pilot", () => {
 
       const pilotResult = await instance.autopilot(goal);
 
-      expect(instance["pilotPerformer"].perform).toHaveBeenCalledWith(goal);
+      expect(instance["autoPerformer"].perform).toHaveBeenCalledWith(goal);
       expect(pilotResult).toEqual(mockPilotResult);
     });
   });
@@ -407,7 +407,7 @@ describe("Pilot", () => {
         summary: "All was good",
       };
 
-      jest.spyOn(instance["pilotPerformer"], "perform").mockResolvedValue({
+      jest.spyOn(instance["autoPerformer"], "perform").mockResolvedValue({
         summary: pilotOutputSuccess.summary,
         goal: goal,
         steps: [
@@ -424,7 +424,7 @@ describe("Pilot", () => {
 
       const result = await instance.autopilot(goal);
 
-      expect(instance["pilotPerformer"].perform).toHaveBeenCalledWith(goal);
+      expect(instance["autoPerformer"].perform).toHaveBeenCalledWith(goal);
       expect(result).toEqual({
         summary: pilotOutputSuccess.summary,
         goal: goal,

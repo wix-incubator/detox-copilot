@@ -1,6 +1,6 @@
 import { AutoPerformer } from "@/performers/auto-performer/AutoPerformer";
-import { AutopilotPromptCreator } from "@/utils/autopilot/AutopilotPromptCreator";
-import { ScreenCapturer } from "@/utils/ScreenCapturer";
+import { AutoPerformerPromptCreator } from "@/performers/auto-performer/AutoPerformerPromptCreator";
+import { ScreenCapturer } from "@/common/snapshot/ScreenCapturer";
 import {
   AutoPreviousStep,
   PromptHandler,
@@ -66,9 +66,9 @@ const SNAPSHOT_DATA = "snapshot_data";
 
 describe("PilotPerformer", () => {
   let pilotPerformer: AutoPerformer;
-  let mockPromptCreator: jest.Mocked<AutopilotPromptCreator>;
+  let mockPromptCreator: jest.Mocked<AutoPerformerPromptCreator>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
-  let mockCopilotStepPerformer: jest.Mocked<StepPerformer>;
+  let mockStepPerformer: jest.Mocked<StepPerformer>;
   let mockScreenCapturer: jest.Mocked<ScreenCapturer>;
   let mockCaptureResult: ScreenCapturerResult;
 
@@ -78,14 +78,14 @@ describe("PilotPerformer", () => {
     // Create mock instances of dependencies
     mockPromptCreator = {
       createPrompt: jest.fn(),
-    } as unknown as jest.Mocked<AutopilotPromptCreator>;
+    } as unknown as jest.Mocked<AutoPerformerPromptCreator>;
 
     mockPromptHandler = {
       runPrompt: jest.fn(),
       isSnapshotImageSupported: jest.fn(),
     } as jest.Mocked<PromptHandler>;
 
-    mockCopilotStepPerformer = {
+    mockStepPerformer = {
       perform: jest.fn(),
     } as unknown as jest.Mocked<StepPerformer>;
 
@@ -97,7 +97,7 @@ describe("PilotPerformer", () => {
     // Instantiate PilotPerformer with the mocks
     pilotPerformer = new AutoPerformer(
       mockPromptCreator,
-      mockCopilotStepPerformer,
+      mockStepPerformer,
       mockPromptHandler,
       mockScreenCapturer,
     );
@@ -133,7 +133,7 @@ describe("PilotPerformer", () => {
   it("should perform an intent successfully with snapshot image support", async () => {
     setupMocks();
 
-    const result = await pilotPerformer.analyseScreenAndCreateCopilotStep(
+    const result = await pilotPerformer.analyseScreenAndCreatePilotStep(
       GOAL,
       [],
       mockCaptureResult,
@@ -181,7 +181,7 @@ describe("PilotPerformer", () => {
   it("should perform an intent successfully without snapshot image support", async () => {
     setupMocks({ isSnapshotSupported: false });
 
-    const result = await pilotPerformer.analyseScreenAndCreateCopilotStep(
+    const result = await pilotPerformer.analyseScreenAndCreatePilotStep(
       GOAL,
       [],
       mockCaptureResult,
@@ -229,7 +229,7 @@ describe("PilotPerformer", () => {
   it("should perform an intent with undefined snapshot", async () => {
     setupMocks({ snapshotData: null });
 
-    const result = await pilotPerformer.analyseScreenAndCreateCopilotStep(
+    const result = await pilotPerformer.analyseScreenAndCreatePilotStep(
       GOAL,
       [],
       mockCaptureResult,
@@ -302,7 +302,7 @@ describe("PilotPerformer", () => {
 
     setupMocks();
 
-    const result = await pilotPerformer.analyseScreenAndCreateCopilotStep(
+    const result = await pilotPerformer.analyseScreenAndCreatePilotStep(
       intent,
       previousIntents,
       mockCaptureResult,
@@ -413,11 +413,11 @@ describe("PilotPerformer", () => {
 
       // Mock analyseScreenAndCreateCopilotStep to return pilotOutputStep1, then pilotOutputSuccess
       const analyseScreenAndCreateCopilotStep = jest
-        .spyOn(pilotPerformer, "analyseScreenAndCreateCopilotStep")
+        .spyOn(pilotPerformer, "analyseScreenAndCreatePilotStep")
         .mockResolvedValueOnce(pilotOutputStep1)
         .mockResolvedValueOnce(pilotOutputSuccess);
 
-      jest.spyOn(mockCopilotStepPerformer, "perform").mockResolvedValue({
+      jest.spyOn(mockStepPerformer, "perform").mockResolvedValue({
         code: "code executed",
         result: "result of execution",
       });

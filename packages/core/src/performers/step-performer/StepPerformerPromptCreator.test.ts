@@ -57,7 +57,9 @@ const mockAPI: TestingFrameworkAPICatalog = {
 
 describe("PromptCreator constructor", () => {
   it("should merge redundant categories", () => {
-    const promptCreator = new StepPerformerPromptCreator(promptCreatorConstructorMockAPI);
+    const promptCreator = new StepPerformerPromptCreator(
+      promptCreatorConstructorMockAPI,
+    );
     const intent = "expect button to be visible";
     const viewHierarchy =
       '<View><Button testID="submit" title="Submit" /></View>';

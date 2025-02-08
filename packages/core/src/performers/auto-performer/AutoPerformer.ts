@@ -1,25 +1,25 @@
-import { AutoPerformerPromptCreator } from "./AutoPerformerPromptCreator";
+import {AutoPerformerPromptCreator} from "./AutoPerformerPromptCreator";
 import {
-  PromptHandler,
-  AutoReport,
-  AutoStepReport,
-  AutoStepPlan,
-  ScreenCapturerResult,
-  AutoReviewSection,
   AutoPreviousStep,
+  AutoReport,
   AutoReview,
-  PreviousStep,
+  AutoReviewSection,
+  AutoStepPlan,
+  AutoStepReport,
   LoggerMessageColor,
+  PreviousStep,
+  PromptHandler,
+  ScreenCapturerResult,
 } from "@/types";
-import { extractTaggedOutputs, OUTPUTS_MAPPINGS } from "@/common/extract/extractTaggedOutputs";
-import { StepPerformer } from "@/performers/step-performer/StepPerformer";
-import { ScreenCapturer } from "@/common/snapshot/ScreenCapturer";
+import {extractTaggedOutputs, OUTPUTS_MAPPINGS,} from "@/common/extract/extractTaggedOutputs";
+import {StepPerformer} from "@/performers/step-performer/StepPerformer";
+import {ScreenCapturer} from "@/common/snapshot/ScreenCapturer";
 import logger from "@/common/logger";
 
 export class AutoPerformer {
   constructor(
     private promptCreator: AutoPerformerPromptCreator,
-    private copilotStepPerformer: StepPerformer,
+    private stepPerformer: StepPerformer,
     private promptHandler: PromptHandler,
     private screenCapturer: ScreenCapturer,
   ) {}
@@ -82,58 +82,64 @@ export class AutoPerformer {
     });
   }
 
-  async analyseScreenAndCreateCopilotStep(
+  async analyseScreenAndCreatePilotStep(
     goal: string,
-    previous: AutoPreviousStep[] = [],
+    previousSteps: AutoPreviousStep[],
     screenCapture: ScreenCapturerResult,
   ): Promise<AutoStepReport> {
     const analysisLoggerSpinner = logger.startSpinner(
       "🤔 Thinking on next step",
+      {
+        message: goal,
+        isBold: true,
+        color: "whiteBright",
+      },
     );
 
     try {
       const { snapshot, viewHierarchy, isSnapshotImageAttached } =
         screenCapture;
+
       const prompt = this.promptCreator.createPrompt(
         goal,
         viewHierarchy,
         isSnapshotImageAttached,
-        previous,
+        previousSteps,
       );
 
-      const generatedPilotTaskDetails: string =
-        await this.promptHandler.runPrompt(prompt, snapshot);
+      const promptResult = await this.promptHandler.runPrompt(prompt, snapshot);
+      const outputs = extractTaggedOutputs({
+        text: promptResult,
+        outputsMapper: OUTPUTS_MAPPINGS.PILOT_STEP,
+      });
 
-      const { screenDescription, thoughts, action, ux, a11y, i18n } =
-        extractTaggedOutputs({
-          text: generatedPilotTaskDetails,
-          outputsMapper: OUTPUTS_MAPPINGS.PILOT_STEP,
-        });
+      const { screenDescription, thoughts, action, ux, a11y, i18n } = outputs;
+      const plan: AutoStepPlan = { action, thoughts };
+      const goalAchieved = action === "success";
 
-      analysisLoggerSpinner.stop("success", `💭 Thoughts:`, {
-        message: thoughts,
+      analysisLoggerSpinner.stop("success", "💡 Next step ready", {
+        message: plan.action,
         isBold: true,
         color: "whiteBright",
       });
 
-      const plan: AutoStepPlan = { action, thoughts };
       const review: AutoReview = {
-        ux: this.extractReviewOutput(ux),
-        a11y: this.extractReviewOutput(a11y),
-        i18n: this.extractReviewOutput(i18n),
+        ux: ux ? this.extractReviewOutput(ux) : undefined,
+        a11y: a11y ? this.extractReviewOutput(a11y) : undefined,
+        i18n: i18n ? this.extractReviewOutput(i18n) : undefined,
       };
 
-      logger.info({
-        message: `Conducting review for ${screenDescription}\n`,
-        isBold: true,
-        color: "whiteBright",
-      });
+      if (review.ux || review.a11y || review.i18n) {
+        logger.info({
+          message: `Conducting review for ${screenDescription}\n`,
+          isBold: true,
+          color: "whiteBright",
+        });
 
-      review.ux && this.logReviewSection(review.ux, "ux");
-      review.a11y && this.logReviewSection(review.a11y, "a11y");
-      review.i18n && this.logReviewSection(review.i18n, "i18n");
-
-      const goalAchieved = action === "success";
+        review.ux && this.logReviewSection(review.ux, "ux");
+        review.a11y && this.logReviewSection(review.a11y, "a11y");
+        review.i18n && this.logReviewSection(review.i18n, "i18n");
+      }
 
       const summary = goalAchieved
         ? extractTaggedOutputs({
@@ -142,11 +148,17 @@ export class AutoPerformer {
           }).summary
         : undefined;
 
-      return { screenDescription, plan, review, goalAchieved, summary };
+      return {
+        screenDescription,
+        plan,
+        review,
+        goalAchieved,
+        summary,
+      };
     } catch (error) {
       analysisLoggerSpinner.stop(
         "failure",
-        `😓 Pilot encountered an error, ${error instanceof Error ? error.message : error}`,
+        `😓 Pilot encountered an error: ${error instanceof Error ? error.message : String(error)}`,
       );
       throw error;
     }
@@ -155,7 +167,7 @@ export class AutoPerformer {
   async perform(goal: string): Promise<AutoReport> {
     const maxSteps = 100;
     let previousSteps: AutoPreviousStep[] = [];
-    let copilotSteps: PreviousStep[] = [];
+    let pilotSteps: PreviousStep[] = [];
     const report: AutoReport = { goal, steps: [] };
 
     logger.info(
@@ -172,51 +184,53 @@ export class AutoPerformer {
     );
 
     for (let step = 0; step < maxSteps; step++) {
-      const screenCapture: ScreenCapturerResult =
-        await this.screenCapturer.capture();
-      const { screenDescription, plan, review, goalAchieved, summary } =
-        await this.analyseScreenAndCreateCopilotStep(
-          goal,
-          previousSteps,
-          screenCapture,
-        );
+      const screenCapture = await this.screenCapturer.capture();
+      const stepReport = await this.analyseScreenAndCreatePilotStep(
+        goal,
+        previousSteps,
+        screenCapture,
+      );
 
-      if (goalAchieved) {
+      report.steps.push(stepReport);
+
+      if (stepReport.goalAchieved) {
+        report.summary = stepReport.summary;
+        report.review = stepReport.review;
         logger.info(`🛬 Pilot reached goal: "${goal}"! 🎉 Summarizing:\n`, {
-          message: `${summary}`,
+          message: `${stepReport.summary}`,
           isBold: true,
           color: "whiteBright",
         });
         logger.writeLogsToFile(`pilot_logs_${Date.now()}`);
-        return { goal, summary, steps: [...report.steps], review };
+        break;
       }
 
-      const { code, result } = await this.copilotStepPerformer.perform(
-        plan.action,
-        [...copilotSteps],
+      const { code, result } = await this.stepPerformer.perform(
+        stepReport.plan.action,
+        pilotSteps,
         screenCapture,
       );
-      copilotSteps = [...copilotSteps, { step: plan.action, code, result }];
+
+      pilotSteps = [
+        ...pilotSteps,
+        { step: stepReport.plan.action, code, result },
+      ];
       previousSteps = [
         ...previousSteps,
-        { screenDescription, step: plan.action, review },
+        {
+          screenDescription: stepReport.screenDescription,
+          step: stepReport.plan.action,
+          review: stepReport.review,
+        },
       ];
 
-      const stepReport: AutoStepReport = {
-        screenDescription,
-        plan,
-        review,
-        code,
-        goalAchieved,
-        summary,
-      };
-      report.steps = [...report.steps, stepReport];
+      if (step === maxSteps - 1) {
+        throw new Error(
+          `Failed to achieve goal after ${maxSteps} steps: ${goal}`,
+        );
+      }
     }
 
-    logger.warn(
-      `🛬 Pilot finished execution due to limit of ${maxSteps} steps has been reached`,
-    );
-    logger.writeLogsToFile(`pilot_logs_${Date.now()}`);
     return report;
   }
 }

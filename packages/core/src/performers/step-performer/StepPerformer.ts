@@ -43,7 +43,7 @@ export class StepPerformer {
     for (const key in newContext) {
       if (key in this.context) {
         logger.warn(
-          `Copilot's variable from context \`${key}\` is overridden by a new value from \`extendJSContext\``,
+          `Pilot's variable from context \`${key}\` is overridden by a new value from \`extendJSContext\``,
         );
         break;
       }
@@ -131,8 +131,8 @@ export class StepPerformer {
 
   private shouldOverrideCache() {
     return (
-      process.env.COPILOT_OVERRIDE_CACHE === "true" ||
-      process.env.COPILOT_OVERRIDE_CACHE === "1"
+      process.env.PILOT_OVERRIDE_CACHE === "true" ||
+      process.env.PILOT_OVERRIDE_CACHE === "1"
     );
   }
 
@@ -206,7 +206,7 @@ export class StepPerformer {
     screenCapture: ScreenCapturerResult,
     maxAttempts: number = 2,
   ): Promise<CodeEvaluationResult> {
-    const loggerSpinner = logger.startSpinner(`🤖 Copilot performing step:`, {
+    const loggerSpinner = logger.startSpinner(`🤖 Pilot performing step:`, {
       message: step,
       isBold: true,
       color: "whiteBright",
@@ -232,7 +232,7 @@ export class StepPerformer {
         lastCode = code;
 
         if (!code) {
-          loggerSpinner.update(`🤖 Copilot retrying step:`, {
+          loggerSpinner.update(`🤖 Pilot retrying step:`, {
             message: step,
             isBold: true,
             color: "whiteBright",
@@ -250,10 +250,10 @@ export class StepPerformer {
         );
         this.sharedContext = result.sharedContext || this.sharedContext;
 
-        loggerSpinner.stop("success", `🦾 Copilot performed step:`, {
+        loggerSpinner.stop("success", `🦾 Pilot performed step:`, {
           message: step,
           isBold: true,
-          color: "greenBright",
+          color: "whiteBright",
         });
 
         if (attempt > 1) {

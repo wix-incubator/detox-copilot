@@ -10,7 +10,7 @@ import {
 } from "@/types";
 import * as crypto from "crypto";
 import { mockedCacheFile, mockCache } from "@/test-utils/cache";
-import { StepPerformerPromptCreator } from "@/utils/performer/StepPerformerPromptCreator";
+import { StepPerformerPromptCreator } from "@/performers/step-performer/StepPerformerPromptCreator";
 import { StepPerformer } from "@/performers/step-performer/StepPerformer";
 import {
   bazCategory,
@@ -18,12 +18,12 @@ import {
   dummyContext,
 } from "@/test-utils/APICatalogTestUtils";
 import { getSnapshotImage } from "@/test-utils/SnapshotComparatorTestImages/SnapshotImageGetter";
-import { SnapshotComparator } from "@/utils/SnapshotComparator";
+import { SnapshotComparator } from "@/common/snapshot/comparator/SnapshotComparator";
 
 jest.mock("crypto");
 jest.mock("fs");
 
-describe("Copilot Integration Tests", () => {
+describe("Pilot Integration Tests", () => {
   let mockedCachedSnapshotHash: SnapshotHashObject;
   let mockFrameworkDriver: jest.Mocked<TestingFrameworkDriver>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
@@ -64,8 +64,8 @@ describe("Copilot Integration Tests", () => {
 
   afterEach(() => {
     // It's generally not recommended to directly access private properties,
-    // but since Copilot is a singleton, we need to reset it between tests.
-    // If possible, consider adding a public reset method to the Copilot class.
+    // but since Pilot is a singleton, we need to reset it between tests.
+    // If possible, consider adding a public reset method to the Pilot class.
     (Pilot as any).instance = undefined;
   });
 
@@ -447,7 +447,7 @@ describe("Copilot Integration Tests", () => {
         StepPerformerPromptCreator.prototype,
         "extendAPICategories",
       );
-      const spyCopilotStepPerformer = jest.spyOn(
+      const spyStepPerformer = jest.spyOn(
         StepPerformer.prototype,
         "extendJSContext",
       );
@@ -457,7 +457,7 @@ describe("Copilot Integration Tests", () => {
 
       pilot.extendAPICatalog([barCategory1], dummyContext);
       expect(spyPromptCreator).toHaveBeenCalledTimes(2);
-      expect(spyCopilotStepPerformer).toHaveBeenCalledTimes(1);
+      expect(spyStepPerformer).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -536,7 +536,7 @@ describe("Copilot Integration Tests", () => {
       };
       const copilotInstance = Pilot.getInstance();
       const spyPilotPerformerPerform = jest
-        .spyOn(copilotInstance["pilotPerformer"], "perform")
+        .spyOn(copilotInstance["autoPerformer"], "perform")
         .mockResolvedValue(mockPilotReport);
 
       const result = await copilotInstance.autopilot(goal);
@@ -546,16 +546,18 @@ describe("Copilot Integration Tests", () => {
       expect(result).toEqual(mockPilotReport);
     });
 
-    it("should handle errors from pilotPerformer.perform", async () => {
+    it("should handle errors from autoPerformer.perform", async () => {
       const goal = "Some goal that causes an error";
 
       const errorMessage = "Error during pilot execution";
       const copilotInstance = Pilot.getInstance();
       const spyPilotPerformerPerform = jest
-        .spyOn(copilotInstance["pilotPerformer"], "perform")
+        .spyOn(copilotInstance["autoPerformer"], "perform")
         .mockRejectedValue(new Error(errorMessage));
 
-      await expect(copilotInstance.autopilot(goal)).rejects.toThrow(errorMessage);
+      await expect(copilotInstance.autopilot(goal)).rejects.toThrow(
+        errorMessage,
+      );
 
       expect(spyPilotPerformerPerform).toHaveBeenCalledTimes(1);
       expect(spyPilotPerformerPerform).toHaveBeenCalledWith(goal);

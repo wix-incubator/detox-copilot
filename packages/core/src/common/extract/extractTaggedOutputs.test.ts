@@ -16,7 +16,10 @@ describe("extractOutputs", () => {
       thoughts: { tag: "THOUGHTS", isRequired: true },
       action: { tag: "ACTION", isRequired: true },
     };
-    const outputs = extractTaggedOutputs({ text: textToBeParsed, outputsMapper });
+    const outputs = extractTaggedOutputs({
+      text: textToBeParsed,
+      outputsMapper,
+    });
     expect(outputs).toEqual({
       thoughts: "I think this is great",
       action: "Tap on GREAT button",
@@ -40,7 +43,10 @@ describe("extractOutputs", () => {
       thoughts: { tag: "THOUGHTS", isRequired: true },
       action: { tag: "ACTION", isRequired: true },
     };
-    const outputs = extractTaggedOutputs({ text: textToBeParsed, outputsMapper });
+    const outputs = extractTaggedOutputs({
+      text: textToBeParsed,
+      outputsMapper,
+    });
     expect(outputs).toEqual({
       thoughts: "I think this is great",
       action: "Tap on GREAT button",
@@ -82,7 +88,10 @@ describe("extractOutputs", () => {
       action: { tag: "ACTION", isRequired: true },
       action2: { tag: "ACTION2", isRequired: false },
     };
-    const outputs = extractTaggedOutputs({ text: textToBeParsed, outputsMapper });
+    const outputs = extractTaggedOutputs({
+      text: textToBeParsed,
+      outputsMapper,
+    });
     expect(outputs).toEqual({
       thoughts: "I think this is great",
       action: "Tap on GREAT button",

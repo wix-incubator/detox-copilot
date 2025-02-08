@@ -10,15 +10,15 @@ import { AutoReport } from "@/types/auto";
  */
 export interface PilotFacade {
   /**
-   * Initializes the Copilot with the provided configuration.
+   * Initializes Pilot with the provided configuration.
    * Must be called once before using any other methods.
-   * @param config - Configuration settings for the Copilot
+   * @param config - Configuration settings for Pilot
    * @throws Error if called multiple times
    */
   init: (config: Config) => void;
 
   /**
-   * Checks if Copilot has been properly initialized.
+   * Checks if Pilot has been properly initialized.
    * @returns true if initialized, false otherwise
    */
   isInitialized: () => boolean;
@@ -26,7 +26,7 @@ export interface PilotFacade {
   /**
    * Starts a new test flow session.
    * Must be called before any test operations to ensure a clean state,
-   * as Copilot uses operation history for context.
+   * as Pilot uses operation history for context.
    */
   start: () => void;
 
@@ -80,9 +80,9 @@ export type CacheMode = "full" | "lightweight" | "disabled";
 export type AnalysisMode = "fast" | "full";
 
 /**
- * Copilot behavior configuration options.
+ * Pilot behavior configuration options.
  */
-export interface CopilotOptions {
+export interface PilotOptions {
   /** Cache mode (default: 'full') */
   cacheMode?: CacheMode;
   /** Analysis mode (default: 'fast') */
@@ -90,7 +90,7 @@ export interface CopilotOptions {
 }
 
 /**
- * Complete Copilot configuration.
+ * Complete Pilot configuration.
  */
 export interface Config {
   /** Testing framework driver */
@@ -98,7 +98,7 @@ export interface Config {
   /** AI service handler */
   promptHandler: PromptHandler;
   /** Optional behavior settings */
-  options?: CopilotOptions;
+  options?: PilotOptions;
 }
 
 /**

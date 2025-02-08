@@ -6,7 +6,7 @@ export class StepPerformerCacheHandler {
   private temporaryCache: Map<string, any> = new Map();
   private readonly cacheFilePath: string;
 
-  constructor(cacheFileName: string = "detox_copilot_cache.json") {
+  constructor(cacheFileName: string = "wix_pilot_cache.json") {
     this.cacheFilePath = path.resolve(process.cwd(), cacheFileName);
   }
 

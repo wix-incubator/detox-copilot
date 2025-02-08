@@ -4,6 +4,6 @@ export class PilotError extends Error {
     public originalError?: Error,
   ) {
     super(message);
-    this.name = "CopilotError";
+    this.name = "PilotError";
   }
 }
