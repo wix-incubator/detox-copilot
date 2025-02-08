@@ -10,7 +10,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Copilot',
+  title: 'Pilot',
   tagline: 'Simplify your mobile app testing with intuitive, natural language commands, making automation faster and more efficient.',
   favicon: '/img/favicon.ico',
 
@@ -46,7 +46,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:
-            'https://github.com/wix-incubator/pilot/blob/copilot-doc-site/website/',
+            'https://github.com/wix-incubator/pilot/blob/main/website/',
         },
         theme: {
           customCss: './src/css/custom.scss',
@@ -60,9 +60,9 @@ const config = {
     ({
       navbar: {
         logo: {
-          alt: 'Wix Pilot Logo',
-          src: 'img/homepage/detox-logo.png',
-          srcDark: 'img/homepage/detox-logo.png',
+          alt: 'Pilot Logo',
+          src: 'img/homepage/pilot-logo.png',
+          srcDark: 'img/homepage/pilot-logo.png',
         },
         style: 'dark',
         items: [
@@ -113,7 +113,7 @@ const config = {
             items: [
               {
                 label: 'Ask a question on Stack Overflow',
-                to: 'https://stackoverflow.com/questions/tagged/detox',
+                to: 'https://stackoverflow.com/questions/tagged/wix-pilot',
                 target: '_self'
               },
               {
@@ -133,7 +133,7 @@ const config = {
               },
               {
                 label: 'Twitter',
-                to: 'https://twitter.com/detoxe2e/',
+                to: 'https://twitter.com/WixEng/',
                 className: 'footer__link-item footer__link-item_twitter',
               },
               {
