@@ -34,21 +34,20 @@ export class Pilot {
   private cacheHandler: StepPerformerCacheHandler;
   private running: boolean = false;
   private autoPerformer: AutoPerformer;
-  private autoPerformerPromptCreator: AutoPerformerPromptCreator;
   private screenCapturer: ScreenCapturer;
 
   private constructor(config: Config) {
-    const snapshotComparator = new SnapshotComparator();
     this.snapshotManager = new SnapshotManager(
       config.frameworkDriver,
-      snapshotComparator,
+      new SnapshotComparator(),
       downscaleImage,
     );
-    this.autoPerformerPromptCreator = new AutoPerformerPromptCreator();
+
     this.cacheHandler = new StepPerformerCacheHandler();
     this.stepPerformerPromptCreator = new StepPerformerPromptCreator(
       config.frameworkDriver.apiCatalog,
     );
+
     this.stepPerformer = new StepPerformer(
       config.frameworkDriver.apiCatalog.context,
       this.stepPerformerPromptCreator,
@@ -61,12 +60,14 @@ export class Pilot {
       config.options?.cacheMode,
       config.options?.analysisMode,
     );
+
     this.screenCapturer = new ScreenCapturer(
       this.snapshotManager,
       config.promptHandler,
     );
+
     this.autoPerformer = new AutoPerformer(
-      this.autoPerformerPromptCreator,
+      new AutoPerformerPromptCreator(),
       this.stepPerformer,
       config.promptHandler,
       this.screenCapturer,
