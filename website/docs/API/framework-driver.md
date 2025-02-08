@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Framework Driver
 
-In this section, we will explain how to implement custom drivers for different testing frameworks in **Wix Pilot**. A **Framework Driver** is a crucial component that ensures **Pilot** remains agnostic to the underlying testing framework, allowing it to work seamlessly with different frameworks like Detox, Jest, Mocha, etc.
+In this section, we will explain how to implement custom drivers for different testing frameworks in **Pilot**. A **Framework Driver** is a crucial component that ensures **Pilot** remains agnostic to the underlying testing framework, allowing it to work seamlessly with different frameworks like Detox, Jest, Mocha, etc.
 
 ## What is a Framework Driver?
 

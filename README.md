@@ -1,7 +1,7 @@
 # Wix Pilot
 
 A flexible plugin that drives your tests with human-written commands, enhanced by the power of large language models (LLMs).
-While originally designed for Detox, Wix Pilot can be extended to **any other testing frameworks**.
+While originally designed for Detox, Pilot can be extended to **any other testing frameworks**.
 
 It provides clear APIs to perform actions and assertions within your tests while interfacing with an LLM service to enhance the testing process.
 
@@ -17,7 +17,7 @@ The test case is written in a human-readable format, and Pilot translates it int
 
 ## API Overview
 
-High-level overview of the API that Wix Pilot exposes:
+High-level overview of the API that Pilot exposes:
 
 ```typescript
 /**
@@ -80,7 +80,7 @@ export PILOT_OVERRIDE_CACHE=false
 
 ## Integration with Testing Frameworks
 
-Wix Pilot requires two main components to work:
+The Pilot requires two main components to work:
 
 ### **Prompt Handler**
 

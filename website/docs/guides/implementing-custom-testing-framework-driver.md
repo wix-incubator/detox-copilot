@@ -7,7 +7,7 @@ sidebar_position: 4
 
 # Implementing a Custom Testing Framework Driver
 
-The **testing framework driver** is a core component of **Wix Pilot**, enabling seamless integration with any testing framework. It allows Pilot to translate natural language commands into actionable steps using the framework's API. This guide outlines how to implement and integrate a custom testing framework driver into the Pilot ecosystem.
+The **testing framework driver** is a core component of **Pilot**, enabling seamless integration with any testing framework. It allows Pilot to translate natural language commands into actionable steps using the framework's API. This guide outlines how to implement and integrate a custom testing framework driver into the Pilot ecosystem.
 
 ---
 

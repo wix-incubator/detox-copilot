@@ -7,7 +7,7 @@ sidebar_position: 1
 
 # Basic Interface Overview
 
-The Testing Copilot provides a simple yet powerful interface for controlling your test flows. This document covers the core API methods and configuration options.
+Pilot provides a simple yet powerful interface for controlling your test flows. This document covers the core API methods and configuration options.
 
 ## API Methods
 
@@ -17,27 +17,45 @@ The Testing Copilot provides a simple yet powerful interface for controlling you
 init(config: Config): void
 ```
 
-Initializes the Copilot instance. Must be called before any other methods and only once in your test environment.
+Initializes Pilot with the provided configuration. Must be called before any other methods and only once in your test environment.
 
 :::note
-This must be called once before using any other Copilot methods, as it sets up the instance and configuration.
+Throws an error if called multiple times.
 :::
 
 Basic initialization example:
 ```typescript
-import copilot from 'detox-copilot';
-import { DetoxDriver } from 'your-testing-framework-driver'; // Replace with your actual driver
-import { OpenAIHandler } from 'your-ai-service-handler'; // Replace with your actual handler
+import pilot from '@wix/pilot';
+import { DetoxFrameworkDriver } from '@wix/pilot-detox';
+import { OpenAIHandler } from '@wix/pilot-openai';
 
-copilot.init({
-  frameworkDriver: new DetoxDriver(),
+pilot.init({
+  frameworkDriver: new DetoxFrameworkDriver(),
   promptHandler: new OpenAIHandler({
     apiKey: process.env.OPENAI_API_KEY
-  })
+  }),
+  options: {
+    cacheMode: 'full',
+    analysisMode: 'fast'
+  }
 });
 ```
 
-See [Configuration](#configuration) for more information on the `config` object.
+### getInstance()
+
+```typescript
+static getInstance(): Pilot
+```
+
+Gets the singleton instance of Pilot.
+
+:::note
+Throws an error if Pilot hasn't been initialized.
+:::
+
+```typescript
+const pilot = Pilot.getInstance();
+```
 
 ### isInitialized()
 
@@ -45,16 +63,13 @@ See [Configuration](#configuration) for more information on the `config` object.
 isInitialized(): boolean
 ```
 
-Checks if the Copilot instance has been initialized.
+Checks if Pilot has been properly initialized.
 
 ```typescript
-if (!copilot.isInitialized()) {
-  // Initialize copilot
-  copilot.init(config);
+if (!pilot.isInitialized()) {
+  pilot.init(config);
 }
 ```
-
-This is useful for ensuring that the Copilot is properly initialized before performing any actions.
 
 ### start()
 
@@ -62,42 +77,65 @@ This is useful for ensuring that the Copilot is properly initialized before perf
 start(): void
 ```
 
-Begins a new test flow, resetting previous steps and clearing temporary cache.
+Starts a new test flow by clearing previous steps and temporary cache.
 
 :::note
-Must be called before performing any steps. If called while a flow is already active, it will throw an error.
+Throws an error if a flow is already active.
 :::
 
-Starting a new test flow:
 ```typescript
-copilot.start();
+pilot.start();
 ```
 
 ### perform()
 
 ```typescript
-perform(...steps: string[]): Promise<string>
+perform(...steps: string[]): Promise<any>
 ```
 
-Executes one or more test steps using natural language. Returns the result of the last step.
+Executes one or more test steps using natural language. Returns the result of the last executed step.
 
 :::note
-Requires an active test flow (initiated by `start()`), otherwise it will throw an error.
+Requires an active test flow (initiated by `start()`).
 :::
 
-Single step example:
+Examples:
 ```typescript
-// Perform a simple click action
-const result = await copilot.perform("Click the login button");
+// Single step
+const result = await pilot.perform('Click the login button');
+
+// Multiple steps in sequence
+const result = await pilot.perform(
+  'Launch the app',
+  'Navigate to Settings',
+  'Tap on "Edit Profile"',
+  'Update username to "john_doe"',
+  'Verify changes are saved'
+);
 ```
 
-Multiple steps example:
+### autopilot()
+
 ```typescript
-// Execute multiple steps in sequence
-const result = await copilot.perform(
-  "Click the login button",
-  "Type 'user@example.com' into the email field",
-  "The login form should be visible"
+autopilot(goal: string): Promise<AutoReport>
+```
+
+Executes an entire test flow automatically based on a high-level goal. Instead of specifying individual steps, you describe the end goal and let Pilot figure out the necessary steps.
+
+:::note
+Requires an active test flow (initiated by `start()`).
+:::
+
+Example:
+```typescript
+// Let Pilot handle the entire flow
+const report = await pilot.autopilot(
+  'Log in as admin user and verify access to all dashboard sections'
+);
+
+// Or achieve the same result as the multiple steps example
+const report = await pilot.autopilot(
+  'Update the profile username to john_doe and verify the changes'
 );
 ```
 
@@ -107,21 +145,19 @@ const result = await copilot.perform(
 end(isCacheDisabled?: boolean): void
 ```
 
-Concludes the test flow and optionally disables caching of the results.
+Ends the test flow and optionally saves the temporary cache.
 
-Ending with default cache behavior:
-```typescript
-// Save results to cache (default behavior)
-copilot.end();
-```
+:::note
+Throws an error if no flow is active.
+:::
 
-Ending with cache disabled:
 ```typescript
+// Save results to cache (default)
+pilot.end();
+
 // Skip saving to cache
-copilot.end(true);
+pilot.end(true);
 ```
-
-Ending with cache disabled is usually done when a test is failing and you want to ensure that the next test run is not affected by the previous test's results.
 
 ### extendAPICatalog()
 
@@ -129,52 +165,49 @@ Ending with cache disabled is usually done when a test is failing and you want t
 extendAPICatalog(categories: TestingFrameworkAPICatalogCategory[], context?: any): void
 ```
 
-Extends the API catalog with additional testing framework capabilities.
+Enriches the API catalog with additional testing framework capabilities.
 
 ```typescript
-copilot.extendAPICatalog([
+pilot.extendAPICatalog([
   {
-    title: 'Deeplink Actions',
+    title: 'Custom Actions',
     items: [
       {
-        signature: 'navigateToDeeplink(url: string)',
-        description: 'Navigates to a given deeplink URL',
-        example: 'await navigateToDeeplink("/home");',
+        signature: 'customAction(param: string)',
+        description: 'Performs a custom action',
+        example: 'await customAction("param")',
         guidelines: [
-         'This action should be used to navigate to a specific screen in the app.',
-         'The URL should be a relative path, starting with a forward slash.'
+          'Use this action for specific test scenarios'
         ]
       }
     ]
   }
-]);
+], customContext);
 ```
-
-This is useful for adding custom actions to the Copilot's API catalog, which can be used in natural language prompts.
 
 ## Configuration
 
 ### Config Interface
 
-The configuration interface defines how to set up Copilot with your testing framework and AI service:
-
 ```typescript
 interface Config {
+  /** Testing framework driver */
   frameworkDriver: TestingFrameworkDriver;
+  /** AI service handler */
   promptHandler: PromptHandler;
-  options?: CopilotOptions;
+  /** Optional behavior settings */
+  options?: PilotOptions;
 }
 
-interface CopilotOptions {
-  cacheMode?: 'full' | 'lightweight' | 'disabled';
-  analysisMode?: 'fast' | 'full';
+interface PilotOptions {
+  /** Cache mode (default: 'full') */
+  cacheMode?: CacheMode;  // 'full' | 'lightweight' | 'disabled'
+  /** Analysis mode (default: 'fast') */
+  analysisMode?: AnalysisMode;  // 'fast' | 'full'
 }
 ```
 
 #### Cache Modes
-
-Cache mode is used to determine how the Copilot will cache the code generated for each step.
-Default cache mode is `full`.
 
 - **full**: Cache is used with the screen state (default)
 - **lightweight**: Cache is used but only based on steps (without screen state)
@@ -182,72 +215,64 @@ Default cache mode is `full`.
 
 #### Analysis Modes
 
-Analysis mode determines how the Copilot analyzes each step before generating code.
-Default analysis mode is `fast`.
-
 - **fast**: Skip API search and view hierarchy analysis preprocessing (default)
 - **full**: Perform complete analysis including API search and view hierarchy preprocessing
 
-### Framework Drivers
+### Framework Driver Interface
 
-:::note Available Drivers
-The `frameworkDriver` supports various testing frameworks, see [Framework Drivers](/docs/API/framework-driver) for more information.
-:::
-
-Basic driver initialization:
 ```typescript
-const driver = new DetoxDriver();
+interface TestingFrameworkDriver {
+  /** Captures the current UI state as an image */
+  captureSnapshotImage(): Promise<string | undefined>;
+  
+  /** Captures the current UI component hierarchy */
+  captureViewHierarchyString(): Promise<string>;
+  
+  /** Available testing framework API methods */
+  apiCatalog: TestingFrameworkAPICatalog;
+}
+
+interface TestingFrameworkAPICatalog {
+  /** Framework name (e.g., "Detox", "Jest") */
+  name?: string;
+  /** Framework purpose and capabilities */
+  description?: string;
+  /** Framework context variables */
+  context: any;
+  /** Available API method categories */
+  categories: TestingFrameworkAPICatalogCategory[];
+  /** List of restrictions and guidelines */
+  restrictions?: string[];
+}
 ```
 
-### Prompt Handlers
+## Error Handling
 
-The `promptHandler` manages communication with AI services.
-
-Setting up OpenAI as the AI service:
-```typescript
-const handler = new OpenAIHandler({
-  apiKey: process.env.OPENAI_API_KEY
-});
-```
-
-## API Basic Usage Notes
-
-- Always call methods in sequence: `init` → `start` → `perform` → `end`
-- Handle errors appropriately using try-catch blocks
-- Clean up resources by calling `end()` after each test flow
-- Use multiple steps in a single `perform` call for related actions
-
-### Error Handling
-
-The Copilot will throw a `CopilotError` when:
-- Methods are called out of sequence
-- A flow is started while another is active
-- Steps are performed without an active flow (e.g. `perform` without `start`)
-- Configuration is invalid or missing required fields
+Pilot throws errors when:
+- Attempting to initialize more than once
+- Starting a flow while another is active
+- Performing steps without an active flow
+- Ending a flow that hasn't been started
 
 Complete flow with error handling:
 ```typescript
-// Check initialization
-if (!copilot.isInitialized()) {
-   copilot.init(config);
-}
-
-// Start the flow
-copilot.start();
-
 try {
-  // Perform steps, if any error occurs, the flow will be ended and the error will be thrown
-  const result = await copilot.perform(
-    "Click the login button",
-    "Type 'test@example.com' into the email field",
-    "The login form should be visible"
+  pilot.start();
+  
+  // Execute multiple steps
+  await pilot.perform(
+    'Click the login button',
+    'Type "test@example.com" into the email field',
+    'The login form should be visible'
   );
+  
+  // Or use autopilot for goal-driven testing
+  await pilot.autopilot('Log in with test@example.com and verify success');
+  
+  pilot.end();
 } catch (error) {
-   // Disable cache on error to avoid caching the failed flow
-   copilot.end(true);
-   throw error;
+  // Disable cache on error
+  pilot.end(true);
+  throw error;
 }
-
-// End the flow (with default cache behavior)
-copilot.end();
 ```

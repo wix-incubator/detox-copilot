@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Prompt Handler
 
-In this section, we will cover how to implement a **Prompt Handler** to interact with AI services, such as OpenAI, in the context of **Wix Pilot**.
+In this section, we will cover how to implement a **Prompt Handler** to interact with AI services, such as OpenAI, in the context of **Pilot**.
 
 ## What is a Prompt Handler?
 
@@ -47,6 +47,6 @@ export interface PromptHandler {
 ```
 
 ## Open Tasks For Contributors
-If you're interested in contributing to Wix Pilot and adding new prompt handlers or improving the existing ones, check out the open tasks on our [GitHub repository](https://github.com/wix-incubator/pilot/issues).
+If you're interested in contributing to Pilot and adding new prompt handlers or improving the existing ones, check out the open tasks on our [GitHub repository](https://github.com/wix-incubator/pilot/issues).
 
 For more information or to suggest improvements, please visit our [GitHub repository](https://github.com/wix-incubator/pilot/issues).

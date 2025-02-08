@@ -5,9 +5,9 @@ sidebar_label: Pilot Best Practices
 sidebar_position: 3
 ---
 
-# Wix Pilot Best Practices
+# Pilot Best Practices
 
-Wix Pilot allows you to write tests using natural language commands. Each step corresponds to a specific action or assertion within your app. In case you're wondering how to make the most out of this feature, here are some best practices to follow when writing your Pilot intents.
+Pilot allows you to write tests using natural language commands. Each step corresponds to a specific action or assertion within your app. In case you're wondering how to make the most out of this feature, here are some best practices to follow when writing your Pilot intents.
 
 ## Step-by-Step Instructions
 

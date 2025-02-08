@@ -46,7 +46,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:
-            'https://github.com/wix-incubator/pilot/blob/main/website/',
+            'https://github.com/wix-incubator/pilot/tree/master/website/',
         },
         theme: {
           customCss: './src/css/custom.scss',
@@ -60,7 +60,7 @@ const config = {
     ({
       navbar: {
         logo: {
-          alt: 'Pilot Logo',
+          alt: 'Wix Pilot Logo',
           src: 'img/homepage/pilot-logo.png',
           srcDark: 'img/homepage/pilot-logo.png',
         },
@@ -131,16 +131,16 @@ const config = {
                 to: 'https://github.com/wix-incubator/pilot',
                 className: 'footer__link-item footer__link-item_git-hub',
               },
-              {
-                label: 'Twitter',
-                to: 'https://twitter.com/WixEng/',
-                className: 'footer__link-item footer__link-item_twitter',
-              },
-              {
-                label: 'Discord',
-                to: 'https://discord.gg/CkD5QKheF5',
-                className: 'footer__link-item footer__link-item_discord',
-              }
+              // {
+              //   label: 'Twitter',
+              //   to: 'https://twitter.com/WixEng/',
+              //   className: 'footer__link-item footer__link-item_twitter',
+              // },
+              // {
+              //   label: 'Discord',
+              //   to: 'https://discord.gg/CkD5QKheF5',
+              //   className: 'footer__link-item footer__link-item_discord',
+              // }
             ]
           }
         ]

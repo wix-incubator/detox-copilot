@@ -1,13 +1,13 @@
 ---
 id: contributing-to-pilot
-title: Contributing to Wix Pilot
+title: Contributing to Pilot
 sidebar_label: Contributing to Pilot
 sidebar_position: 5
 ---
 
-# Contributing to Wix Pilot
+# Contributing to Pilot
 
-We welcome contributions to **Wix Pilot**, whether through ideas, bug reports, code enhancements, or prompt handlers. Below, you'll find the main ways to contribute and collaborate with our community.
+We welcome contributions to **Pilot**, whether through ideas, bug reports, code enhancements, or prompt handlers. Below, you'll find the main ways to contribute and collaborate with our community.
 
 For reference on integrating with frameworks, see the [Implementing Custom Testing Framework Driver Guide](./implementing-custom-testing-framework-driver.md).
 
@@ -53,5 +53,5 @@ If you're unsure where to start, visit our [GitHub Issues Page](https://github.c
 
 ---
 
-Thank you for supporting **Wix Pilot**! Together, we can enhance testing automation and make it accessible to a broader developer community.
+Thank you for supporting **Pilot**! Together, we can enhance testing automation and make it accessible to a broader developer community.
 

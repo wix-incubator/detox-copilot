@@ -1,6 +1,6 @@
-# Supported Frameworks for Wix Pilot
+# Supported Frameworks for Pilot
 
-**Wix Pilot** enables natural language testing across different testing frameworks. Here's how to use it with our supported frameworks:
+**Pilot** enables natural language testing across different testing frameworks. Here's how to use it with our supported frameworks:
 
 ## Mobile Testing Support
 
@@ -61,6 +61,24 @@ it('should submit a form', async () => {
 ```
 
 Specialized for Chrome/Chromium automation with DevTools Protocol access.
+
+## Extending Framework Support
+
+You can add support for additional testing frameworks by implementing the `FrameworkDriver` interface:
+
+```typescript
+import { Pilot, FrameworkDriver } from '@wix/pilot';
+
+class CustomFrameworkDriver implements FrameworkDriver {
+  // Implement required methods
+}
+
+// Initialize Pilot with your custom framework
+Pilot.init({
+  frameworkDriver: new CustomFrameworkDriver(),
+  promptHandler: yourPromptHandler
+});
+```
 
 ## Contributing
 
