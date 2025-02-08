@@ -144,9 +144,9 @@ describe("CopilotStepPerformer", () => {
     mockCodeEvaluator.evaluate.mockResolvedValue(codeEvaluationResult);
 
     if (overrideCache) {
-      process.env.COPILOT_OVERRIDE_CACHE = "true";
+      process.env.PILOT_OVERRIDE_CACHE = "true";
     } else {
-      process.env.COPILOT_OVERRIDE_CACHE = "false";
+      process.env.PILOT_OVERRIDE_CACHE = "false";
     }
 
     const viewHierarchyHash = "hash";
@@ -401,7 +401,7 @@ describe("CopilotStepPerformer", () => {
     expect(mockCacheHandler.addToTemporaryCache).not.toHaveBeenCalled();
   });
 
-  it("should not use cached prompt result if COPILOT_OVERRIDE_CACHE is enabled", async () => {
+  it("should not use cached prompt result if PILOT_OVERRIDE_CACHE is enabled", async () => {
     const intent = "tap button";
     setupMocks({ cacheExists: true, overrideCache: true, intent });
 
