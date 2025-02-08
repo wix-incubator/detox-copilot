@@ -15,20 +15,20 @@ import { SnapshotComparator } from "./utils/SnapshotComparator";
 import { PilotPerformer } from "./actions/PilotPerformer";
 import { PilotPromptCreator } from "./utils/PilotPromptCreator";
 import { ScreenCapturer } from "./utils/ScreenCapturer";
-import { CopilotAPISearchPromptCreator } from "./utils/CopilotAPISearchPromptCreator";
+import { APISearchPromptCreator } from "./utils/APISearchPromptCreator";
 import { ViewAnalysisPromptCreator } from "./utils/ViewAnalysisPromptCreator";
 import downscaleImage from "./utils/downscaleImage";
 
 /**
- * The main Copilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
+ * The main Pilot class that provides AI-assisted testing capabilities for a given underlying testing framework.
  * @note Originally, this class is designed to work with Detox, but it can be extended to work with other frameworks.
  */
-export class Copilot {
-  // Singleton instance of Copilot
-  static instance?: Copilot;
+export class Pilot {
+  // Singleton instance of Pilot
+  static instance?: Pilot;
 
   private readonly promptCreator: PromptCreator;
-  private readonly apiSearchPromptCreator: CopilotAPISearchPromptCreator;
+  private readonly apiSearchPromptCreator: APISearchPromptCreator;
   private readonly codeEvaluator: CodeEvaluator;
   private readonly snapshotManager: SnapshotManager;
   private previousSteps: PreviousStep[] = [];
@@ -41,7 +41,7 @@ export class Copilot {
 
   private constructor(config: Config) {
     this.promptCreator = new PromptCreator(config.frameworkDriver.apiCatalog);
-    this.apiSearchPromptCreator = new CopilotAPISearchPromptCreator(
+    this.apiSearchPromptCreator = new APISearchPromptCreator(
       config.frameworkDriver.apiCatalog,
     );
     this.codeEvaluator = new CodeEvaluator();
@@ -78,21 +78,21 @@ export class Copilot {
   }
 
   static isInitialized(): boolean {
-    return !!Copilot.instance;
+    return !!Pilot.instance;
   }
 
   /**
    * Gets the singleton instance of Copilot.
    * @returns The Copilot instance.
    */
-  static getInstance(): Copilot {
-    if (!Copilot.instance) {
+  static getInstance(): Pilot {
+    if (!Pilot.instance) {
       throw new CopilotError(
         "Copilot has not been initialized. Please call the `init()` method before using it.",
       );
     }
 
-    return Copilot.instance;
+    return Pilot.instance;
   }
 
   /**
@@ -100,13 +100,13 @@ export class Copilot {
    * @param config The configuration options for Copilot.
    */
   static init(config: Config): void {
-    if (Copilot.instance) {
+    if (Pilot.instance) {
       throw new CopilotError(
         "Copilot has already been initialized. Please call the `init()` method only once.",
       );
     }
 
-    Copilot.instance = new Copilot(config);
+    Pilot.instance = new Pilot(config);
   }
 
   /**

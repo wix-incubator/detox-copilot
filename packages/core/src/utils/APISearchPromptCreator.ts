@@ -1,7 +1,7 @@
 import { TestingFrameworkAPICatalog } from "@/types";
 import { APIFormatter } from "@/utils/APIFormatter";
 
-export class CopilotAPISearchPromptCreator {
+export class APISearchPromptCreator {
   private apiFormatter: APIFormatter;
 
   constructor(private apiCatalog: TestingFrameworkAPICatalog) {

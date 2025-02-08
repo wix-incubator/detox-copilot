@@ -1,4 +1,4 @@
-import { Copilot } from "@/Copilot";
+import { Pilot } from "@/Pilot";
 import { CopilotStepPerformer } from "@/actions/CopilotStepPerformer";
 import { CopilotError } from "@/errors/CopilotError";
 import {
@@ -78,22 +78,22 @@ describe("Copilot", () => {
   afterEach(() => {
     jest.resetAllMocks();
     (console.error as jest.Mock).mockRestore();
-    (Copilot as any)["instance"] = undefined;
+    (Pilot as any)["instance"] = undefined;
   });
 
   describe("getInstance", () => {
     it("should return the same instance after initialization", () => {
-      Copilot.init(mockConfig);
+      Pilot.init(mockConfig);
 
-      const instance1 = Copilot.getInstance();
-      const instance2 = Copilot.getInstance();
+      const instance1 = Pilot.getInstance();
+      const instance2 = Pilot.getInstance();
 
       expect(instance1).toBe(instance2);
     });
 
     it("should throw CopilotError if getInstance is called before init", () => {
-      expect(() => Copilot.getInstance()).toThrow(CopilotError);
-      expect(() => Copilot.getInstance()).toThrow(
+      expect(() => Pilot.getInstance()).toThrow(CopilotError);
+      expect(() => Pilot.getInstance()).toThrow(
         "Copilot has not been initialized. Please call the `init()` method before using it.",
       );
     });
@@ -101,14 +101,14 @@ describe("Copilot", () => {
 
   describe("init", () => {
     it("should create a new instance of Copilot", () => {
-      Copilot.init(mockConfig);
-      expect(Copilot.getInstance()).toBeInstanceOf(Copilot);
+      Pilot.init(mockConfig);
+      expect(Pilot.getInstance()).toBeInstanceOf(Pilot);
     });
 
     it("should throw an error when trying to initialize Copilot multiple times", () => {
-      Copilot.init(mockConfig);
+      Pilot.init(mockConfig);
 
-      expect(() => Copilot.init(mockConfig)).toThrow(
+      expect(() => Pilot.init(mockConfig)).toThrow(
         "Copilot has already been initialized. Please call the `init()` method only once.",
       );
     });
@@ -116,26 +116,26 @@ describe("Copilot", () => {
     it("should throw an error if config is invalid", () => {
       const invalidConfig = {} as Config;
 
-      expect(() => Copilot.init(invalidConfig)).toThrow();
+      expect(() => Pilot.init(invalidConfig)).toThrow();
     });
   });
 
   describe("isInitialized", () => {
     it("should return false before initialization", () => {
-      expect(Copilot.isInitialized()).toBe(false);
+      expect(Pilot.isInitialized()).toBe(false);
     });
 
     it("should return true after initialization", () => {
-      Copilot.init(mockConfig);
+      Pilot.init(mockConfig);
 
-      expect(Copilot.isInitialized()).toBe(true);
+      expect(Pilot.isInitialized()).toBe(true);
     });
   });
 
   describe("performStep", () => {
     it("should call CopilotStepPerformer.perform with the given intent", async () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
       instance.start();
       await instance.performStep(INTENT);
 
@@ -147,8 +147,8 @@ describe("Copilot", () => {
     });
 
     it("should return the result from CopilotStepPerformer.perform", async () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
       instance.start();
 
       const result = await instance.performStep(INTENT);
@@ -157,8 +157,8 @@ describe("Copilot", () => {
     });
 
     it("should accumulate previous steps", async () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
       instance.start();
       const intent1 = "tap button 1";
       const intent2 = "tap button 2";
@@ -182,8 +182,8 @@ describe("Copilot", () => {
 
   describe("start", () => {
     it("should clear previous steps", async () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
       instance.start();
       const intent1 = "tap button 1";
       const intent2 = "tap button 2";
@@ -203,8 +203,8 @@ describe("Copilot", () => {
 
   describe("start and end behavior", () => {
     it("should not performStep before start", async () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
 
       await expect(instance.performStep(INTENT)).rejects.toThrowError(
         "Copilot is not running. Please call the `start()` method before performing any steps.",
@@ -212,8 +212,8 @@ describe("Copilot", () => {
     });
 
     it("should not start without ending the previous flow (start->start)", async () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
       instance.start();
 
       await instance.performStep(INTENT);
@@ -224,8 +224,8 @@ describe("Copilot", () => {
     });
 
     it("should not end without starting a new flow (end->end)", () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
       instance.start();
 
       instance.end(true);
@@ -240,8 +240,8 @@ describe("Copilot", () => {
     it("end with isCacheDisabled=true should not save to cache", async () => {
       mockCache();
 
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
       instance.start();
 
       await instance.performStep(INTENT);
@@ -253,8 +253,8 @@ describe("Copilot", () => {
 
   describe("extend API catalog", () => {
     it("should extend the API catalog with a new category", () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
 
       const spyCopilotStepPerformer = jest.spyOn(
         instance["copilotStepPerformer"],
@@ -270,8 +270,8 @@ describe("Copilot", () => {
     });
 
     it("should extend the API catalog with a new category and context", () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
 
       const spyCopilotStepPerformer = jest.spyOn(
         instance["copilotStepPerformer"],
@@ -287,8 +287,8 @@ describe("Copilot", () => {
     });
 
     it("should extend the API catalog with an existing category", () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
 
       const spyCopilotStepPerformer = jest.spyOn(
         instance["copilotStepPerformer"],
@@ -308,8 +308,8 @@ describe("Copilot", () => {
     });
 
     it("should extend the API catalog with multiple categories sequentially", () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
 
       instance.extendAPICatalog([barCategory1]);
       instance.extendAPICatalog([bazCategory]);
@@ -321,8 +321,8 @@ describe("Copilot", () => {
     });
 
     it("should pilot through steps successfully", async () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
       const goal = "test goal";
 
       const mockPilotResult = {
@@ -360,8 +360,8 @@ describe("Copilot", () => {
 
   describe("pilot", () => {
     it("should perform an entire test flow using the provided goal", async () => {
-      Copilot.init(mockConfig);
-      const instance = Copilot.getInstance();
+      Pilot.init(mockConfig);
+      const instance = Pilot.getInstance();
       const goal = "Test the login flow";
 
       const pilotOutputStep1: PilotStepReport = {

@@ -1,7 +1,7 @@
-import { CopilotAPISearchPromptCreator } from "@/utils/CopilotAPISearchPromptCreator";
+import { APISearchPromptCreator } from "@/utils/APISearchPromptCreator";
 import { TestingFrameworkAPICatalog } from "@/types";
 
-describe("CopilotAPISearchPromptCreator", () => {
+describe("APISearchPromptCreator", () => {
   const mockAPI: TestingFrameworkAPICatalog = {
     context: {},
     name: "Test Framework",
@@ -51,10 +51,10 @@ describe("CopilotAPISearchPromptCreator", () => {
     ],
   };
 
-  let promptCreator: CopilotAPISearchPromptCreator;
+  let promptCreator: APISearchPromptCreator;
 
   beforeEach(() => {
-    promptCreator = new CopilotAPISearchPromptCreator(mockAPI);
+    promptCreator = new APISearchPromptCreator(mockAPI);
   });
 
   it("should create the prompt properly", () => {
@@ -74,7 +74,7 @@ describe("CopilotAPISearchPromptCreator", () => {
   });
 
   it("should handle empty API catalog", () => {
-    const emptyAPICreator = new CopilotAPISearchPromptCreator({
+    const emptyAPICreator = new APISearchPromptCreator({
       context: {},
       categories: [],
     });

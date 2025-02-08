@@ -1,6 +1,6 @@
 import { PromptCreator } from "@/utils/PromptCreator";
 import { CodeEvaluator } from "@/utils/CodeEvaluator";
-import { CopilotAPISearchPromptCreator } from "@/utils/CopilotAPISearchPromptCreator";
+import { APISearchPromptCreator } from "@/utils/APISearchPromptCreator";
 import { ViewAnalysisPromptCreator } from "@/utils/ViewAnalysisPromptCreator";
 import { CacheHandler } from "@/utils/CacheHandler";
 import { SnapshotComparator } from "@/utils/SnapshotComparator";
@@ -26,7 +26,7 @@ export class CopilotStepPerformer {
   constructor(
     private context: any,
     private promptCreator: PromptCreator,
-    private apiSearchPromptCreator: CopilotAPISearchPromptCreator,
+    private apiSearchPromptCreator: APISearchPromptCreator,
     private viewAnalysisPromptCreator: ViewAnalysisPromptCreator,
     private codeEvaluator: CodeEvaluator,
     private promptHandler: PromptHandler,

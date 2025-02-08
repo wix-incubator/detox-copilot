@@ -1,6 +1,6 @@
 import copilot from "@/index";
 import fs from "fs";
-import { Copilot } from "@/Copilot";
+import { Pilot } from "@/Pilot";
 import {
   PromptHandler,
   TestingFrameworkDriver,
@@ -66,7 +66,7 @@ describe("Copilot Integration Tests", () => {
     // It's generally not recommended to directly access private properties,
     // but since Copilot is a singleton, we need to reset it between tests.
     // If possible, consider adding a public reset method to the Copilot class.
-    (Copilot as any).instance = undefined;
+    (Pilot as any).instance = undefined;
   });
 
   describe("Initialization", () => {
@@ -482,15 +482,15 @@ describe("Copilot Integration Tests", () => {
         captureViewHierarchyString: jest.fn(),
       };
 
-      Copilot.init({
+      Pilot.init({
         frameworkDriver: mockFrameworkDriver,
         promptHandler: mockPromptHandler,
       });
-      Copilot.getInstance().start();
+      Pilot.getInstance().start();
     });
 
     afterEach(() => {
-      (Copilot as any)["instance"] = undefined;
+      (Pilot as any)["instance"] = undefined;
     });
 
     it("should perform pilot flow and return a pilot report", async () => {
@@ -534,7 +534,7 @@ describe("Copilot Integration Tests", () => {
           },
         },
       };
-      const copilotInstance = Copilot.getInstance();
+      const copilotInstance = Pilot.getInstance();
       const spyPilotPerformerPerform = jest
         .spyOn(copilotInstance["pilotPerformer"], "perform")
         .mockResolvedValue(mockPilotReport);
@@ -550,7 +550,7 @@ describe("Copilot Integration Tests", () => {
       const goal = "Some goal that causes an error";
 
       const errorMessage = "Error during pilot execution";
-      const copilotInstance = Copilot.getInstance();
+      const copilotInstance = Pilot.getInstance();
       const spyPilotPerformerPerform = jest
         .spyOn(copilotInstance["pilotPerformer"], "perform")
         .mockRejectedValue(new Error(errorMessage));

@@ -16,7 +16,7 @@ import {
   dummyBarContext1,
   dummyBarContext2,
 } from "../test-utils/APICatalogTestUtils";
-import { CopilotAPISearchPromptCreator } from "@/utils/CopilotAPISearchPromptCreator";
+import { APISearchPromptCreator } from "@/utils/APISearchPromptCreator";
 import { ViewAnalysisPromptCreator } from "@/utils/ViewAnalysisPromptCreator";
 import logger from "@/utils/logger";
 
@@ -37,7 +37,7 @@ describe("CopilotStepPerformer", () => {
   let copilotStepPerformer: CopilotStepPerformer;
   let mockContext: jest.Mocked<any>;
   let mockPromptCreator: jest.Mocked<PromptCreator>;
-  let mockApiSearchPromptCreator: jest.Mocked<CopilotAPISearchPromptCreator>;
+  let mockApiSearchPromptCreator: jest.Mocked<APISearchPromptCreator>;
   let mockViewAnalysisPromptCreator: jest.Mocked<ViewAnalysisPromptCreator>;
   let mockCodeEvaluator: jest.Mocked<CodeEvaluator>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
@@ -70,7 +70,7 @@ describe("CopilotStepPerformer", () => {
 
     mockApiSearchPromptCreator = {
       createPrompt: jest.fn(),
-    } as unknown as jest.Mocked<CopilotAPISearchPromptCreator>;
+    } as unknown as jest.Mocked<APISearchPromptCreator>;
 
     mockViewAnalysisPromptCreator = {
       createPrompt: jest.fn(),

@@ -1,4 +1,4 @@
-import { Copilot } from "@/Copilot";
+import { Pilot } from "@/Pilot";
 import {
   CopilotFacade,
   Config,
@@ -7,19 +7,19 @@ import {
 
 const copilot: CopilotFacade = {
   init: (config: Config) => {
-    Copilot.init(config);
+    Pilot.init(config);
   },
   isInitialized: () => {
-    return Copilot.isInitialized();
+    return Pilot.isInitialized();
   },
   start: () => {
-    Copilot.getInstance().start();
+    Pilot.getInstance().start();
   },
   end: (isCacheDisabled?: boolean) => {
-    Copilot.getInstance().end(isCacheDisabled);
+    Pilot.getInstance().end(isCacheDisabled);
   },
   perform: async (...steps: string[]) => {
-    const copilotInstance = Copilot.getInstance();
+    const copilotInstance = Pilot.getInstance();
 
     let result;
     for await (const intent of steps) {
@@ -30,14 +30,14 @@ const copilot: CopilotFacade = {
   },
 
   pilot: async (goal: string) => {
-    return await Copilot.getInstance().pilot(goal);
+    return await Pilot.getInstance().pilot(goal);
   },
 
   extendAPICatalog: (
     categories: TestingFrameworkAPICatalogCategory[],
     context?: any,
   ) => {
-    Copilot.getInstance().extendAPICatalog(categories, context);
+    Pilot.getInstance().extendAPICatalog(categories, context);
   },
 };
 
