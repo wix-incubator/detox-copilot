@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CopilotAPISearchPromptCreator should create the prompt properly 1`] = `
+exports[`APISearchPromptCreator should create the prompt properly 1`] = `
 "# API Method Search
 
 ## Task Description
@@ -121,7 +121,7 @@ Additional Context:
 "
 `;
 
-exports[`CopilotAPISearchPromptCreator should handle complex multi-step intent 1`] = `
+exports[`APISearchPromptCreator should handle complex multi-step intent 1`] = `
 "# API Method Search
 
 ## Task Description
@@ -242,7 +242,7 @@ Additional Context:
 "
 `;
 
-exports[`CopilotAPISearchPromptCreator should handle empty API catalog 1`] = `
+exports[`APISearchPromptCreator should handle empty API catalog 1`] = `
 "# API Method Search
 
 ## Task Description
@@ -302,7 +302,7 @@ Additional Context:
 "
 `;
 
-exports[`CopilotAPISearchPromptCreator should handle empty view analysis result 1`] = `
+exports[`APISearchPromptCreator should handle empty view analysis result 1`] = `
 "# API Method Search
 
 ## Task Description
@@ -423,7 +423,7 @@ Additional Context:
 "
 `;
 
-exports[`CopilotAPISearchPromptCreator should handle special characters in step 1`] = `
+exports[`APISearchPromptCreator should handle special characters in step 1`] = `
 "# API Method Search
 
 ## Task Description
@@ -544,7 +544,7 @@ Additional Context:
 "
 `;
 
-exports[`CopilotAPISearchPromptCreator should include view analysis result when provided 1`] = `
+exports[`APISearchPromptCreator should include view analysis result when provided 1`] = `
 "# API Method Search
 
 ## Task Description
