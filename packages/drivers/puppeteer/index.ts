@@ -5,8 +5,14 @@ import {
 import * as puppeteer from "puppeteer-core";
 import path from "path";
 import fs from "fs";
-import getCleanDOM from "./utils/getCleanDOM";
-const bundledCodePath = require.resolve("@wix-pilot/web-utils");
+import utils from "@wix-pilot/web-utils";
+const bundledCodePath = require.resolve("@wix-pilot/web-utils/dist/web-utils.browser.js");
+declare global {
+  interface Window {
+    driverUtils: typeof utils;
+  }
+}
+
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: puppeteer.Page;
@@ -28,7 +34,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   /**
    * Sets the current page identifier, must be set if the driver needs to interact with a specific page
    */
-  setCurrentPage(page: puppeteer.Page): void {
+  async setCurrentPage(page: puppeteer.Page): Promise<void> {
     this.currentPage = page;
   }
 
@@ -37,11 +43,11 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
    */
   async injectJsToPage(page: puppeteer.Page): Promise<void> {
     const isInjected = await page.evaluate(() => {
-      return typeof (window as any).markImportantElements === "function";
+      return typeof window.driverUtils?.markImportantElements === "function";
     });
-
+  
     if (!isInjected) {
-      const bundledCode = fs.readFileSync(bundledCodePath, "utf8");
+      const bundledCode: string = fs.readFileSync(bundledCodePath, "utf8");
       await page.addScriptTag({ content: bundledCode });
       console.log("Bundled script injected into the page.");
     } else {
@@ -49,11 +55,30 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
     }
   }
   
-
+  /**
+   * Mark the elements and separates them to categories
+   */
   async markElements(page: puppeteer.Page): Promise<void> {
     await page.evaluate(() => {
-      (window as any).markImportantElements();
-      (window as any).manipulateElementStyles();
+      window.driverUtils.markImportantElements();
+    });
+  }
+
+  /**
+   * Mark the elements and separates them to categories
+   */
+  async manipulateStyles(page: puppeteer.Page): Promise<void> {
+    await page.evaluate(() => {
+      window.driverUtils.manipulateElementStyles();
+    });
+  }
+
+  /**
+   * Clean up page style changes
+   */
+  async cleanUpStyleChanges(page: puppeteer.Page): Promise<void> {
+    await page.evaluate(() => {
+      window.driverUtils.cleanupStyleChanges();
     });
   }
 
@@ -71,12 +96,15 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
     if (!fs.existsSync("temp")) {
       fs.mkdirSync("temp");
     }
-
+    
+    await this.injectJsToPage(this.currentPage);
+    await this.markElements(this.currentPage);
+    await this.manipulateStyles(this.currentPage);
     await this.currentPage.screenshot({
       path: fileName,
-      fullPage: false,
+      fullPage: true,
     });
-
+    await this.cleanUpStyleChanges(this.currentPage);
     return path.resolve(fileName);
   }
 
@@ -90,8 +118,11 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
         "START A NEW ONE BASED ON THE ACTION NEED OR RAISE AN ERROR"
       );
     }
-
-    return await getCleanDOM(this.currentPage);
+    await this.injectJsToPage(this.currentPage);
+    await this.markElements(this.currentPage);
+    return await this.currentPage.evaluate(() => {
+      return window.driverUtils.extractCleanViewStructure();
+    });
   }
 
   /**
@@ -115,7 +146,6 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               signature: "const browser = await puppeteer.launch([options])",
               description: "Launches a new browser instance.",
               example:
-                `const browser = await puppeteer.launch({\`headless: "new"\`, executablePath: "${this.executablePath}" });\n` +
                 `const browser = await puppeteer.launch({\`headless: "false"\`, executablePath: "${this.executablePath}" });`,
               guidelines: [
                 `Executable path is required always, use the path: ${this.executablePath}`,
@@ -155,10 +185,10 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               example: "const page = await getCurrentPage();",
             },
             {
-              signature: "setCurrentPage(page)",
+              signature: "await setCurrentPage(page)",
               description:
                 "Sets the current page instance for the driver to interact with (required if setting a new page).",
-              example: "setCurrentPage(page);",
+              example: "await setCurrentPage(page);",
             },
           ],
         },
@@ -166,83 +196,60 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
           title: "Matchers",
           items: [
             {
-              signature: "await getCurrentPage().$(selector)",
-              description: "Finds the first element matching the selector.",
-              example:
-                'const element = await getCurrentPage().$("#login-button");',
-              guidelines: [
-                "Returns an ElementHandle if the element is found, otherwise `null`.",
-                "Use CSS selectors to locate elements.",
-                "Avoid using overly broad selectors; prefer IDs or class names when available.",
-              ],
+              "signature": "document.querySelectorAll('[aria-pilot-category]')",
+              "description": "Selects all elements that have been marked with an `aria-pilot-category` attribute.",
+              "example": "const markedElements = await page.evaluate(() => Array.from(document.querySelectorAll('[aria-pilot-category]')).map(el => el.tagName.toLowerCase()));",
+              "guidelines": [
+                "Use this selector to retrieve all elements that have been categorized by `markImportantElements`.",
+                "Helpful for verifying that elements have been properly marked and for further interactions."
+              ]
             },
             {
-              signature: "await getCurrentPage().$$(selector)",
-              description: "Finds all elements matching the selector.",
-              example:
-                'const elements = await getCurrentPage().$$(".list-item");',
-              guidelines: [
-                "Returns an array of ElementHandles.",
-                "Use this when you need to interact with multiple elements.",
-              ],
+              "signature": "document.querySelectorAll('[aria-pilot-category=\"categoryName\"]')",
+              "description": "Selects all elements marked with a specific `aria-pilot-category`.",
+              "example": "const buttons = await page.evaluate(() => Array.from(document.querySelectorAll('[aria-pilot-category=\"button\"]')).map(el => el.textContent.trim()));",
+              "guidelines": [
+                "Replace `categoryName` with the desired category (e.g., `button`, `link`, `input`, `list`, `table`, `header`, `semantic`).",
+                "Use this to target and verify elements of a specific category."
+              ]
             },
             {
-              signature: "await getCurrentPage().$x(xpath)",
-              description: "Finds elements matching the XPath expression.",
-              example:
-                "const elements = await getCurrentPage().$x(\"//button[text()='Submit']\");",
-              guidelines: [
-                "Use XPath selectors when CSS selectors are insufficient.",
-                "Avoid using XPath if CSS selectors can achieve the same result.",
-              ],
+              "signature": "document.querySelector('[aria-pilot-category=\"categoryName\"][aria-pilot-index=\"index\"]')",
+              "description": "Selects a specific element within a category based on its index.",
+              "example": "const firstButton = await page.evaluate(() => document.querySelector('[aria-pilot-category=\"button\"][aria-pilot-index=\"0\"]'));",
+              "guidelines": [
+                "Replace `categoryName` with the desired category and `index` with the specific index as a string.",
+                "Indexing is zero-based and increments per category as elements are found.",
+                "Use this to interact with or verify a specific instance of a category, ensuring the exact element is targeted."
+              ]
             },
             {
-              signature:
-                "await getCurrentPage().waitForSelector(selector[, options])",
-              description:
-                "Waits for an element matching the selector to appear in the DOM.",
-              example:
-                'await getCurrentPage().waitForSelector(".loading-indicator", { visible: true });',
-              guidelines: [
-                "Useful for synchronization before interacting with elements.",
-                "Options can specify visibility (`visible`, `hidden`), and timeout.",
-              ],
+              "signature": "element.hasAttribute('aria-pilot-category')",
+              "description": "Checks if an element has been marked with an `aria-pilot-category` attribute.",
+              "example": "const isMarked = await page.evaluate(() => document.querySelector('nav').hasAttribute('aria-pilot-category'));",
+              "guidelines": [
+                "Useful for asserting whether specific elements have been processed by `markImportantElements`.",
+                "Can be combined with other conditions to validate the markup."
+              ]
             },
             {
-              signature:
-                "await getCurrentPage().waitForXPath(xpath[, options])",
-              description:
-                "Waits for an element matching the XPath expression to appear.",
-              example:
-                "await getCurrentPage().waitForXPath(\"//div[@class='content']\");",
-              guidelines: [
-                "Use when XPath is necessary to locate elements.",
-                "Similar to `waitForSelector` but using XPath expressions.",
-              ],
+              "signature": "await page.evaluate(() => window.isElementHidden(element))",
+              "description": "Evaluates whether an element is hidden in the DOM.",
+              "example": "const isHidden = await page.evaluate(() => window.isElementHidden(document.querySelector('#hidden-element')));",
+              "guidelines": [
+                "Helps determine if elements are visible or should be included when marking elements.",
+                "Used internally by `markImportantElements` unless `includeHidden` is set to `true`."
+              ]
             },
             {
-              signature:
-                "await getCurrentPage().waitForFunction(pageFunction[, options][, ...args])",
-              description:
-                "Waits for a function to evaluate to a truthy value.",
-              example:
-                'await getCurrentPage().waitForFunction(() => document.querySelector("#status").innerText === "Loaded");',
-              guidelines: [
-                "Useful as an alternative for using click, type, etc. to wait for a condition. Preferred practice.",
-                "Useful for waiting on dynamic content or conditions.",
-                "Avoid tight polling intervals to prevent excessive CPU usage.",
-              ],
-            },
-            {
-              signature: "await getCurrentPage().waitForTimeout(milliseconds)",
-              description: "Pauses execution for a specified amount of time.",
-              example:
-                "await getCurrentPage().waitForTimeout(2000); // Waits for 2 seconds",
-              guidelines: [
-                "Use sparingly; prefer event-based waiting when possible.",
-                "Can be useful for simulating user think time or for debugging.",
-              ],
-            },
+              "signature": "await page.evaluate(() => { /* assertions on form elements */ })",
+              "description": "Evaluates and extracts information from form elements to test their structure and attributes.",
+              "example": "const formElements = await page.evaluate(() => { const inputs = document.querySelectorAll('form input[aria-pilot-category=\"input\"]'); return Array.from(inputs).map(input => input.placeholder); });",
+              "guidelines": [
+                "Use to verify that form elements are correctly marked and contain the expected attributes.",
+                "Can be extended to check various types of input fields and buttons within forms."
+              ]
+            }
           ],
         },
         {
