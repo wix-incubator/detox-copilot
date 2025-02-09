@@ -39,32 +39,23 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   }
 
   /**
-   * Injects bundeled code to page
+   * Injects bundeled code to page and marks important elements in the DOM
    */
-  async injectJsToPage(page: puppeteer.Page): Promise<void> {
-    const isInjected = await page.evaluate(() => {
-      return typeof window.driverUtils?.markImportantElements === "function";
-    });
-  
-    if (isInjected) {
-      console.log("Bundled script already injected. Skipping injection.");
-      return;
+  async injectCodeAndMarkElements(page: puppeteer.Page): Promise<void> {
+    const isInjected = await page.evaluate(() => 
+        typeof window.driverUtils?.markImportantElements === "function"
+    );
+
+    if (!isInjected) {
+        await page.addScriptTag({ content: fs.readFileSync(bundledCodePath, "utf8") });
+        console.log("Bundled script injected into the page.");
+    } else {
+        console.log("Bundled script already injected. Skipping injection.");
     }
 
-    const bundledCode: string = fs.readFileSync(bundledCodePath, "utf8");
-    await page.addScriptTag({ content: bundledCode });
-    console.log("Bundled script injected into the page.");
+    await page.evaluate(() => window.driverUtils.markImportantElements());
   }
   
-  /**
-   * Mark the elements and separates them to categories
-   */
-  async markElements(page: puppeteer.Page): Promise<void> {
-    await page.evaluate(() => {
-      window.driverUtils.markImportantElements();
-    });
-  }
-
   /**
    * Mark the elements and separates them to categories
    */
@@ -98,8 +89,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
       fs.mkdirSync("temp");
     }
     
-    await this.injectJsToPage(this.currentPage);
-    await this.markElements(this.currentPage);
+    await this.injectCodeAndMarkElements(this.currentPage);
     await this.manipulateStyles(this.currentPage);
     await this.currentPage.screenshot({
       path: fileName,
@@ -119,8 +109,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
         "START A NEW ONE BASED ON THE ACTION NEED OR RAISE AN ERROR"
       );
     }
-    await this.injectJsToPage(this.currentPage);
-    await this.markElements(this.currentPage);
+    await this.injectCodeAndMarkElements(this.currentPage);
     const clear_view = await this.currentPage.evaluate(() => {
       return window.driverUtils.extractCleanViewStructure();
     });
