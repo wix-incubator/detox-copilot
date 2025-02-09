@@ -34,9 +34,7 @@ describe("Example Test Suite", () => {
 
   it("perform test with pilot", async () => {
     await pilot.autopilot(
-      "On `https://github.com/wix-incubator/pilot`, " +
-        "open the Commits page and summarize the latest commits. " +
-        "Open the browser with GUI.",
+      "Open https://www.wix.com/domains, accept cookies and than search for the domain Shraga.com, is it available?",
     );
   });
 });
