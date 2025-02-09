@@ -15,7 +15,7 @@
     "url": "git+https://github.com/wix-incubator/pilot.git"
   },
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "tsc && tsc-alias &&  ts-node src/test/bundle.ts",
     "test": "jest",
     "bump-version": "npm version patch && git push && git push --tags",
     "release": "npm run test && npm run bump-version && npm run build && npm publish",
@@ -34,5 +34,5 @@
     "jest-image-snapshot": "^6.4.0",
     "jsdom": "^26.0.0",
     "puppeteer": "^20.8.0"
-  }
+    }
 }
