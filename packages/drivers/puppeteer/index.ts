@@ -48,6 +48,14 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
       console.log("Bundled script already injected. Skipping injection.");
     }
   }
+  
+
+  async markElements(page: puppeteer.Page): Promise<void> {
+    await page.evaluate(() => {
+      (window as any).markImportantElements();
+      (window as any).manipulateElementStyles();
+    });
+  }
 
   /**
    * @inheritdoc

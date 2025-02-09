@@ -1,6 +1,6 @@
 import * as puppeteer from "puppeteer";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
-import { bundleUtils } from "./test-setup";
+import { bundleDriverUtils } from "./test-setup";
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -19,7 +19,7 @@ describe("driver-utils Puppeteer Tests", () => {
 
   beforeAll(async () => {
     try {
-      bundledCode = await bundleUtils();
+      bundledCode = await bundleDriverUtils();
       browser = await puppeteer.launch({
         devtools: false,
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
