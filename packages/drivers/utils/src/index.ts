@@ -56,52 +56,54 @@ const utils: DriverUtils = {
     function processElement(element: Element, depth = 0): string {
       const children = Array.from(element.children);
       let structure = "";
-
-      // Add element info if it's marked or essential
-      if (
+    
+      // Process all children
+      let childStructure = "";
+      for (const child of children) {
+        const childStr = processElement(child, depth + 1);
+        if (childStr) {
+          childStructure += childStr;
+        }
+      }
+    
+      // Determine if current element is important or has important descendants
+      const isImportantElement =
         element.hasAttribute("aria-pilot-category") ||
-        ESSENTIAL_ELEMENTS.includes(element.tagName)
-      ) {
+        ESSENTIAL_ELEMENTS.includes(element.tagName);
+    
+      if (isImportantElement || childStructure) {
         const category = element.getAttribute("aria-pilot-category");
         const index = element.getAttribute("aria-pilot-index");
         const indent = "  ".repeat(depth);
-
+    
         structure += `${indent}<${element.tagName.toLowerCase()}`;
-
+    
         // Add relevant attributes
         const tagName = element.tagName.toLowerCase();
         const allowedAttrs = [
           ...ATTRIBUTE_WHITELIST["*"],
           ...(ATTRIBUTE_WHITELIST[tagName] || []),
         ];
-
+    
         Array.from(element.attributes)
           .filter((attr) => allowedAttrs.includes(attr.name.toLowerCase()))
           .forEach((attr) => {
             structure += ` ${attr.name}="${attr.value}"`;
           });
-
+    
         if (category) {
           structure += ` data-category="${category}" data-index="${index}"`;
         }
-
+    
         structure += ">\n";
-      }
-
-      // Process children
-      for (const child of children) {
-        if (
-          ESSENTIAL_ELEMENTS.includes(child.tagName) ||
-          child.hasAttribute("aria-pilot-category")
-        ) {
-          structure += processElement(child, depth + 1);
+    
+        if (childStructure) {
+          structure += childStructure;
         }
+    
+        structure += `${indent}</${element.tagName.toLowerCase()}>\n`;
       }
-
-      if (structure) {
-        structure += `${"  ".repeat(depth)}</${element.tagName.toLowerCase()}>\n`;
-      }
-
+    
       return structure;
     }
 
