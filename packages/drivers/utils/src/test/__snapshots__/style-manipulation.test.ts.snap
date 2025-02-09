@@ -1,0 +1,404 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Style Manipulation should apply correct styles to marked elements: applied-styles 1`] = `
+[
+  {
+    "category": "semantic",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "header",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "21.44px 0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "semantic",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "list",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "16px 0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "link",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 238)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "link",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 238)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "link",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 238)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "semantic",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "semantic",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "header",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "19.92px 0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "button",
+    "computedStyle": {
+      "border": "2px outset rgb(0, 0, 0)",
+      "margin": "5px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "button",
+    "computedStyle": {
+      "border": "2px outset rgb(0, 0, 0)",
+      "margin": "5px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "button",
+    "computedStyle": {
+      "border": "2px outset rgb(0, 0, 0)",
+      "margin": "5px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "input",
+    "computedStyle": {
+      "border": "2px inset rgb(118, 118, 118)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "input",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "3px 3px 3px 4px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "input",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "3px 3px 0px 5px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "input",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "3px 3px 0px 5px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "input",
+    "computedStyle": {
+      "border": "1px solid rgb(118, 118, 118)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "semantic",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "header",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "19.92px 0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "list",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "16px 0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "list",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "16px 0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "semantic",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "header",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "19.92px 0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "table",
+    "computedStyle": {
+      "border": "0px none rgb(128, 128, 128)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "semantic",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "header",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "19.92px 0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "button",
+    "computedStyle": {
+      "border": "2px outset rgb(0, 0, 0)",
+      "margin": "5px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "link",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 238)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+  {
+    "category": "semantic",
+    "computedStyle": {
+      "border": "0px none rgb(0, 0, 0)",
+      "margin": "0px",
+      "position": "relative",
+    },
+  },
+]
+`;
+
+exports[`Style Manipulation should properly clean up all applied styles: styles-after-cleanup 1`] = `
+{
+  "elementsWithComputedStyles": [
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "header",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "h1",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "nav",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "ul",
+    },
+    {
+      "border": "0px none rgb(0, 0, 238)",
+      "position": "static",
+      "tag": "a",
+    },
+    {
+      "border": "0px none rgb(0, 0, 238)",
+      "position": "static",
+      "tag": "a",
+    },
+    {
+      "border": "0px none rgb(0, 0, 238)",
+      "position": "static",
+      "tag": "a",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "main",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "section",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "h2",
+    },
+    {
+      "border": "2px outset rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "button",
+    },
+    {
+      "border": "2px outset rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "button",
+    },
+    {
+      "border": "2px outset rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "button",
+    },
+    {
+      "border": "2px inset rgb(118, 118, 118)",
+      "position": "static",
+      "tag": "input",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "input",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "input",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "input",
+    },
+    {
+      "border": "1px solid rgb(118, 118, 118)",
+      "position": "static",
+      "tag": "select",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "section",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "h2",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "ul",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "ol",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "section",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "h2",
+    },
+    {
+      "border": "0px none rgb(128, 128, 128)",
+      "position": "static",
+      "tag": "table",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "section",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "h2",
+    },
+    {
+      "border": "2px outset rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "button",
+    },
+    {
+      "border": "0px none rgb(0, 0, 238)",
+      "position": "static",
+      "tag": "a",
+    },
+    {
+      "border": "0px none rgb(0, 0, 0)",
+      "position": "static",
+      "tag": "footer",
+    },
+  ],
+  "styleElementExists": false,
+}
+`;

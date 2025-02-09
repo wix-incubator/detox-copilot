@@ -6,6 +6,7 @@ import * as puppeteer from "puppeteer-core";
 import path from "path";
 import fs from "fs";
 import getCleanDOM from "./utils/getCleanDOM";
+const bundledCodePath = require.resolve("@pilot/driver-utils");
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: puppeteer.Page;
@@ -29,6 +30,23 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
    */
   setCurrentPage(page: puppeteer.Page): void {
     this.currentPage = page;
+  }
+
+  /**
+   * Injects bundeled code to page
+   */
+  async injectJsToPage(page: puppeteer.Page): Promise<void> {
+    const isInjected = await page.evaluate(() => {
+      return typeof (window as any).markImportantElements === "function";
+    });
+
+    if (!isInjected) {
+      const bundledCode = fs.readFileSync(bundledCodePath, "utf8");
+      await page.addScriptTag({ content: bundledCode });
+      console.log("Bundled script injected into the page.");
+    } else {
+      console.log("Bundled script already injected. Skipping injection.");
+    }
   }
 
   /**

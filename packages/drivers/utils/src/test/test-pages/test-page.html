@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver Utils Test Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    nav {
+      background: #f0f0f0;
+      padding: 10px;
+    }
+    button {
+      margin: 5px;
+      padding: 8px 16px;
+    }
+    .form-group {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Test Page</h1>
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Interactive Elements</h2>
+      <div class="form-group">
+        <button type="button">Click Me</button>
+        <button type="submit">Submit</button>
+        <button type="reset">Reset</button>
+      </div>
+
+      <div class="form-group">
+        <input type="text" placeholder="Text input">
+        <input type="checkbox" id="check1">
+        <label for="check1">Checkbox</label>
+        <input type="radio" name="radio" id="radio1">
+        <label for="radio1">Radio 1</label>
+        <input type="radio" name="radio" id="radio2">
+        <label for="radio2">Radio 2</label>
+      </div>
+
+      <div class="form-group">
+        <select>
+          <option>Option 1</option>
+          <option>Option 2</option>
+          <option>Option 3</option>
+        </select>
+      </div>
+    </section>
+
+    <section>
+      <h2>Lists</h2>
+      <ul>
+        <li>Item 1</li>
+        <li>Item 2</li>
+        <li>Item 3</li>
+      </ul>
+
+      <ol>
+        <li>First</li>
+        <li>Second</li>
+        <li>Third</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Table</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Header 1</th>
+            <th>Header 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Cell 1</td>
+            <td>Cell 2</td>
+          </tr>
+          <tr>
+            <td>Cell 3</td>
+            <td>Cell 4</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Hidden Elements</h2>
+      <div class="hidden">
+        <button>Hidden Button</button>
+        <a href="#hidden">Hidden Link</a>
+      </div>
+      <button hidden>Also Hidden</button>
+      <div style="visibility: hidden;">
+        <input type="text" placeholder="Hidden Input">
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Test page footer</p>
+  </footer>
+</body>
+</html> 

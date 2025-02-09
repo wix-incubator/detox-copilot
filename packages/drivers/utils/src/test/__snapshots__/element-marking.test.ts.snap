@@ -1,0 +1,353 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Element Marking Functionality should handle hidden elements correctly: hidden-elements-handling 1`] = `
+[
+  {
+    "hasCategory": false,
+    "tag": "button",
+  },
+  {
+    "hasCategory": false,
+    "tag": "a",
+  },
+  {
+    "hasCategory": false,
+    "tag": "input",
+  },
+]
+`;
+
+exports[`Element Marking Functionality should mark all supported elements with correct categories: element-categories 1`] = `
+[
+  {
+    "category": "semantic",
+    "index": "0",
+    "tag": "header",
+  },
+  {
+    "category": "header",
+    "index": "0",
+    "tag": "h1",
+  },
+  {
+    "category": "semantic",
+    "index": "1",
+    "tag": "nav",
+  },
+  {
+    "category": "list",
+    "index": "0",
+    "tag": "ul",
+  },
+  {
+    "category": "link",
+    "index": "0",
+    "tag": "a",
+  },
+  {
+    "category": "link",
+    "index": "1",
+    "tag": "a",
+  },
+  {
+    "category": "link",
+    "index": "2",
+    "tag": "a",
+  },
+  {
+    "category": "semantic",
+    "index": "2",
+    "tag": "main",
+  },
+  {
+    "category": "semantic",
+    "index": "3",
+    "tag": "section",
+  },
+  {
+    "category": "header",
+    "index": "1",
+    "tag": "h2",
+  },
+  {
+    "category": "button",
+    "index": "0",
+    "tag": "button",
+  },
+  {
+    "category": "button",
+    "index": "1",
+    "tag": "button",
+  },
+  {
+    "category": "button",
+    "index": "2",
+    "tag": "button",
+  },
+  {
+    "category": "input",
+    "index": "0",
+    "tag": "input",
+  },
+  {
+    "category": "input",
+    "index": "1",
+    "tag": "input",
+  },
+  {
+    "category": "input",
+    "index": "2",
+    "tag": "input",
+  },
+  {
+    "category": "input",
+    "index": "3",
+    "tag": "input",
+  },
+  {
+    "category": "input",
+    "index": "4",
+    "tag": "select",
+  },
+  {
+    "category": "semantic",
+    "index": "4",
+    "tag": "section",
+  },
+  {
+    "category": "header",
+    "index": "2",
+    "tag": "h2",
+  },
+  {
+    "category": "list",
+    "index": "1",
+    "tag": "ul",
+  },
+  {
+    "category": "list",
+    "index": "2",
+    "tag": "ol",
+  },
+  {
+    "category": "semantic",
+    "index": "5",
+    "tag": "section",
+  },
+  {
+    "category": "header",
+    "index": "3",
+    "tag": "h2",
+  },
+  {
+    "category": "table",
+    "index": "0",
+    "tag": "table",
+  },
+  {
+    "category": "semantic",
+    "index": "6",
+    "tag": "section",
+  },
+  {
+    "category": "header",
+    "index": "4",
+    "tag": "h2",
+  },
+  {
+    "category": "button",
+    "index": "3",
+    "tag": "button",
+  },
+  {
+    "category": "link",
+    "index": "3",
+    "tag": "a",
+  },
+  {
+    "category": "semantic",
+    "index": "7",
+    "tag": "footer",
+  },
+]
+`;
+
+exports[`Element Marking Functionality should mark hidden elements when includeHidden option is true: hidden-elements-included 1`] = `
+[
+  {
+    "category": "semantic",
+    "isHidden": false,
+    "tag": "header",
+  },
+  {
+    "category": "header",
+    "isHidden": false,
+    "tag": "h1",
+  },
+  {
+    "category": "semantic",
+    "isHidden": false,
+    "tag": "nav",
+  },
+  {
+    "category": "list",
+    "isHidden": false,
+    "tag": "ul",
+  },
+  {
+    "category": "link",
+    "isHidden": false,
+    "tag": "a",
+  },
+  {
+    "category": "link",
+    "isHidden": false,
+    "tag": "a",
+  },
+  {
+    "category": "link",
+    "isHidden": false,
+    "tag": "a",
+  },
+  {
+    "category": "semantic",
+    "isHidden": false,
+    "tag": "main",
+  },
+  {
+    "category": "semantic",
+    "isHidden": false,
+    "tag": "section",
+  },
+  {
+    "category": "header",
+    "isHidden": false,
+    "tag": "h2",
+  },
+  {
+    "category": "button",
+    "isHidden": false,
+    "tag": "button",
+  },
+  {
+    "category": "button",
+    "isHidden": false,
+    "tag": "button",
+  },
+  {
+    "category": "button",
+    "isHidden": false,
+    "tag": "button",
+  },
+  {
+    "category": "input",
+    "isHidden": false,
+    "tag": "input",
+  },
+  {
+    "category": "input",
+    "isHidden": false,
+    "tag": "input",
+  },
+  {
+    "category": "input",
+    "isHidden": false,
+    "tag": "input",
+  },
+  {
+    "category": "input",
+    "isHidden": false,
+    "tag": "input",
+  },
+  {
+    "category": "input",
+    "isHidden": false,
+    "tag": "select",
+  },
+  {
+    "category": "semantic",
+    "isHidden": false,
+    "tag": "section",
+  },
+  {
+    "category": "header",
+    "isHidden": false,
+    "tag": "h2",
+  },
+  {
+    "category": "list",
+    "isHidden": false,
+    "tag": "ul",
+  },
+  {
+    "category": "list",
+    "isHidden": false,
+    "tag": "ol",
+  },
+  {
+    "category": "semantic",
+    "isHidden": false,
+    "tag": "section",
+  },
+  {
+    "category": "header",
+    "isHidden": false,
+    "tag": "h2",
+  },
+  {
+    "category": "table",
+    "isHidden": false,
+    "tag": "table",
+  },
+  {
+    "category": "semantic",
+    "isHidden": false,
+    "tag": "section",
+  },
+  {
+    "category": "header",
+    "isHidden": false,
+    "tag": "h2",
+  },
+  {
+    "category": "button",
+    "isHidden": false,
+    "tag": "button",
+  },
+  {
+    "category": "link",
+    "isHidden": false,
+    "tag": "a",
+  },
+  {
+    "category": "button",
+    "isHidden": true,
+    "tag": "button",
+  },
+  {
+    "category": "input",
+    "isHidden": true,
+    "tag": "input",
+  },
+  {
+    "category": "semantic",
+    "isHidden": false,
+    "tag": "footer",
+  },
+  {
+    "category": "button",
+    "isHidden": true,
+    "tag": "button",
+  },
+  {
+    "category": "link",
+    "isHidden": true,
+    "tag": "a",
+  },
+  {
+    "category": "input",
+    "isHidden": true,
+    "tag": "input",
+  },
+]
+`;
