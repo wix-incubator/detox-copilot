@@ -6,7 +6,7 @@ import * as puppeteer from "puppeteer-core";
 import path from "path";
 import fs from "fs";
 import getCleanDOM from "./utils/getCleanDOM";
-const bundledCodePath = require.resolve("@pilot/driver-utils");
+const bundledCodePath = require.resolve("@wix-pilot/web-utils");
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: puppeteer.Page;
