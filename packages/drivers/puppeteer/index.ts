@@ -9,6 +9,7 @@ import utils from "@wix-pilot/web-utils";
 const bundledCodePath = require.resolve(
   "@wix-pilot/web-utils/dist/web-utils.browser.js",
 );
+
 declare global {
   interface Window {
     driverUtils: typeof utils;
