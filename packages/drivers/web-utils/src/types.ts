@@ -6,5 +6,3 @@ export type ElementCategory =
   | "table"
   | "header"
   | "semantic";
-
-export type FrameworkDriver = "puppeteer" | "playwright";

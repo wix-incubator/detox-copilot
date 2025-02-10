@@ -20,14 +20,14 @@ describe("Wix Domains Page Testing", () => {
 
   beforeEach(async () => {
     await page.evaluate(() => {
-      (window as any).driverUtils.cleanupStyleChanges();
+      window.driverUtils.cleanupStyleChanges();
     });
   });
 
   it("should match the screenshot against the baseline image", async () => {
     await page.evaluate(() => {
-      (window as any).driverUtils.markImportantElements();
-      (window as any).driverUtils.manipulateElementStyles();
+      window.driverUtils.markImportantElements();
+      window.driverUtils.manipulateElementStyles();
     });
 
     await page.setViewportSize({ width: 800, height: 600 });
@@ -49,8 +49,8 @@ describe("Wix Domains Page Testing", () => {
 
   it("should generate the expected clean view structure", async () => {
     const structure = await page.evaluate(() => {
-      (window as any).driverUtils.markImportantElements();
-      return (window as any).driverUtils.extractCleanViewStructure();
+      window.driverUtils.markImportantElements();
+      return window.driverUtils.extractCleanViewStructure();
     });
     expect(structure).toMatchSnapshot("wix-domains-clean-view-structure");
   });

@@ -30,5 +30,3 @@ export async function bundleDriverUtils(): Promise<string> {
     throw error;
   }
 }
-
-bundleDriverUtils();

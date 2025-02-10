@@ -11,7 +11,7 @@ import type {
 } from "puppeteer";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { bundleDriverUtils } from "./bundle";
-import type { FrameworkDriver } from "../types";
+type FrameworkDriver = "puppeteer" | "playwright";
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -29,8 +29,8 @@ export interface TestContext {
 }
 
 export async function setupTestEnvironment(
-  testPage: string = "test-page.html",
-  driver: FrameworkDriver = "puppeteer",
+  htmlFileName: string,
+  driver: FrameworkDriver,
 ): Promise<TestContext> {
   try {
     const bundledCode = await bundleDriverUtils();
@@ -61,7 +61,7 @@ export async function setupTestEnvironment(
     page.on("pageerror", (err) => console.error("Page error:", err));
     page.setDefaultNavigationTimeout(10000);
 
-    await page.goto(`file://${__dirname}/test-pages/${testPage}`);
+    await page.goto(`file://${__dirname}/test-pages/${htmlFileName}`);
     await page.addScriptTag({ content: bundledCode });
 
     return { browser, context, page, bundledCode };
