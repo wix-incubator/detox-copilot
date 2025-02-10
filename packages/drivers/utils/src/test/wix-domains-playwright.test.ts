@@ -30,8 +30,15 @@ describe("Wix Domains Page Testing", () => {
       (window as any).driverUtils.manipulateElementStyles();
     });
 
-    await page.setViewportSize({ width: 800, height: 12587 });
-
+    await page.setViewportSize({ width: 800, height: 600 });
+    await page.addStyleTag({
+      content: `
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      `,
+    });
     const screenshot = await page.screenshot({ fullPage: true });
     expect(screenshot).toMatchImageSnapshot({
       customSnapshotIdentifier: "wix-domains-playwright-desktop",

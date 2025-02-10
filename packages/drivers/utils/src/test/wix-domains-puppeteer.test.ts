@@ -29,7 +29,16 @@ describe("Wix Domains Page Testing", () => {
       (window as any).driverUtils.markImportantElements();
       (window as any).driverUtils.manipulateElementStyles();
     });
-    await page.setViewport({ width: 800, height: 12587 });
+    await page.setViewport({ width: 800, height: 600 });
+    await page.addStyleTag({
+      content: `
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      `,
+    });
+    await page.waitForNetworkIdle({ idleTime: 500 });
     const screenshot = await page.screenshot({ fullPage: true });
     expect(screenshot).toMatchImageSnapshot({
       customSnapshotIdentifier: "wix-domains-puppeteer-desktop",
