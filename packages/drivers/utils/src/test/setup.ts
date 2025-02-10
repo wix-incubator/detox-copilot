@@ -1,6 +1,14 @@
 import * as puppeteer from "puppeteer";
+import {
+  chromium,
+  Browser as PlaywrightBrowser,
+  Page as PlaywrightPage,
+  BrowserContext as PlaywrightContext,
+} from "playwright";
+import type { Browser as PuppeteerBrowser, Page as PuppeteerPage } from "puppeteer";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { bundleDriverUtils } from "./bundle";
+import type { FrameworkDriver } from "../types";
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -11,39 +19,60 @@ declare global {
 }
 
 export interface TestContext {
-  browser: puppeteer.Browser;
-  page: puppeteer.Page;
+  browser: PuppeteerBrowser | PlaywrightBrowser;
+  context?: PlaywrightContext;
+  page: PuppeteerPage | PlaywrightPage;
   bundledCode: string;
 }
 
 export async function setupTestEnvironment(
   testPage: string = "test-page.html",
+  driver: FrameworkDriver = "puppeteer"
 ): Promise<TestContext> {
   try {
     const bundledCode = await bundleDriverUtils();
-    const browser = await puppeteer.launch({
-      headless: "new",
-      devtools: false,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
 
-    const page = await browser.newPage();
-    page.on("console", (msg) => console.log("Browser log:", msg.text()));
+    let browser: PuppeteerBrowser | PlaywrightBrowser;
+    let context: PlaywrightContext | undefined;
+    let page: PuppeteerPage | PlaywrightPage;
+
+    if (driver === "puppeteer") {
+      browser = await puppeteer.launch({
+        headless: "new",
+        devtools: false,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
+      page = await browser.newPage();
+    } else if (driver === "playwright") {
+      browser = await chromium.launch({
+        headless: true,
+        devtools: false,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
+      context = await browser.newContext();
+      page = await context.newPage();
+    } else {
+      throw new Error(`Unsupported driver: ${driver}`);
+    }
+    page.on("console", (msg: any) => console.log("Browser log:", msg.text()));
     page.on("pageerror", (err) => console.error("Page error:", err));
-    page.on("error", (err) => console.error("Browser error:", err));
     page.setDefaultNavigationTimeout(10000);
 
     await page.goto(`file://${__dirname}/test-pages/${testPage}`);
     await page.addScriptTag({ content: bundledCode });
 
-    return { browser, page, bundledCode };
+    return { browser, context, page, bundledCode };
   } catch (error) {
     console.error("Setup failed:", error);
     throw error;
   }
 }
 
-export async function teardownTestEnvironment({ browser }: TestContext) {
+
+export async function teardownTestEnvironment({ browser, context }: TestContext) {
+  if (context) {
+    await context.close();
+  }
   if (browser) {
     await browser.close();
   }
