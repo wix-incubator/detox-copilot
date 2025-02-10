@@ -17,7 +17,7 @@
     "scripts": {
         "build": "tsc && tsc-alias",
         "test": "echo No tests avialable for this package",
-        "test:example": "echo skiping tests",
+        "test:example": "jest",
         "bump-version:patch": "npm version patch && git commit -am 'chore: bump patch version' && git push",
         "release:patch": "npm run test && npm run bump-version:patch && npm run build && npm publish --access public",
         "bump-version:minor": "npm version minor && git commit -am 'chore: bump minor version' && git push",
