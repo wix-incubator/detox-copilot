@@ -7,7 +7,7 @@ import { Page as PlaywrightPage } from "playwright";
 
 describe("Wix Domains Page Testing", () => {
   let testContext: TestContext;
-  let page: PlaywrightPage; 
+  let page: PlaywrightPage;
 
   beforeAll(async () => {
     testContext = await setupTestEnvironment("wix-domains.html", "playwright");

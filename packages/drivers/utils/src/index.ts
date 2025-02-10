@@ -56,7 +56,7 @@ const utils: DriverUtils = {
     function processElement(element: Element, depth = 0): string {
       const children = Array.from(element.children);
       let structure = "";
-    
+
       // Process all children
       let childStructure = "";
       for (const child of children) {
@@ -65,45 +65,45 @@ const utils: DriverUtils = {
           childStructure += childStr;
         }
       }
-    
+
       // Determine if current element is important or has important descendants
       const isImportantElement =
         element.hasAttribute("aria-pilot-category") ||
         ESSENTIAL_ELEMENTS.includes(element.tagName);
-    
+
       if (isImportantElement || childStructure) {
         const category = element.getAttribute("aria-pilot-category");
         const index = element.getAttribute("aria-pilot-index");
         const indent = "  ".repeat(depth);
-    
+
         structure += `${indent}<${element.tagName.toLowerCase()}`;
-    
+
         // Add relevant attributes
         const tagName = element.tagName.toLowerCase();
         const allowedAttrs = [
           ...ATTRIBUTE_WHITELIST["*"],
           ...(ATTRIBUTE_WHITELIST[tagName] || []),
         ];
-    
+
         Array.from(element.attributes)
           .filter((attr) => allowedAttrs.includes(attr.name.toLowerCase()))
           .forEach((attr) => {
             structure += ` ${attr.name}="${attr.value}"`;
           });
-    
+
         if (category) {
           structure += ` data-category="${category}" data-index="${index}"`;
         }
-    
+
         structure += ">\n";
-    
+
         if (childStructure) {
           structure += childStructure;
         }
-    
+
         structure += `${indent}</${element.tagName.toLowerCase()}>\n`;
       }
-    
+
       return structure;
     }
 

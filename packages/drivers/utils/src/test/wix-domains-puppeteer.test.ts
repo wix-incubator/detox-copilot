@@ -7,11 +7,11 @@ import {
 
 describe("Wix Domains Page Testing", () => {
   let testContext: TestContext;
-  let page: PuppeteerPage; 
+  let page: PuppeteerPage;
 
   beforeAll(async () => {
     testContext = await setupTestEnvironment("wix-domains.html");
-    page = testContext.page as PuppeteerPage; 
+    page = testContext.page as PuppeteerPage;
   }, 30000);
 
   afterAll(async () => {

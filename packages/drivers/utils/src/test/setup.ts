@@ -5,7 +5,10 @@ import {
   Page as PlaywrightPage,
   BrowserContext as PlaywrightContext,
 } from "playwright";
-import type { Browser as PuppeteerBrowser, Page as PuppeteerPage } from "puppeteer";
+import type {
+  Browser as PuppeteerBrowser,
+  Page as PuppeteerPage,
+} from "puppeteer";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
 import { bundleDriverUtils } from "./bundle";
 import type { FrameworkDriver } from "../types";
@@ -27,7 +30,7 @@ export interface TestContext {
 
 export async function setupTestEnvironment(
   testPage: string = "test-page.html",
-  driver: FrameworkDriver = "puppeteer"
+  driver: FrameworkDriver = "puppeteer",
 ): Promise<TestContext> {
   try {
     const bundledCode = await bundleDriverUtils();
@@ -68,8 +71,10 @@ export async function setupTestEnvironment(
   }
 }
 
-
-export async function teardownTestEnvironment({ browser, context }: TestContext) {
+export async function teardownTestEnvironment({
+  browser,
+  context,
+}: TestContext) {
   if (context) {
     await context.close();
   }

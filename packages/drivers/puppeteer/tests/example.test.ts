@@ -1,7 +1,7 @@
-import pilot from "@wix-pilot/core";
+import copilot from "@pilot/core";
 import puppeteer from "puppeteer";
 import { PromptHandler } from "../utils/promptHandler";
-import { PuppeteerFrameworkDriver } from "../index";
+import { PuppeteerFrameworkDriver } from "@pilot/puppeterr-driver";
 
 describe("Example Test Suite", () => {
   jest.setTimeout(300000);
@@ -14,7 +14,7 @@ describe("Example Test Suite", () => {
     frameworkDriver = new PuppeteerFrameworkDriver();
     frameworkDriver = new PuppeteerFrameworkDriver(puppeteer.executablePath());
 
-    pilot.init({
+    copilot.init({
       frameworkDriver,
       promptHandler,
     });
@@ -25,16 +25,18 @@ describe("Example Test Suite", () => {
   });
 
   beforeEach(async () => {
-    pilot.start();
+    copilot.start();
   });
 
   afterEach(async () => {
-    pilot.end();
+    copilot.end();
   });
 
   it("perform test with pilot", async () => {
-    await pilot.autopilot(
-      "Open https://www.wix.com/domains, and search for the domain Shraga.com, is it available?. if there is cookies message decline it",
+    await copilot.pilot(
+      "On `https://github.com/wix-incubator/detox-copilot`, " +
+        "open the Commits page and summarize the latest commits. " +
+        "Open the browser with GUI.",
     );
   });
 });

@@ -6,13 +6,14 @@ import * as puppeteer from "puppeteer-core";
 import path from "path";
 import fs from "fs";
 import utils from "@wix-pilot/web-utils";
-const bundledCodePath = require.resolve("@wix-pilot/web-utils/dist/web-utils.browser.js");
+const bundledCodePath = require.resolve(
+  "@wix-pilot/web-utils/dist/web-utils.browser.js",
+);
 declare global {
   interface Window {
     driverUtils: typeof utils;
   }
 }
-
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: puppeteer.Page;
@@ -42,20 +43,22 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
    * Injects bundeled code to page and marks important elements in the DOM
    */
   async injectCodeAndMarkElements(page: puppeteer.Page): Promise<void> {
-    const isInjected = await page.evaluate(() => 
-        typeof window.driverUtils?.markImportantElements === "function"
+    const isInjected = await page.evaluate(
+      () => typeof window.driverUtils?.markImportantElements === "function",
     );
 
     if (!isInjected) {
-        await page.addScriptTag({ content: fs.readFileSync(bundledCodePath, "utf8") });
-        console.log("Bundled script injected into the page.");
+      await page.addScriptTag({
+        content: fs.readFileSync(bundledCodePath, "utf8"),
+      });
+      console.log("Bundled script injected into the page.");
     } else {
-        console.log("Bundled script already injected. Skipping injection.");
+      console.log("Bundled script already injected. Skipping injection.");
     }
 
     await page.evaluate(() => window.driverUtils.markImportantElements());
   }
-  
+
   /**
    * Mark the elements and separates them to categories
    */
@@ -88,7 +91,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
     if (!fs.existsSync("temp")) {
       fs.mkdirSync("temp");
     }
-    
+
     await this.injectCodeAndMarkElements(this.currentPage);
     await this.manipulateStyles(this.currentPage);
     await this.currentPage.screenshot({
@@ -115,7 +118,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
     });
     return clear_view;
   }
-  
+
   /**
    * @inheritdoc
    */
@@ -136,8 +139,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
             {
               signature: "const browser = await puppeteer.launch([options])",
               description: "Launches a new browser instance.",
-              example:
-                `const browser = await puppeteer.launch({\`headless: "false"\`, executablePath: "${this.executablePath}" });`,
+              example: `const browser = await puppeteer.launch({\`headless: "false"\`, executablePath: "${this.executablePath}" });`,
               guidelines: [
                 `Executable path is required always, use the path: ${this.executablePath}`,
                 "Options can specify `headless`, `slowMo`, `args`, etc.",
@@ -187,60 +189,17 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
           title: "Matchers",
           items: [
             {
-              "signature": "document.querySelectorAll('[aria-pilot-category]')",
-              "description": "Selects all elements that have been marked with an `aria-pilot-category` attribute.",
-              "example": "const markedElements = await page.evaluate(() => Array.from(document.querySelectorAll('[aria-pilot-category]')).map(el => el.tagName.toLowerCase()));",
-              "guidelines": [
-                "Use this selector to retrieve all elements that have been categorized by `markImportantElements`.",
-                "Helpful for verifying that elements have been properly marked and for further interactions."
-              ]
-            },
-            {
-              "signature": "document.querySelectorAll('[aria-pilot-category=\"categoryName\"]')",
-              "description": "Selects all elements marked with a specific `aria-pilot-category`.",
-              "example": "const buttons = await page.evaluate(() => Array.from(document.querySelectorAll('[aria-pilot-category=\"button\"]')).map(el => el.textContent.trim()));",
-              "guidelines": [
-                "Replace `categoryName` with the desired category (e.g., `button`, `link`, `input`, `list`, `table`, `header`, `semantic`).",
-                "Use this to target and verify elements of a specific category."
-              ]
-            },
-            {
-              "signature": "document.querySelector('[aria-pilot-category=\"categoryName\"][aria-pilot-index=\"index\"]')",
-              "description": "Selects a specific element within a category based on its index.",
-              "example": `const firstButton = await page.evaluate(() => const acceptAllButton = document.querySelector('[aria-pilot-category="button"][aria-pilot-index="27"]');`,
-              "guidelines": [
+              signature:
+                'document.querySelector(\'[aria-pilot-category="categoryName"][aria-pilot-index="index"]\')',
+              description:
+                "Selects a specific element within a category based on its index.",
+              example: `const firstButton = await page.evaluate(() => document.querySelector('[aria-pilot-category="button"][aria-pilot-index="27"]');`,
+              guidelines: [
                 "Replace `categoryName` with the desired category and `index` with the specific index as a string.",
                 "Indexing is zero-based and increments per category as elements are found.",
-                "Use this to interact with or verify a specific instance of a category, ensuring the exact element is targeted."
-              ]
+                "Use this to interact with or verify a specific instance of a category, ensuring the exact element is targeted.",
+              ],
             },
-            {
-              "signature": "element.hasAttribute('aria-pilot-category')",
-              "description": "Checks if an element has been marked with an `aria-pilot-category` attribute.",
-              "example": "const isMarked = await page.evaluate(() => document.querySelector('nav').hasAttribute('aria-pilot-category'));",
-              "guidelines": [
-                "Useful for asserting whether specific elements have been processed by `markImportantElements`.",
-                "Can be combined with other conditions to validate the markup."
-              ]
-            },
-            {
-              "signature": "await page.evaluate(() => window.isElementHidden(element))",
-              "description": "Evaluates whether an element is hidden in the DOM.",
-              "example": "const isHidden = await page.evaluate(() => window.isElementHidden(document.querySelector('#hidden-element')));",
-              "guidelines": [
-                "Helps determine if elements are visible or should be included when marking elements.",
-                "Used internally by `markImportantElements` unless `includeHidden` is set to `true`."
-              ]
-            },
-            {
-              "signature": "await page.evaluate(() => { /* assertions on form elements */ })",
-              "description": "Evaluates and extracts information from form elements to test their structure and attributes.",
-              "example": "const formElements = await page.evaluate(() => { const inputs = document.querySelectorAll('form input[aria-pilot-category=\"input\"]'); return Array.from(inputs).map(input => input.placeholder); });",
-              "guidelines": [
-                "Use to verify that form elements are correctly marked and contain the expected attributes.",
-                "Can be extended to check various types of input fields and buttons within forms."
-              ]
-            }
           ],
         },
       ],
