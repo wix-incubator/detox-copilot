@@ -36,7 +36,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   /**
    * Sets the current page identifier, must be set if the driver needs to interact with a specific page
    */
-  async setCurrentPage(page: puppeteer.Page): Promise<void> {
+  setCurrentPage(page: puppeteer.Page): void {
     this.currentPage = page;
   }
 
@@ -114,10 +114,9 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
       );
     }
     await this.injectCodeAndMarkElements(this.currentPage);
-    const clear_view = await this.currentPage.evaluate(() => {
+    return await this.currentPage.evaluate(() => {
       return window.driverUtils.extractCleanViewStructure();
     });
-    return clear_view;
   }
 
   /**
@@ -159,9 +158,9 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               ],
             },
             {
-              signature: "await getCurrentPage().setUserAgent(userAgent)",
+              signature: "getCurrentPage().setUserAgent(userAgent)",
               description: "Overrides the default user agent string.",
-              example: 'await getCurrentPage().setUserAgent("UA-TEST");',
+              example: 'getCurrentPage().setUserAgent("UA-TEST");',
               guidelines: [
                 "Affects the value of `navigator.userAgent`.",
                 "Useful for simulating different browsers or bots.",
@@ -173,16 +172,16 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
           title: "Current page management",
           items: [
             {
-              signature: "const page = await getCurrentPage()",
+              signature: "const page = getCurrentPage()",
               description:
                 "Gets the current page instance. Can return `undefined` if no page is set.",
-              example: "const page = await getCurrentPage();",
+              example: "const page = getCurrentPage();",
             },
             {
-              signature: "await setCurrentPage(page)",
+              signature: "setCurrentPage(page)",
               description:
                 "Sets the current page instance for the driver to interact with (required if setting a new page).",
-              example: "await setCurrentPage(page);",
+              example: "setCurrentPage(page);",
             },
           ],
         },
