@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { bundleDriverUtils } from './bundle';
+import fs from "fs";
+import path from "path";
+import { bundleDriverUtils } from "./bundle";
 
 async function createBundledDriverUtilsFile(): Promise<void> {
   try {
