@@ -1,155 +1,102 @@
-import getElementCategory, { tags } from "./getElementCategory";
-import isElementHidden from "./isElementHidden";
-import { ElementCategory } from "./types";
+import fs from "fs";
+import path from "path";
+import { Page } from "./types";
 
-const CATEGORY_COLORS: Record<ElementCategory, [string, string]> = {
-  button: ["#ff0000", "#ffffff"],
-  link: ["#0aff0a", "#000000"],
-  input: ["#0000ff", "#ffffff"],
-  list: ["#ff00ff", "#000000"],
-  table: ["#ff6a02", "#ffffff"],
-  header: ["#00c2ff", "#000000"],
-  semantic: ["#bababa", "#000000"],
-};
-
-const ATTRIBUTE_WHITELIST: Record<string, string[]> = {
-  "*": ["aria-pilot-category", "aria-pilot-index"],
-  a: ["href", "target"],
-  img: ["src", "alt"],
-  input: ["type", "name", "value"],
-  meta: ["name", "content"],
-  link: ["rel", "href"],
-  script: ["src", "type"],
-};
-
-const ESSENTIAL_ELEMENTS = ["HTML", "HEAD", "BODY"];
-
-export interface DriverUtils {
-  markImportantElements: (options?: { includeHidden?: boolean }) => void;
-  extractCleanViewStructure: () => string;
-  manipulateElementStyles: () => void;
-  cleanupStyleChanges: () => void;
+declare global {
+  interface Window {
+    driverUtils: typeof import("./utils").default;
+  }
 }
 
-const utils: DriverUtils = {
-  markImportantElements(options?: { includeHidden?: boolean }) {
-    const selector = tags.join(",");
-    const elements = Array.from(document.querySelectorAll(selector));
-    const categoryCounts = new Map<ElementCategory, number>();
+export default class WebTestingFrameworkDriverUtils {
+  protected currentPage?: Page;
 
-    elements.forEach((el) => {
-      if (!options?.includeHidden && isElementHidden(el)) return;
+  constructor() {}
 
-      const category = getElementCategory(el);
-      if (!category) return;
+  /**
+   * Injects bundled code and marks important elements
+   */
+  async injectCodeAndMarkElements(page: Page): Promise<void> {
+    const bundledCodePath = require.resolve("../dist/web-utils.browser.js");
+    const isInjected = await page.evaluate(
+      () => typeof window.driverUtils?.markImportantElements === "function",
+    );
 
-      const index = categoryCounts.get(category) || 0;
-      el.setAttribute("aria-pilot-category", category);
-      el.setAttribute("aria-pilot-index", index.toString());
-      categoryCounts.set(category, index + 1);
-    });
-  },
-
-  extractCleanViewStructure() {
-    const clone = document.documentElement.cloneNode(true) as HTMLElement;
-
-    function processElement(element: Element, depth = 0): string {
-      const children = Array.from(element.children);
-      let structure = "";
-
-      // Process all children
-      let childStructure = "";
-      for (const child of children) {
-        const childStr = processElement(child, depth + 1);
-        if (childStr) {
-          childStructure += childStr;
-        }
-      }
-
-      // Determine if current element is important or has important descendants
-      const isImportantElement =
-        element.hasAttribute("aria-pilot-category") ||
-        ESSENTIAL_ELEMENTS.includes(element.tagName);
-
-      if (isImportantElement || childStructure) {
-        const category = element.getAttribute("aria-pilot-category");
-        const index = element.getAttribute("aria-pilot-index");
-        const indent = "  ".repeat(depth);
-
-        structure += `${indent}<${element.tagName.toLowerCase()}`;
-
-        // Add relevant attributes
-        const tagName = element.tagName.toLowerCase();
-        const allowedAttrs = [
-          ...ATTRIBUTE_WHITELIST["*"],
-          ...(ATTRIBUTE_WHITELIST[tagName] || []),
-        ];
-
-        Array.from(element.attributes)
-          .filter((attr) => allowedAttrs.includes(attr.name.toLowerCase()))
-          .forEach((attr) => {
-            structure += ` ${attr.name}="${attr.value}"`;
-          });
-
-        if (category) {
-          structure += ` data-category="${category}" data-index="${index}"`;
-        }
-
-        structure += ">\n";
-
-        if (childStructure) {
-          structure += childStructure;
-        }
-
-        structure += `${indent}</${element.tagName.toLowerCase()}>\n`;
-      }
-
-      return structure;
+    if (!isInjected) {
+      await page.addScriptTag({
+        content: fs.readFileSync(bundledCodePath, "utf8"),
+      });
+      console.log("Bundled script injected into the page.");
+    } else {
+      console.log("Bundled script already injected. Skipping injection.");
     }
 
-    return processElement(clone);
-  },
+    await page.evaluate(() => window.driverUtils.markImportantElements());
+  }
 
-  manipulateElementStyles() {
-    const styleId = "aria-pilot-styles";
-    const oldStyle = document.getElementById(styleId);
-    if (oldStyle) oldStyle.remove();
+  /**
+   * Manipulates element styles
+   */
+  async manipulateStyles(page: Page): Promise<void> {
+    await page.evaluate(() => {
+      window.driverUtils.manipulateElementStyles();
+    });
+  }
 
-    const style = document.createElement("style");
-    style.id = styleId;
-    style.textContent = Object.entries(CATEGORY_COLORS)
-      .map(
-        ([category, color]) => `
-        [aria-pilot-category="${category}"] {
-          position: relative !important;
-          box-shadow: 0 0 0 2px ${color[0]} !important;
-          z-index: auto !important;
-        }
+  /**
+   * Cleans up style changes
+   */
+  async cleanUpStyleChanges(page: Page): Promise<void> {
+    await page.evaluate(() => {
+      window.driverUtils.cleanupStyleChanges();
+    });
+  }
 
-        [aria-pilot-category="${category}"]::before {
-          content: "${category} #" attr(aria-pilot-index);
-          position: absolute !important;
-          top: -20px !important;
-          left: 0 !important;
-          background: ${color[0]};
-          opacity: 0.5;
-          color: ${color[1]};
-          font: 10px monospace;
-          padding: 2px 4px;
-          white-space: nowrap;
-          z-index: 2147483647 !important;
-          pointer-events: none !important;
-        }
-      `,
-      )
-      .join("\n");
-    document.head.appendChild(style);
-  },
+  /**
+   * Captures a snapshot image
+   */
+  async captureSnapshotImage(): Promise<string | undefined> {
+    if (!this.currentPage) {
+      return undefined;
+    }
 
-  cleanupStyleChanges() {
-    const style = document.getElementById("aria-pilot-styles");
-    style?.remove();
-  },
-};
+    const fileName = `temp/snapshot_${Date.now()}.png`;
 
-export default utils;
+    // Create temp directory if it doesn't exist
+    if (!fs.existsSync("temp")) {
+      fs.mkdirSync("temp");
+    }
+
+    await this.injectCodeAndMarkElements(this.currentPage);
+    await this.manipulateStyles(this.currentPage);
+    await this.currentPage.screenshot({
+      path: fileName,
+      fullPage: true,
+    });
+    await this.cleanUpStyleChanges(this.currentPage);
+    return path.resolve(fileName);
+  }
+
+  /**
+   * Captures the view hierarchy as a string
+   */
+  async captureViewHierarchyString(): Promise<string> {
+    if (!this.currentPage) {
+      return (
+        "CANNOT SEE ANY ACTIVE PAGE, " +
+        "START A NEW ONE BASED ON THE ACTION NEED OR RAISE AN ERROR"
+      );
+    }
+    await this.injectCodeAndMarkElements(this.currentPage);
+    return await this.currentPage.evaluate(() => {
+      return window.driverUtils.extractCleanViewStructure();
+    });
+  }
+
+  /**
+   * Sets current working page
+   */
+  async setCurrentPage(page: Page) {
+    this.currentPage = page;
+  }
+}

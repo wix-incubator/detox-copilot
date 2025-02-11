@@ -3,24 +3,16 @@ import {
   TestingFrameworkDriver,
 } from "@wix-pilot/core";
 import * as puppeteer from "puppeteer-core";
-import path from "path";
-import fs from "fs";
-import utils from "@wix-pilot/web-utils";
-const bundledCodePath = require.resolve(
-  "@wix-pilot/web-utils/dist/web-utils.browser.js",
-);
-
-declare global {
-  interface Window {
-    driverUtils: typeof utils;
-  }
-}
+import WebTestingFrameworkDriverUtils from "@wix-pilot/web-utils";
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: puppeteer.Page;
   private executablePath?: string;
 
-  constructor(executablePath?: string) {
+  constructor(
+    private driverUtils: WebTestingFrameworkDriverUtils,
+    executablePath?: string,
+  ) {
     this.getCurrentPage = this.getCurrentPage.bind(this);
     this.setCurrentPage = this.setCurrentPage.bind(this);
     this.executablePath = executablePath;
@@ -38,85 +30,21 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
    */
   setCurrentPage(page: puppeteer.Page): void {
     this.currentPage = page;
-  }
-
-  /**
-   * Injects bundeled code to page and marks important elements in the DOM
-   */
-  async injectCodeAndMarkElements(page: puppeteer.Page): Promise<void> {
-    const isInjected = await page.evaluate(
-      () => typeof window.driverUtils?.markImportantElements === "function",
-    );
-
-    if (!isInjected) {
-      await page.addScriptTag({
-        content: fs.readFileSync(bundledCodePath, "utf8"),
-      });
-      console.log("Bundled script injected into the page.");
-    } else {
-      console.log("Bundled script already injected. Skipping injection.");
-    }
-
-    await page.evaluate(() => window.driverUtils.markImportantElements());
-  }
-
-  /**
-   * Mark the elements and separates them to categories
-   */
-  async manipulateStyles(page: puppeteer.Page): Promise<void> {
-    await page.evaluate(() => {
-      window.driverUtils.manipulateElementStyles();
-    });
-  }
-
-  /**
-   * Clean up page style changes
-   */
-  async cleanUpStyleChanges(page: puppeteer.Page): Promise<void> {
-    await page.evaluate(() => {
-      window.driverUtils.cleanupStyleChanges();
-    });
+    this.driverUtils.setCurrentPage(page);
   }
 
   /**
    * @inheritdoc
    */
   async captureSnapshotImage(): Promise<string | undefined> {
-    if (!this.currentPage) {
-      return undefined;
-    }
-
-    const fileName = `temp/snapshot_puppeteer_${Date.now()}.png`;
-
-    // create temp directory if it doesn't exist
-    if (!fs.existsSync("temp")) {
-      fs.mkdirSync("temp");
-    }
-
-    await this.injectCodeAndMarkElements(this.currentPage);
-    await this.manipulateStyles(this.currentPage);
-    await this.currentPage.screenshot({
-      path: fileName,
-      fullPage: true,
-    });
-    await this.cleanUpStyleChanges(this.currentPage);
-    return path.resolve(fileName);
+    return await this.driverUtils.captureSnapshotImage();
   }
 
   /**
    * @inheritdoc
    */
   async captureViewHierarchyString(): Promise<string> {
-    if (!this.currentPage) {
-      return (
-        "CANNOT SEE ANY ACTIVE PAGE, " +
-        "START A NEW ONE BASED ON THE ACTION NEED OR RAISE AN ERROR"
-      );
-    }
-    await this.injectCodeAndMarkElements(this.currentPage);
-    return await this.currentPage.evaluate(() => {
-      return window.driverUtils.extractCleanViewStructure();
-    });
+    return await this.driverUtils.captureViewHierarchyString();
   }
 
   /**

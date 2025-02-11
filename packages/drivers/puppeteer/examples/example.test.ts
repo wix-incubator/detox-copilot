@@ -2,6 +2,7 @@ import pilot from "@wix-pilot/core";
 import puppeteer from "puppeteer";
 import { PromptHandler } from "../utils/promptHandler";
 import { PuppeteerFrameworkDriver } from "../index";
+import WebTestingFrameworkDriverUtils from "@wix-pilot/web-utils";
 
 describe("Example Test Suite", () => {
   jest.setTimeout(300000);
@@ -10,9 +11,12 @@ describe("Example Test Suite", () => {
 
   beforeAll(async () => {
     const promptHandler: PromptHandler = new PromptHandler();
-
-    frameworkDriver = new PuppeteerFrameworkDriver();
-    frameworkDriver = new PuppeteerFrameworkDriver(puppeteer.executablePath());
+    const driverUtils: WebTestingFrameworkDriverUtils =
+      new WebTestingFrameworkDriverUtils();
+    frameworkDriver = new PuppeteerFrameworkDriver(
+      driverUtils,
+      puppeteer.executablePath(),
+    );
 
     pilot.init({
       frameworkDriver,

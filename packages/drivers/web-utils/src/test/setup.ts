@@ -17,7 +17,7 @@ expect.extend({ toMatchImageSnapshot });
 
 declare global {
   interface Window {
-    driverUtils: typeof import("../index").default;
+    driverUtils: typeof import("../utils").default;
   }
 }
 
