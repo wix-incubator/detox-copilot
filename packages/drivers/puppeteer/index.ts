@@ -10,6 +10,8 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private driverUtils: WebTestingFrameworkDriverHelper;
 
   constructor(executablePath?: string) {
+    this.setCurrentPage = this.setCurrentPage.bind(this);
+    this.getCurrentPage = this.getCurrentPage.bind(this);
     this.executablePath = executablePath;
     this.driverUtils = new WebTestingFrameworkDriverHelper();
   }

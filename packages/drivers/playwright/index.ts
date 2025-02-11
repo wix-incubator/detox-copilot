@@ -9,6 +9,8 @@ import WebTestingFrameworkDriverHelper from "@wix-pilot/web-utils";
 export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
   private driverUtils: WebTestingFrameworkDriverHelper;
   constructor() {
+    this.setCurrentPage = this.setCurrentPage.bind(this);
+    this.getCurrentPage = this.getCurrentPage.bind(this);
     this.driverUtils = new WebTestingFrameworkDriverHelper();
   }
 
