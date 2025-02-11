@@ -4,14 +4,12 @@ import {
 } from "@wix-pilot/core";
 import * as playwright from "playwright";
 import { expect as playwrightExpect } from "@playwright/test";
-import path from "path";
-import fs from "fs";
-import getCleanDOM from "./utils/getCleanDOM";
+import WebTestingFrameworkDriverUtils from "@wix-pilot/web-utils";
 
 export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
   private currentPage?: playwright.Page;
 
-  constructor() {
+  constructor(private driverUtils: WebTestingFrameworkDriverUtils) {
     this.getCurrentPage = this.getCurrentPage.bind(this);
     this.setCurrentPage = this.setCurrentPage.bind(this);
   }
@@ -28,47 +26,21 @@ export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
    */
   setCurrentPage(page: playwright.Page): void {
     this.currentPage = page;
+    this.driverUtils.setCurrentPage(page);
   }
 
   /**
    * @inheritdoc
    */
   async captureSnapshotImage(): Promise<string | undefined> {
-    if (!this.currentPage) {
-      return undefined;
-    }
-
-    const fileName = `temp/snapshot_playwright_${Date.now()}.png`;
-
-    // create temp directory if it doesn't exist
-    if (!fs.existsSync("temp")) {
-      fs.mkdirSync("temp");
-    }
-
-    await this.currentPage.screenshot({
-      path: fileName,
-      fullPage: true,
-    });
-
-    return path.resolve(fileName);
+    return await this.driverUtils.captureSnapshotImage();
   }
 
   /**
    * @inheritdoc
    */
   async captureViewHierarchyString(): Promise<string> {
-    if (!this.currentPage) {
-      return (
-        "CANNOT SEE ANY ACTIVE PAGE, " +
-        "START A NEW ONE BASED ON THE ACTION NEED OR RAISE AN ERROR"
-      );
-    }
-
-    try {
-      return await getCleanDOM(this.currentPage);
-    } catch {
-      return "NO INNER VIEW HIERARCHY FOUND, PAGE IS EMPTY OR NOT LOADED";
-    }
+    return await this.driverUtils.captureViewHierarchyString();
   }
 
   /**
