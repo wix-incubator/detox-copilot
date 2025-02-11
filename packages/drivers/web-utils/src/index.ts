@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-export default class WebTestingFrameworkDriverUtils {
+export default class WebTestingFrameworkDriverHelper {
   protected currentPage?: Page;
 
   constructor() {}
@@ -96,7 +96,16 @@ export default class WebTestingFrameworkDriverUtils {
   /**
    * Sets current working page
    */
-  async setCurrentPage(page: Page) {
+   setCurrentPage(page: Page) {
     this.currentPage = page;
   }
+  
+  /**
+   * Gets the current page identifier
+   */
+  getCurrentPage(): Page | undefined {
+    return this.currentPage;
+  }
+
+
 }

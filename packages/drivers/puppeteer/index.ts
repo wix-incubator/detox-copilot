@@ -3,33 +3,28 @@ import {
   TestingFrameworkDriver,
 } from "@wix-pilot/core";
 import * as puppeteer from "puppeteer-core";
-import WebTestingFrameworkDriverUtils from "@wix-pilot/web-utils";
+import WebTestingFrameworkDriverHelper  from "@wix-pilot/web-utils";
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
-  private currentPage?: puppeteer.Page;
   private executablePath?: string;
+  private driverUtils: WebTestingFrameworkDriverHelper;
 
-  constructor(
-    private driverUtils: WebTestingFrameworkDriverUtils,
-    executablePath?: string,
-  ) {
-    this.getCurrentPage = this.getCurrentPage.bind(this);
-    this.setCurrentPage = this.setCurrentPage.bind(this);
+  constructor(executablePath?: string) {
     this.executablePath = executablePath;
+    this.driverUtils = new WebTestingFrameworkDriverHelper ();
   }
 
   /**
    * Gets the current page identifier
    */
   getCurrentPage(): puppeteer.Page | undefined {
-    return this.currentPage;
+    return this.driverUtils.getCurrentPage() as puppeteer.Page | undefined;
   }
 
   /**
    * Sets the current page identifier, must be set if the driver needs to interact with a specific page
    */
   setCurrentPage(page: puppeteer.Page): void {
-    this.currentPage = page;
     this.driverUtils.setCurrentPage(page);
   }
 

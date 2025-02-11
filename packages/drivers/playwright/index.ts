@@ -4,28 +4,27 @@ import {
 } from "@wix-pilot/core";
 import * as playwright from "playwright";
 import { expect as playwrightExpect } from "@playwright/test";
-import WebTestingFrameworkDriverUtils from "@wix-pilot/web-utils";
+import WebTestingFrameworkDriverHelper  from "@wix-pilot/web-utils";
 
 export class PlaywrightFrameworkDriver implements TestingFrameworkDriver {
-  private currentPage?: playwright.Page;
-
-  constructor(private driverUtils: WebTestingFrameworkDriverUtils) {
+  private driverUtils: WebTestingFrameworkDriverHelper ;
+  constructor() {
     this.getCurrentPage = this.getCurrentPage.bind(this);
     this.setCurrentPage = this.setCurrentPage.bind(this);
+    this.driverUtils = new WebTestingFrameworkDriverHelper();
   }
 
   /**
    * Gets the current page identifier
    */
   getCurrentPage(): playwright.Page | undefined {
-    return this.currentPage;
+    return this.driverUtils.getCurrentPage() as playwright.Page | undefined;
   }
 
   /**
    * Sets the current page identifier, must be set if the driver needs to interact with a specific page
    */
   setCurrentPage(page: playwright.Page): void {
-    this.currentPage = page;
     this.driverUtils.setCurrentPage(page);
   }
 
