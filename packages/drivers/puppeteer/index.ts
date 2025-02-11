@@ -3,7 +3,7 @@ import {
   TestingFrameworkDriver,
 } from "@wix-pilot/core";
 import * as puppeteer from "puppeteer-core";
-import WebTestingFrameworkDriverHelper  from "@wix-pilot/web-utils";
+import WebTestingFrameworkDriverHelper from "@wix-pilot/web-utils";
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private executablePath?: string;
@@ -11,7 +11,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
 
   constructor(executablePath?: string) {
     this.executablePath = executablePath;
-    this.driverUtils = new WebTestingFrameworkDriverHelper ();
+    this.driverUtils = new WebTestingFrameworkDriverHelper();
   }
 
   /**

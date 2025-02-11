@@ -10,9 +10,7 @@ describe("Example Test Suite", () => {
 
   beforeAll(async () => {
     const promptHandler: PromptHandler = new PromptHandler();
-    frameworkDriver = new PuppeteerFrameworkDriver(
-      puppeteer.executablePath(),
-    );
+    frameworkDriver = new PuppeteerFrameworkDriver(puppeteer.executablePath());
 
     pilot.init({
       frameworkDriver,

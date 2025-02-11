@@ -96,16 +96,14 @@ export default class WebTestingFrameworkDriverHelper {
   /**
    * Sets current working page
    */
-   setCurrentPage(page: Page) {
+  setCurrentPage(page: Page) {
     this.currentPage = page;
   }
-  
+
   /**
    * Gets the current page identifier
    */
   getCurrentPage(): Page | undefined {
     return this.currentPage;
   }
-
-
 }
