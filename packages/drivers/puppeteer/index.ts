@@ -3,41 +3,32 @@ import {
   TestingFrameworkDriver,
 } from "@wix-pilot/core";
 import * as puppeteer from "puppeteer-core";
-import path from "path";
+import WebTestingFrameworkDriverHelper from "@wix-pilot/web-utils";
 import fs from "fs";
-import utils from "@wix-pilot/web-utils";
-const bundledCodePath = require.resolve(
-  "@wix-pilot/web-utils/dist/web-utils.browser.js",
-);
-
-declare global {
-  interface Window {
-    driverUtils: typeof utils;
-  }
-}
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
-  private currentPage?: puppeteer.Page;
   private executablePath?: string;
+  private driverUtils: WebTestingFrameworkDriverHelper;
 
   constructor(executablePath?: string) {
-    this.getCurrentPage = this.getCurrentPage.bind(this);
     this.setCurrentPage = this.setCurrentPage.bind(this);
+    this.getCurrentPage = this.getCurrentPage.bind(this);
     this.executablePath = executablePath;
+    this.driverUtils = new WebTestingFrameworkDriverHelper();
   }
 
   /**
    * Gets the current page identifier
    */
   getCurrentPage(): puppeteer.Page | undefined {
-    return this.currentPage;
+    return this.driverUtils.getCurrentPage() as puppeteer.Page | undefined;
   }
 
   /**
    * Sets the current page identifier, must be set if the driver needs to interact with a specific page
    */
-  async setCurrentPage(page: puppeteer.Page): Promise<void> {
-    this.currentPage = page;
+  setCurrentPage(page: puppeteer.Page): void {
+    this.driverUtils.setCurrentPage(page);
   }
 
   /**
@@ -50,7 +41,7 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
 
     if (!isInjected) {
       await page.addScriptTag({
-        content: fs.readFileSync(bundledCodePath, "utf8"),
+        content: fs.readFileSync(this.driverUtils.getBundledCodePath(), "utf8"),
       });
       console.log("Bundled script injected into the page.");
     } else {
@@ -82,42 +73,14 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
    * @inheritdoc
    */
   async captureSnapshotImage(): Promise<string | undefined> {
-    if (!this.currentPage) {
-      return undefined;
-    }
-
-    const fileName = `temp/snapshot_puppeteer_${Date.now()}.png`;
-
-    // create temp directory if it doesn't exist
-    if (!fs.existsSync("temp")) {
-      fs.mkdirSync("temp");
-    }
-
-    await this.injectCodeAndMarkElements(this.currentPage);
-    await this.manipulateStyles(this.currentPage);
-    await this.currentPage.screenshot({
-      path: fileName,
-      fullPage: true,
-    });
-    await this.cleanUpStyleChanges(this.currentPage);
-    return path.resolve(fileName);
+    return await this.driverUtils.captureSnapshotImage();
   }
 
   /**
    * @inheritdoc
    */
   async captureViewHierarchyString(): Promise<string> {
-    if (!this.currentPage) {
-      return (
-        "CANNOT SEE ANY ACTIVE PAGE, " +
-        "START A NEW ONE BASED ON THE ACTION NEED OR RAISE AN ERROR"
-      );
-    }
-    await this.injectCodeAndMarkElements(this.currentPage);
-    const clear_view = await this.currentPage.evaluate(() => {
-      return window.driverUtils.extractCleanViewStructure();
-    });
-    return clear_view;
+    return await this.driverUtils.captureViewHierarchyString();
   }
 
   /**
@@ -159,9 +122,9 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               ],
             },
             {
-              signature: "await getCurrentPage().setUserAgent(userAgent)",
+              signature: "getCurrentPage().setUserAgent(userAgent)",
               description: "Overrides the default user agent string.",
-              example: 'await getCurrentPage().setUserAgent("UA-TEST");',
+              example: 'getCurrentPage().setUserAgent("UA-TEST");',
               guidelines: [
                 "Affects the value of `navigator.userAgent`.",
                 "Useful for simulating different browsers or bots.",
@@ -173,10 +136,10 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
           title: "Current page management",
           items: [
             {
-              signature: "const page = await getCurrentPage()",
+              signature: "const page = getCurrentPage()",
               description:
                 "Gets the current page instance. Can return `undefined` if no page is set.",
-              example: "const page = await getCurrentPage();",
+              example: "const page = getCurrentPage();",
             },
             {
               signature: "await setCurrentPage(page)",

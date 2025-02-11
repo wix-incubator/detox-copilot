@@ -5,7 +5,7 @@ import fs from "fs";
 export async function bundleDriverUtils(): Promise<string> {
   try {
     const result = await esbuild.build({
-      entryPoints: [path.resolve(__dirname, "../index.ts")],
+      entryPoints: [path.resolve(__dirname, "../utils.ts")],
       bundle: true,
       write: false,
       format: "iife",
@@ -30,5 +30,3 @@ export async function bundleDriverUtils(): Promise<string> {
     throw error;
   }
 }
-
-bundleDriverUtils();
