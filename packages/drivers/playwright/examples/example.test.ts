@@ -1,7 +1,6 @@
 import pilot from "@wix-pilot/core";
 import { PromptHandler } from "../utils/promptHandler";
 import { PlaywrightFrameworkDriver } from "../index";
-
 describe("Example Test Suite", () => {
   jest.setTimeout(300000);
 
@@ -9,7 +8,6 @@ describe("Example Test Suite", () => {
 
   beforeAll(async () => {
     const promptHandler: PromptHandler = new PromptHandler();
-
     frameworkDriver = new PlaywrightFrameworkDriver();
 
     pilot.init({

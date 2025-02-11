@@ -1,0 +1,44 @@
+{
+  "name": "@wix-pilot/web-utils",
+  "version": "1.0.0",
+  "description": "Driver utils for Wix Pilot usage",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wix-incubator/pilot.git"
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias && ts-node src/test/createBundleDriverUtilsFile.ts",
+    "test": "echo skipping tests",
+    "test:web-utils": "jest",
+    "bump-version:patch": "npm version patch && git commit -am 'chore: bump patch version' && git push",
+    "release:patch": "npm run test && npm run bump-version:patch && npm run build && npm publish --access public",
+    "bump-version:minor": "npm version minor && git commit -am 'chore: bump minor version' && git push",
+    "release:minor": "npm run test && npm run bump-version:minor && npm run build && npm publish --access public",
+    "bump-version:major": "npm version major && git commit -am 'chore: bump major version' && git push",
+    "release:major": "npm run test && npm run bump-version:major && npm run build && npm publish --access public",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "bugs": {
+    "url": "https://github.com/wix-incubator/pilot/issues"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "@types/jest-image-snapshot": "^6.4.0",
+    "@types/jsdom": "^21.1.7",
+    "@types/puppeteer": "^7.0.4",
+    "esbuild": "^0.24.2",
+    "jest-image-snapshot": "^6.4.0",
+    "jsdom": "^26.0.0",
+    "puppeteer": "^20.8.0"
+    }
+}

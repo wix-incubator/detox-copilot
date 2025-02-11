@@ -7,7 +7,9 @@
         "packages/*/*"
     ],
     "scripts": {
-        "build": "npm run build --workspaces",
+        "build": "npm run build:web-utils && npm run build:others",
+        "build:web-utils": "npm run build --workspace=@wix-pilot/web-utils",
+        "build:others": "npm run build --workspaces --if-present --exclude-workspace=@wix-pilot/web-utils",
         "test": "npm run test --workspaces",
         "lint": "npm run lint --workspaces",
         "lint:fix": "npm run lint:fix --workspaces",
