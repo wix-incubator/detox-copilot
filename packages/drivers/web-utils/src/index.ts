@@ -16,7 +16,7 @@ export default class WebTestingFrameworkDriverUtils {
   /**
    * Injects bundled code and marks important elements
    */
-  async injectCodeAndMarkElements(page: Page): Promise<void> {
+  private async injectCodeAndMarkElements(page: Page): Promise<void> {
     const bundledCodePath = require.resolve("../dist/web-utils.browser.js");
     const isInjected = await page.evaluate(
       () => typeof window.driverUtils?.markImportantElements === "function",
@@ -37,7 +37,7 @@ export default class WebTestingFrameworkDriverUtils {
   /**
    * Manipulates element styles
    */
-  async manipulateStyles(page: Page): Promise<void> {
+  private async manipulateStyles(page: Page): Promise<void> {
     await page.evaluate(() => {
       window.driverUtils.manipulateElementStyles();
     });
@@ -46,7 +46,7 @@ export default class WebTestingFrameworkDriverUtils {
   /**
    * Cleans up style changes
    */
-  async cleanUpStyleChanges(page: Page): Promise<void> {
+  private async cleanUpStyleChanges(page: Page): Promise<void> {
     await page.evaluate(() => {
       window.driverUtils.cleanupStyleChanges();
     });
