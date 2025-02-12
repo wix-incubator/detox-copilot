@@ -2,12 +2,6 @@ import fs from "fs";
 import path from "path";
 import { Page } from "./types";
 
-declare global {
-  interface Window {
-    driverUtils: typeof import("./utils").default;
-  }
-}
-
 export default class WebTestingFrameworkDriverHelper {
   protected currentPage?: Page;
 
@@ -18,38 +12,32 @@ export default class WebTestingFrameworkDriverHelper {
    */
   private async injectCodeAndMarkElements(page: Page): Promise<void> {
     const bundledCodePath = require.resolve("../dist/web-utils.browser.js");
-    const isInjected = await page.evaluate(
-      () => typeof window.driverUtils?.markImportantElements === "function",
-    );
-
-    if (!isInjected) {
-      await page.addScriptTag({
-        content: fs.readFileSync(bundledCodePath, "utf8"),
-      });
-      console.log("Bundled script injected into the page.");
-    } else {
-      console.log("Bundled script already injected. Skipping injection.");
-    }
-
-    await page.evaluate(() => window.driverUtils.markImportantElements());
+    const bundledCode = fs.readFileSync(bundledCodePath, "utf8");
+    await page.evaluate((bundledCode) => {
+      // eval bundled code as IIFE code:
+      eval(bundledCode);
+      // const func = new Function(
+      //   fs.readFileSync(bundledCodePath, "utf8")
+      // )();
+    }, bundledCode);
   }
 
   /**
    * Manipulates element styles
    */
   private async manipulateStyles(page: Page): Promise<void> {
-    await page.evaluate(() => {
-      window.driverUtils.manipulateElementStyles();
-    });
+    // await page.evaluate(() => {
+    //   window.driverUtils.manipulateElementStyles();
+    // });
   }
 
   /**
    * Cleans up style changes
    */
   private async cleanUpStyleChanges(page: Page): Promise<void> {
-    await page.evaluate(() => {
-      window.driverUtils.cleanupStyleChanges();
-    });
+    // await page.evaluate(() => {
+    //   window.driverUtils.cleanupStyleChanges();
+    // });
   }
 
   /**
@@ -88,9 +76,11 @@ export default class WebTestingFrameworkDriverHelper {
       );
     }
     await this.injectCodeAndMarkElements(this.currentPage);
-    return await this.currentPage.evaluate(() => {
-      return window.driverUtils.extractCleanViewStructure();
-    });
+    // return await this.currentPage.evaluate(() => {
+    //   return window.driverUtils.extractCleanViewStructure();
+    // });
+
+    return "HELLO";
   }
 
   /**

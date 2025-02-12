@@ -5,15 +5,15 @@ import fs from "fs";
 export async function bundleDriverUtils(): Promise<string> {
   try {
     const result = await esbuild.build({
-      entryPoints: [path.resolve(__dirname, "../utils.ts")],
+      entryPoints: [path.resolve(__dirname, "../manipulate.ts")],
       bundle: true,
       write: false,
       format: "iife",
       globalName: "driverUtils",
       target: ["chrome100"],
-      footer: {
-        js: "window.driverUtils = driverUtils.default;",
-      },
+      // footer: {
+      //   js: "window.driverUtils = driverUtils.default;",
+      // },
     });
 
     if (!result.outputFiles?.[0]) {
