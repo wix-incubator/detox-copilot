@@ -4,10 +4,12 @@ import {
   setupTestEnvironment,
   teardownTestEnvironment,
 } from "./setup";
+import WebTestingFrameworkDriverHelper from "../index"
 
 describe("Wix Domains Page Testing", () => {
   let testContext: TestContext;
   let page: PuppeteerPage;
+  let driverUtils : WebTestingFrameworkDriverHelper = new WebTestingFrameworkDriverHelper();
 
   beforeAll(async () => {
     testContext = await setupTestEnvironment("wix-domains.html", "puppeteer");
@@ -19,16 +21,12 @@ describe("Wix Domains Page Testing", () => {
   });
 
   beforeEach(async () => {
-    await page.evaluate(() => {
-      window.driverUtils.cleanupStyleChanges();
-    });
+    await driverUtils.cleanUpStyleChanges(page);
   });
 
   it("should match the screenshot against the baseline image", async () => {
-    await page.evaluate(() => {
-      window.driverUtils.markImportantElements();
-      window.driverUtils.manipulateElementStyles();
-    });
+    await driverUtils.markElements(page);
+    await driverUtils.manipulateStyles(page);
     await page.setViewport({ width: 800, height: 600 });
     await page.addStyleTag({
       content: `
@@ -48,10 +46,8 @@ describe("Wix Domains Page Testing", () => {
   });
 
   it("should generate the expected clean view structure", async () => {
-    const structure = await page.evaluate(() => {
-      window.driverUtils.markImportantElements();
-      return window.driverUtils.extractCleanViewStructure();
-    });
+    await driverUtils.markElements(page);
+    const structure = await driverUtils.getCleanView(page);
     expect(structure).toMatchSnapshot("wix-domains-clean-view-structure");
   });
 });

@@ -20,37 +20,36 @@ export default class WebTestingFrameworkDriverHelper {
     const bundlePath = path.resolve(__dirname, bundleRelativePath);
     const bundleString = fs.readFileSync(bundlePath, "utf8");
     return await page.evaluate((code: string) => eval(code), bundleString);
-   
   }
 
   /**
    * Injects bundled code and marks important elements.
    */
-  private async markElements(page: Page): Promise<void> {
-    await this.executeBundledScript(page, "../dist/markElements.bundle.js");
+  async markElements(page: Page): Promise<void> {
+    await this.executeBundledScript(page, "../dist/markImportantElements.bundle.js");
   }
 
   /**
    * Manipulates element styles.
    */
-  private async manipulateStyles(page: Page): Promise<void> {
-    await this.executeBundledScript(page, "../dist/manipulateStyles.bundle.js");
+  async manipulateStyles(page: Page): Promise<void> {
+    await this.executeBundledScript(page, "../dist/manipulateElementStyles.bundle.js");
   }
 
   /**
    * Cleans up style changes.
    */
-  private async cleanUpStyleChanges(page: Page): Promise<void> {
-    await this.executeBundledScript(page, "../dist/cleanStyles.bundle.js");
+  async cleanUpStyleChanges(page: Page): Promise<void> {
+    await this.executeBundledScript(page, "../dist/cleanupStyleChanges.bundle.js");
   }
 
   /**
    * Gets the clean view hierarchy as a string.
    */
-  private async getCleanView(page: Page): Promise<string> {
+ async getCleanView(page: Page): Promise<string> {
     return await this.executeBundledScript(
       page,
-      "../dist/extractCleanView.bundle.js"
+      "../dist/extractCleanViewStructure.bundle.js"
     );
   }
 
