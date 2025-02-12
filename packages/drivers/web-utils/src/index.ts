@@ -16,16 +16,11 @@ export default class WebTestingFrameworkDriverHelper {
   private async executeBundledScript(
     page: Page,
     bundleRelativePath: string,
-    returnResult = false
   ): Promise<any> {
     const bundlePath = path.resolve(__dirname, bundleRelativePath);
     const bundleString = fs.readFileSync(bundlePath, "utf8");
-
-    if (returnResult) {
-      return await page.evaluate((code: string) => eval(code), bundleString);
-    } else {
-      await page.evaluate((code: string) => eval(code), bundleString);
-    }
+    return await page.evaluate((code: string) => eval(code), bundleString);
+   
   }
 
   /**
@@ -55,8 +50,7 @@ export default class WebTestingFrameworkDriverHelper {
   private async getCleanView(page: Page): Promise<string> {
     return await this.executeBundledScript(
       page,
-      "../dist/extractCleanView.bundle.js",
-      true
+      "../dist/extractCleanView.bundle.js"
     );
   }
 
