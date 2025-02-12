@@ -8,65 +8,89 @@ export default class WebTestingFrameworkDriverHelper {
   constructor() {}
 
   /**
-   * Injects bundled code and marks important elements
+   * Executes a bundled script within the page context.
+   * @param page - The web page instance.
+   * @param bundleRelativePath - Relative path to the bundled script.
+   * @param returnResult - Whether to return the result of the script execution.
    */
-  private async injectCodeAndMarkElements(page: Page): Promise<void> {
-    const bundledCodePath = require.resolve("../dist/web-utils.browser.js");
-    const bundledCode = fs.readFileSync(bundledCodePath, "utf8");
-    await page.evaluate((bundledCode) => {
-      // eval bundled code as IIFE code:
-      eval(bundledCode);
-      // const func = new Function(
-      //   fs.readFileSync(bundledCodePath, "utf8")
-      // )();
-    }, bundledCode);
+  private async executeBundledScript(
+    page: Page,
+    bundleRelativePath: string,
+    returnResult = false
+  ): Promise<any> {
+    const bundlePath = path.resolve(__dirname, bundleRelativePath);
+    const bundleString = fs.readFileSync(bundlePath, "utf8");
+
+    if (returnResult) {
+      return await page.evaluate((code: string) => eval(code), bundleString);
+    } else {
+      await page.evaluate((code: string) => eval(code), bundleString);
+    }
   }
 
   /**
-   * Manipulates element styles
+   * Injects bundled code and marks important elements.
+   */
+  private async markElements(page: Page): Promise<void> {
+    await this.executeBundledScript(page, "../dist/markElements.bundle.js");
+  }
+
+  /**
+   * Manipulates element styles.
    */
   private async manipulateStyles(page: Page): Promise<void> {
-    // await page.evaluate(() => {
-    //   window.driverUtils.manipulateElementStyles();
-    // });
+    await this.executeBundledScript(page, "../dist/manipulateStyles.bundle.js");
   }
 
   /**
-   * Cleans up style changes
+   * Cleans up style changes.
    */
   private async cleanUpStyleChanges(page: Page): Promise<void> {
-    // await page.evaluate(() => {
-    //   window.driverUtils.cleanupStyleChanges();
-    // });
+    await this.executeBundledScript(page, "../dist/cleanStyles.bundle.js");
   }
 
   /**
-   * Captures a snapshot image
+   * Gets the clean view hierarchy as a string.
+   */
+  private async getCleanView(page: Page): Promise<string> {
+    return await this.executeBundledScript(
+      page,
+      "../dist/extractCleanView.bundle.js",
+      true
+    );
+  }
+
+  /**
+   * Captures a snapshot image.
    */
   async captureSnapshotImage(): Promise<string | undefined> {
     if (!this.currentPage) {
       return undefined;
     }
 
-    const fileName = `temp/snapshot_${Date.now()}.png`;
+    const tempDir = "temp";
+    const fileName = `snapshot_${Date.now()}.png`;
+    const filePath = path.resolve(tempDir, fileName);
 
     // Create temp directory if it doesn't exist
-    if (!fs.existsSync("temp")) {
-      fs.mkdirSync("temp");
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
     }
 
-    await this.injectCodeAndMarkElements(this.currentPage);
+    await this.markElements(this.currentPage);
     await this.manipulateStyles(this.currentPage);
+
     await this.currentPage.screenshot({
-      path: fileName,
+      path: filePath,
       fullPage: true,
     });
+
     await this.cleanUpStyleChanges(this.currentPage);
-    return path.resolve(fileName);
+    return filePath;
   }
 
   /**
-   * Captures the view hierarchy as a string
+   * Captures the view hierarchy as a string.
    */
   async captureViewHierarchyString(): Promise<string> {
     if (!this.currentPage) {
@@ -75,23 +99,20 @@ export default class WebTestingFrameworkDriverHelper {
         "START A NEW ONE BASED ON THE ACTION NEED OR RAISE AN ERROR"
       );
     }
-    await this.injectCodeAndMarkElements(this.currentPage);
-    // return await this.currentPage.evaluate(() => {
-    //   return window.driverUtils.extractCleanViewStructure();
-    // });
 
-    return "HELLO";
+    await this.markElements(this.currentPage);
+    return await this.getCleanView(this.currentPage);
   }
 
   /**
-   * Sets current working page
+   * Sets the current working page.
    */
-  setCurrentPage(page: Page) {
+  setCurrentPage(page: Page): void {
     this.currentPage = page;
   }
 
   /**
-   * Gets the current page identifier
+   * Gets the current page.
    */
   getCurrentPage(): Page | undefined {
     return this.currentPage;

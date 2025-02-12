@@ -1,32 +1,33 @@
 import * as esbuild from "esbuild";
-import * as path from "path";
 import fs from "fs";
+import path from "path";
 
-export async function bundleDriverUtils(): Promise<string> {
+export async function bundleDriverUtils(
+  entryFilePath = "../utils.ts",
+  outputFilePath = "../../dist/web-utils.browser.js"
+): Promise<string> {
+  const resolvedEntryPath = path.resolve(__dirname, entryFilePath);
+  const resolvedOutputPath = path.resolve(__dirname, outputFilePath);
+
   try {
-    const result = await esbuild.build({
-      entryPoints: [path.resolve(__dirname, "../manipulate.ts")],
+    const { outputFiles } = await esbuild.build({
+      entryPoints: [resolvedEntryPath],
       bundle: true,
       write: false,
       format: "iife",
-      globalName: "driverUtils",
       target: ["chrome100"],
-      // footer: {
-      //   js: "window.driverUtils = driverUtils.default;",
-      // },
     });
 
-    if (!result.outputFiles?.[0]) {
+    const [output] = outputFiles || [];
+
+    if (!output) {
       throw new Error("Bundle generation failed: No output produced");
     }
-    const outputPath = path.resolve(
-      __dirname,
-      "../../dist/web-utils.browser.js",
-    );
-    fs.writeFileSync(outputPath, result.outputFiles[0].text, "utf8");
-    return result.outputFiles[0].text;
+
+    await fs.promises.writeFile(resolvedOutputPath, output.text, "utf8");
+    return output.text;
   } catch (error) {
-    console.error("Bundling failed:", error);
+    console.error(`Bundling failed for ${resolvedEntryPath}:`, error);
     throw error;
   }
 }
