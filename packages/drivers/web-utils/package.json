@@ -15,7 +15,7 @@
     "url": "git+https://github.com/wix-incubator/pilot.git"
   },
   "scripts": {
-    "build": "tsc && tsc-alias && ts-node src/test/createBundleDriverUtilsFile.ts",
+    "build": "tsc && tsc-alias && ts-node src/manipulateElementStylesScript.ts",
     "test": "echo skipping tests",
     "test:web-utils": "jest",
     "bump-version:patch": "npm version patch && git commit -am 'chore: bump patch version' && git push",

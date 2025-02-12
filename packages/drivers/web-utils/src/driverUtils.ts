@@ -31,7 +31,7 @@ export interface DriverUtils {
   cleanupStyleChanges: () => void;
 }
 
-const utils: DriverUtils = {
+const driverUtils: DriverUtils = {
   markImportantElements(options?: { includeHidden?: boolean }) {
     const selector = tags.join(",");
     const elements = Array.from(document.querySelectorAll(selector));
@@ -152,4 +152,4 @@ const utils: DriverUtils = {
   },
 };
 
-export default utils;
+export default driverUtils;
