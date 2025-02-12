@@ -36,7 +36,6 @@ const utils: DriverUtils = {
     const selector = tags.join(",");
     const elements = Array.from(document.querySelectorAll(selector));
     const categoryCounts = new Map<ElementCategory, number>();
-
     elements.forEach((el) => {
       if (!options?.includeHidden && isElementHidden(el)) return;
 
