@@ -4,7 +4,6 @@ import {
   teardownTestEnvironment,
 } from "./setup";
 import { Page as PlaywrightPage } from "playwright";
-import driverUtils from "../driverUtils";
 
 describe("Wix Domains Page Testing", () => {
   let testContext: TestContext;
@@ -20,16 +19,16 @@ describe("Wix Domains Page Testing", () => {
   });
 
   beforeEach(async () => {
-    await page.evaluate((driverUtils) => {
-      driverUtils.cleanupStyleChanges();
-    }, driverUtils);
+    await page.evaluate(() => {
+      window.driverUtils.cleanupStyleChanges();
+    });
   });
 
   it("should match the screenshot against the baseline image", async () => {
-    await page.evaluate((driverUtils) => {
-      driverUtils.markImportantElements();
-      driverUtils.manipulateElementStyles();
-    }, driverUtils);
+    await page.evaluate(() => {
+      window.driverUtils.markImportantElements();
+      window.driverUtils.manipulateElementStyles();
+    });
 
     await page.setViewportSize({ width: 800, height: 600 });
     await page.addStyleTag({
@@ -40,9 +39,7 @@ describe("Wix Domains Page Testing", () => {
         }
       `,
     });
-
     const screenshot = await page.screenshot({ fullPage: true });
-
     expect(screenshot).toMatchImageSnapshot({
       customSnapshotIdentifier: "wix-domains-playwright-desktop",
       failureThreshold: 0.05,
@@ -51,11 +48,10 @@ describe("Wix Domains Page Testing", () => {
   });
 
   it("should generate the expected clean view structure", async () => {
-    const structure = await page.evaluate((driverUtils) => {
-      driverUtils.markImportantElements();
-      return driverUtils.extractCleanViewStructure();
-    }, driverUtils);
-
+    const structure = await page.evaluate(() => {
+      window.driverUtils.markImportantElements();
+      return window.driverUtils.extractCleanViewStructure();
+    });
     expect(structure).toMatchSnapshot("wix-domains-clean-view-structure");
   });
 });

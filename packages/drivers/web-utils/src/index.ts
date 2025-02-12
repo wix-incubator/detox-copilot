@@ -1,30 +1,55 @@
 import fs from "fs";
 import path from "path";
 import { Page } from "./types";
-import driverUtils from "./driverUtils";
+
+declare global {
+  interface Window {
+    driverUtils: typeof import("./utils").default;
+  }
+}
 
 export default class WebTestingFrameworkDriverHelper {
   protected currentPage?: Page;
+
+  constructor() {}
 
   /**
    * Injects bundled code and marks important elements
    */
   private async injectCodeAndMarkElements(page: Page): Promise<void> {
-    await page.evaluate((driverUtils) => driverUtils.markImportantElements(), driverUtils);
+    const bundledCodePath = require.resolve("../dist/web-utils.browser.js");
+    const isInjected = await page.evaluate(
+      () => typeof window.driverUtils?.markImportantElements === "function",
+    );
+
+    if (!isInjected) {
+      await page.addScriptTag({
+        content: fs.readFileSync(bundledCodePath, "utf8"),
+      });
+      console.log("Bundled script injected into the page.");
+    } else {
+      console.log("Bundled script already injected. Skipping injection.");
+    }
+
+    await page.evaluate(() => window.driverUtils.markImportantElements());
   }
 
   /**
    * Manipulates element styles
    */
   private async manipulateStyles(page: Page): Promise<void> {
-    await page.evaluate((driverUtils) => driverUtils.manipulateElementStyles(), driverUtils);
+    await page.evaluate(() => {
+      window.driverUtils.manipulateElementStyles();
+    });
   }
 
   /**
    * Cleans up style changes
    */
   private async cleanUpStyleChanges(page: Page): Promise<void> {
-    await page.evaluate((driverUtils) => driverUtils.cleanupStyleChanges(), driverUtils);
+    await page.evaluate(() => {
+      window.driverUtils.cleanupStyleChanges();
+    });
   }
 
   /**
@@ -63,8 +88,9 @@ export default class WebTestingFrameworkDriverHelper {
       );
     }
     await this.injectCodeAndMarkElements(this.currentPage);
-    return await this.currentPage.evaluate(
-        (driverUtils) => driverUtils.extractCleanViewStructure(), driverUtils);
+    return await this.currentPage.evaluate(() => {
+      return window.driverUtils.extractCleanViewStructure();
+    });
   }
 
   /**
