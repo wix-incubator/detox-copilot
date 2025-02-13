@@ -25,7 +25,7 @@ export default class WebTestingFrameworkDriverHelper {
   /**
    * Injects bundled code and marks important elements.
    */
-  async markElements(page: Page): Promise<void> {
+  async markImportantElements(page: Page): Promise<void> {
     await this.executeBundledScript(
       page,
       "../dist/markImportantElements.bundle.js",
@@ -35,29 +35,29 @@ export default class WebTestingFrameworkDriverHelper {
   /**
    * Manipulates element styles.
    */
-  async manipulateStyles(page: Page): Promise<void> {
+  async highlightMarkedElements(page: Page): Promise<void> {
     await this.executeBundledScript(
       page,
-      "../dist/manipulateElementStyles.bundle.js",
+      "../dist/highlightMarkedElements.bundle.js",
     );
   }
 
   /**
    * Cleans up style changes.
    */
-  async cleanUpStyleChanges(page: Page): Promise<void> {
+  async removeMarkedElementsHighlights(page: Page): Promise<void> {
     await this.executeBundledScript(
       page,
-      "../dist/cleanupStyleChanges.bundle.js",
+      "../dist/removeMarkedElementsHighlights.bundle.js",
     );
   }
 
   /**
    * Gets the clean view hierarchy as a string.
    */
-  async getCleanView(page: Page): Promise<string> {
+  async createMarkedViewHierarchy(page: Page): Promise<string> {
     return await page.evaluate(() => {
-      return window.extractCleanViewStructure();
+      return window.createMarkedViewHierarchy();
     });
   }
 
@@ -78,15 +78,15 @@ export default class WebTestingFrameworkDriverHelper {
       fs.mkdirSync(tempDir);
     }
 
-    await this.markElements(this.currentPage);
-    await this.manipulateStyles(this.currentPage);
+    await this.markImportantElements(this.currentPage);
+    await this.highlightMarkedElements(this.currentPage);
 
     await this.currentPage.screenshot({
       path: filePath,
       fullPage: true,
     });
 
-    await this.cleanUpStyleChanges(this.currentPage);
+    await this.removeMarkedElementsHighlights(this.currentPage);
     return filePath;
   }
 
@@ -101,8 +101,8 @@ export default class WebTestingFrameworkDriverHelper {
       );
     }
 
-    await this.markElements(this.currentPage);
-    return await this.getCleanView(this.currentPage);
+    await this.markImportantElements(this.currentPage);
+    return await this.createMarkedViewHierarchy(this.currentPage);
   }
 
   /**

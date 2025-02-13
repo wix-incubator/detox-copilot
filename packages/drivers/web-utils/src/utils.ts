@@ -4,7 +4,7 @@ import { ElementCategory } from "./types";
 
 declare global {
   interface Window {
-    extractCleanViewStructure: () => string;
+    createMarkedViewHierarchy: () => string;
   }
 }
 
@@ -48,7 +48,7 @@ export function markImportantElements(options?: { includeHidden?: boolean }) {
   });
 }
 
-export function extractCleanViewStructure() {
+export function createMarkedViewHierarchy() {
   const clone = document.documentElement.cloneNode(true) as HTMLElement;
 
   function processElement(element: Element, depth = 0): string {
@@ -108,7 +108,7 @@ export function extractCleanViewStructure() {
   return processElement(clone);
 }
 
-export function manipulateElementStyles() {
+export function highlightMarkedElements() {
   const styleId = "aria-pilot-styles";
   const oldStyle = document.getElementById(styleId);
   if (oldStyle) oldStyle.remove();
@@ -144,11 +144,11 @@ export function manipulateElementStyles() {
   document.head.appendChild(style);
 }
 
-export function cleanupStyleChanges() {
+export function removeMarkedElementsHighlights() {
   const style = document.getElementById("aria-pilot-styles");
   style?.remove();
 }
 
 if (typeof window !== "undefined") {
-  window.extractCleanViewStructure = extractCleanViewStructure;
+  window.createMarkedViewHierarchy = createMarkedViewHierarchy;
 }

@@ -22,12 +22,12 @@ describe("Wix Domains Page Testing", () => {
   });
 
   beforeEach(async () => {
-    await driverUtils.cleanUpStyleChanges(page);
+    await driverUtils.removeMarkedElementsHighlights(page);
   });
 
   it("should match the screenshot against the baseline image", async () => {
-    await driverUtils.markElements(page);
-    await driverUtils.manipulateStyles(page);
+    await driverUtils.markImportantElements(page);
+    await driverUtils.highlightMarkedElements(page);
     await page.setViewportSize({ width: 800, height: 600 });
     await page.addStyleTag({
       content: `
@@ -47,8 +47,8 @@ describe("Wix Domains Page Testing", () => {
   });
 
   it("should generate the expected clean view structure", async () => {
-    await driverUtils.markElements(page);
-    const structure = await driverUtils.getCleanView(page);
+    await driverUtils.markImportantElements(page);
+    const structure = await driverUtils.createMarkedViewHierarchy(page);
     expect(structure).toMatchSnapshot("wix-domains-clean-view-structure");
   });
 });
