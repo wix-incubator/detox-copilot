@@ -19,28 +19,37 @@ export default class WebTestingFrameworkDriverHelper {
   ): Promise<any> {
     const bundlePath = path.resolve(__dirname, bundleRelativePath);
     const bundleString = fs.readFileSync(bundlePath, "utf8");
-    await page.evaluate((code: string) => eval(code) , bundleString);
+    await page.evaluate((code: string) => eval(code), bundleString);
   }
 
   /**
    * Injects bundled code and marks important elements.
    */
   async markElements(page: Page): Promise<void> {
-    await this.executeBundledScript(page, "../dist/markImportantElements.bundle.js");
+    await this.executeBundledScript(
+      page,
+      "../dist/markImportantElements.bundle.js",
+    );
   }
 
   /**
    * Manipulates element styles.
    */
   async manipulateStyles(page: Page): Promise<void> {
-    await this.executeBundledScript(page, "../dist/manipulateElementStyles.bundle.js");
+    await this.executeBundledScript(
+      page,
+      "../dist/manipulateElementStyles.bundle.js",
+    );
   }
 
   /**
    * Cleans up style changes.
    */
   async cleanUpStyleChanges(page: Page): Promise<void> {
-    await this.executeBundledScript(page, "../dist/cleanupStyleChanges.bundle.js");
+    await this.executeBundledScript(
+      page,
+      "../dist/cleanupStyleChanges.bundle.js",
+    );
   }
 
   /**

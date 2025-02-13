@@ -4,12 +4,13 @@ import {
   teardownTestEnvironment,
 } from "./setup";
 import { Page as PlaywrightPage } from "playwright";
-import WebTestingFrameworkDriverHelper from "../index"
+import WebTestingFrameworkDriverHelper from "../index";
 
 describe("Wix Domains Page Testing", () => {
   let testContext: TestContext;
   let page: PlaywrightPage;
-  let driverUtils : WebTestingFrameworkDriverHelper = new WebTestingFrameworkDriverHelper();
+  const driverUtils: WebTestingFrameworkDriverHelper =
+    new WebTestingFrameworkDriverHelper();
 
   beforeAll(async () => {
     testContext = await setupTestEnvironment("wix-domains.html", "playwright");

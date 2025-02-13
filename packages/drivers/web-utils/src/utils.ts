@@ -2,10 +2,9 @@ import getElementCategory, { tags } from "./getElementCategory";
 import isElementHidden from "./isElementHidden";
 import { ElementCategory } from "./types";
 
-
 declare global {
   interface Window {
-      extractCleanViewStructure: () => string;
+    extractCleanViewStructure: () => string;
   }
 }
 

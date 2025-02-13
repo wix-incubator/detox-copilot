@@ -1,8 +1,12 @@
 import path from "path";
 import fs from "fs";
 import * as esbuild from "esbuild";
+import * as utils from "../utils";
 
-async function bundleUtil(methodName: string, outputFilePath: string): Promise<string> {
+async function bundleUtil(
+  methodName: string,
+  outputFilePath: string,
+): Promise<string> {
   const tempDir = path.resolve(__dirname, "./temp");
   await fs.promises.mkdir(tempDir, { recursive: true });
 
@@ -11,7 +15,7 @@ async function bundleUtil(methodName: string, outputFilePath: string): Promise<s
     import {${methodName}} from "../../utils";
     ${methodName}();
   `;
-  
+
   await fs.promises.writeFile(tempFilePath, fileContent, "utf8");
 
   try {
@@ -35,18 +39,17 @@ async function bundleUtil(methodName: string, outputFilePath: string): Promise<s
     console.error(`Bundling failed for ${tempFilePath}:`, error);
     throw error;
   } finally {
-      await fs.promises.unlink(tempFilePath);
+    await fs.promises.unlink(tempFilePath);
   }
 }
 
 (async () => {
-  const utils = require("../utils");
   const methodNames = Object.keys(utils);
 
   for (const methodName of methodNames) {
     const outputFilePath = path.resolve(
       __dirname,
-      `../../dist/${methodName}.bundle.js`
+      `../../dist/${methodName}.bundle.js`,
     );
 
     try {

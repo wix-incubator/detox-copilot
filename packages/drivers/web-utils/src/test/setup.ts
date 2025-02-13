@@ -14,7 +14,6 @@ type FrameworkDriver = "puppeteer" | "playwright";
 
 expect.extend({ toMatchImageSnapshot });
 
-
 export interface TestContext {
   browser: PuppeteerBrowser | PlaywrightBrowser;
   context?: PlaywrightContext;
@@ -54,7 +53,7 @@ export async function setupTestEnvironment(
 
     await page.goto(`file://${__dirname}/test-pages/${htmlFileName}`);
 
-    return { browser, context, page};
+    return { browser, context, page };
   } catch (error) {
     console.error("Setup failed:", error);
     throw error;
