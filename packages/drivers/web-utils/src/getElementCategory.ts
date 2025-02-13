@@ -84,16 +84,26 @@ function getElementCategory(el: Element): ElementCategory | undefined {
 
   const tag = el.tagName.toLowerCase();
   const categoryResolver = tagToCategory[tag];
+  const _isScrollable = isScrollable(el);
 
   if (typeof categoryResolver === "function") {
-    return categoryResolver(el);
+    const category = categoryResolver(el);
+    if (category === undefined) {
+      return _isScrollable ? "scrollable" : undefined;
+    }
+    return category;
   } else if (categoryResolver) {
     return categoryResolver;
   }
 
   // TODO: content editable --> input
   // TODO: cursor auto --> input
-  return isCustomInteractiveElement(el) ? "button" : undefined;
+
+  return isCustomInteractiveElement(el)
+    ? "button"
+    : _isScrollable
+      ? "scrollable"
+      : undefined;
 }
 
 function isParentMarkedAsButton(el: Element, depth = 0, maxDepth = 2): boolean {
@@ -153,6 +163,34 @@ function isCustomInteractiveElement(el: Element): boolean {
       el.getAttribute("role") === "button" ||
       pointerCursor)
   );
+}
+
+// Helper function to check if an element is scrollable
+function isScrollable(el: Element): boolean {
+  // Check for specific CSS classes that indicate scrollability
+  const scrollableClasses = ["scrollable", "overflow-auto"]; // Customize these classes per your project
+  for (const className of scrollableClasses) {
+    if (el.classList.contains(className)) {
+      return true; // Element is explicitly marked as scrollable
+    }
+  }
+
+  // Get computed styles
+  const overflowX = getComputedStyle(el).overflowX;
+  const overflowY = getComputedStyle(el).overflowY;
+
+  // Check if this element has a scrollable style
+  const isScrollableByStyle =
+    overflowX === "scroll" ||
+    overflowY === "scroll" ||
+    overflowX === "auto" ||
+    overflowY === "auto";
+
+  // Check the element's dimensions and content to avoid false positives
+  const hasScrollableContent =
+    el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
+
+  return isScrollableByStyle && hasScrollableContent;
 }
 
 export default getElementCategory;

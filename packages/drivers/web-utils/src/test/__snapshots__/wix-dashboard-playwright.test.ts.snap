@@ -2044,7 +2044,7 @@ exports[`Wix Dashboard Page Testing should generate the expected clean view stru
                                                                   </div>
                                                                 </div>
                                                               </div>
-                                                              <div>
+                                                              <div aria-pilot-category="scrollable" aria-pilot-index="0" data-category="scrollable" data-index="0">
                                                                 <div>
                                                                   <div>
                                                                     <div>
