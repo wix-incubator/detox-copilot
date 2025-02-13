@@ -4,7 +4,6 @@ import {
 } from "@wix-pilot/core";
 import * as puppeteer from "puppeteer-core";
 import WebTestingFrameworkDriverHelper from "@wix-pilot/web-utils";
-import fs from "fs";
 
 export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
   private executablePath?: string;
@@ -29,44 +28,6 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
    */
   setCurrentPage(page: puppeteer.Page): void {
     this.driverUtils.setCurrentPage(page);
-  }
-
-  /**
-   * Injects bundeled code to page and marks important elements in the DOM
-   */
-  async injectCodeAndMarkElements(page: puppeteer.Page): Promise<void> {
-    const isInjected = await page.evaluate(
-      () => typeof window.driverUtils?.markImportantElements === "function",
-    );
-
-    if (!isInjected) {
-      await page.addScriptTag({
-        content: fs.readFileSync(this.driverUtils.getBundledCodePath(), "utf8"),
-      });
-      console.log("Bundled script injected into the page.");
-    } else {
-      console.log("Bundled script already injected. Skipping injection.");
-    }
-
-    await page.evaluate(() => window.driverUtils.markImportantElements());
-  }
-
-  /**
-   * Mark the elements and separates them to categories
-   */
-  async manipulateStyles(page: puppeteer.Page): Promise<void> {
-    await page.evaluate(() => {
-      window.driverUtils.manipulateElementStyles();
-    });
-  }
-
-  /**
-   * Clean up page style changes
-   */
-  async cleanUpStyleChanges(page: puppeteer.Page): Promise<void> {
-    await page.evaluate(() => {
-      window.driverUtils.cleanupStyleChanges();
-    });
   }
 
   /**
@@ -142,10 +103,10 @@ export class PuppeteerFrameworkDriver implements TestingFrameworkDriver {
               example: "const page = getCurrentPage();",
             },
             {
-              signature: "await setCurrentPage(page)",
+              signature: "setCurrentPage(page)",
               description:
                 "Sets the current page instance for the driver to interact with (required if setting a new page).",
-              example: "await setCurrentPage(page);",
+              example: "setCurrentPage(page);",
             },
           ],
         },

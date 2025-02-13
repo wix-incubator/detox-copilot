@@ -4,7 +4,6 @@ import { Page } from "./types";
 
 export default class WebTestingFrameworkDriverHelper {
   protected currentPage?: Page;
-  protected bundledCodePath = require.resolve("../dist/web-utils.browser.js");
 
   constructor() {}
 
@@ -118,12 +117,5 @@ export default class WebTestingFrameworkDriverHelper {
    */
   getCurrentPage(): Page | undefined {
     return this.currentPage;
-  }
-
-  /**
-   * Gets the bundle code path
-   */
-  getBundledCodePath(): string {
-    return this.bundledCodePath;
   }
 }

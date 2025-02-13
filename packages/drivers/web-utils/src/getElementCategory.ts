@@ -96,9 +96,6 @@ function getElementCategory(el: Element): ElementCategory | undefined {
     return categoryResolver;
   }
 
-  // TODO: content editable --> input
-  // TODO: cursor auto --> input
-
   return isCustomInteractiveElement(el)
     ? "button"
     : _isScrollable
