@@ -2,6 +2,13 @@ import getElementCategory, { tags } from "./getElementCategory";
 import isElementHidden from "./isElementHidden";
 import { ElementCategory } from "./types";
 
+
+declare global {
+  interface Window {
+      extractCleanViewStructure: () => string;
+  }
+}
+
 const CATEGORY_COLORS: Record<ElementCategory, [string, string]> = {
   button: ["#ff0000", "#ffffff"],
   link: ["#0aff0a", "#000000"],
@@ -141,4 +148,8 @@ export function manipulateElementStyles() {
 export function cleanupStyleChanges() {
   const style = document.getElementById("aria-pilot-styles");
   style?.remove();
+}
+
+if (typeof window !== "undefined") {
+  window.extractCleanViewStructure = extractCleanViewStructure;
 }

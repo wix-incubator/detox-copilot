@@ -31,6 +31,4 @@ export interface Page {
   }): Promise<Buffer | string>;
 
   close(): Promise<void>;
-
-  setBypassCSP(enabled: boolean): Promise<void>;
 }

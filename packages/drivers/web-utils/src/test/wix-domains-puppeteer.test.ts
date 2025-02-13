@@ -33,6 +33,7 @@ describe("Wix Domains Page Testing", () => {
         * {
           animation: none !important;
           transition: none !important;
+          will-change: auto !important;
         }
       `,
     });

@@ -19,7 +19,7 @@ export default class WebTestingFrameworkDriverHelper {
   ): Promise<any> {
     const bundlePath = path.resolve(__dirname, bundleRelativePath);
     const bundleString = fs.readFileSync(bundlePath, "utf8");
-    return await page.evaluate((code: string) => eval(code), bundleString);
+    await page.evaluate((code: string) => eval(code) , bundleString);
   }
 
   /**
@@ -46,11 +46,10 @@ export default class WebTestingFrameworkDriverHelper {
   /**
    * Gets the clean view hierarchy as a string.
    */
- async getCleanView(page: Page): Promise<string> {
-    return await this.executeBundledScript(
-      page,
-      "../dist/extractCleanViewStructure.bundle.js"
-    );
+  async getCleanView(page: Page): Promise<string> {
+    return await page.evaluate(() => {
+      return window.extractCleanViewStructure();
+    });
   }
 
   /**
