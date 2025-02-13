@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-export class StepPerformerCacheHandler {
+export class CacheHandler {
   private cache: Map<string, any> = new Map();
   private temporaryCache: Map<string, any> = new Map();
   private readonly cacheFilePath: string;

@@ -1,7 +1,7 @@
 import { StepPerformer } from "@/performers/step-performer/StepPerformer";
 import { StepPerformerPromptCreator } from "./StepPerformerPromptCreator";
 import { CodeEvaluator } from "@/common/CodeEvaluator";
-import { StepPerformerCacheHandler } from "@/performers/step-performer/StepPerformerCacheHandler";
+import { CacheHandler } from "../../common/cacheHandler/CacheHandler";
 import { SnapshotComparator } from "@/common/snapshot/comparator/SnapshotComparator";
 import {
   PromptHandler,
@@ -41,7 +41,7 @@ describe("CopilotStepPerformer", () => {
   let mockViewAnalysisPromptCreator: jest.Mocked<ViewAnalysisPromptCreator>;
   let mockCodeEvaluator: jest.Mocked<CodeEvaluator>;
   let mockPromptHandler: jest.Mocked<PromptHandler>;
-  let mockCacheHandler: jest.Mocked<StepPerformerCacheHandler>;
+  let mockCacheHandler: jest.Mocked<CacheHandler>;
   let mockSnapshotComparator: jest.Mocked<SnapshotComparator>;
   let uuidCounter = 0;
 
@@ -94,7 +94,7 @@ describe("CopilotStepPerformer", () => {
       clearTemporaryCache: jest.fn(),
       getStepFromCache: jest.fn(),
       getFromTemporaryCache: jest.fn(),
-    } as unknown as jest.Mocked<StepPerformerCacheHandler>;
+    } as unknown as jest.Mocked<CacheHandler>;
 
     mockSnapshotComparator = {
       generateHashes: jest.fn(),

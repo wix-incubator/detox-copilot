@@ -2,7 +2,7 @@ import { StepPerformerPromptCreator } from "./StepPerformerPromptCreator";
 import { CodeEvaluator } from "@/common/CodeEvaluator";
 import { APISearchPromptCreator } from "@/common/prompts/APISearchPromptCreator";
 import { ViewAnalysisPromptCreator } from "@/common/prompts/ViewAnalysisPromptCreator";
-import { StepPerformerCacheHandler } from "@/performers/step-performer/StepPerformerCacheHandler";
+import { CacheHandler } from "@/common/cacheHandler/CacheHandler";
 import { SnapshotComparator } from "@/common/snapshot/comparator/SnapshotComparator";
 import {
   AnalysisMode,
@@ -30,7 +30,7 @@ export class StepPerformer {
     private viewAnalysisPromptCreator: ViewAnalysisPromptCreator,
     private codeEvaluator: CodeEvaluator,
     private promptHandler: PromptHandler,
-    private cacheHandler: StepPerformerCacheHandler,
+    private cacheHandler: CacheHandler,
     private snapshotComparator: SnapshotComparator,
     cacheMode: CacheMode = "full",
     analysisMode: AnalysisMode = "fast",

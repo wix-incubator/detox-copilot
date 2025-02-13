@@ -6,7 +6,7 @@ import {
 } from "@/types";
 import { PilotError } from "@/errors/PilotError";
 import { StepPerformer } from "@/performers/step-performer/StepPerformer";
-import { StepPerformerCacheHandler } from "@/performers/step-performer/StepPerformerCacheHandler";
+import { CacheHandler } from "@/common/cacheHandler/CacheHandler";
 import { AutoPerformer } from "@/performers/auto-performer/AutoPerformer";
 import { AutoPerformerPromptCreator } from "@/performers/auto-performer/AutoPerformerPromptCreator";
 import { AutoReport } from "@/types/auto";
@@ -31,7 +31,7 @@ export class Pilot {
   private previousSteps: PreviousStep[] = [];
   private stepPerformerPromptCreator: StepPerformerPromptCreator;
   private stepPerformer: StepPerformer;
-  private cacheHandler: StepPerformerCacheHandler;
+  private cacheHandler: CacheHandler;
   private running: boolean = false;
   private autoPerformer: AutoPerformer;
   private screenCapturer: ScreenCapturer;
@@ -43,7 +43,7 @@ export class Pilot {
       downscaleImage,
     );
 
-    this.cacheHandler = new StepPerformerCacheHandler();
+    this.cacheHandler = new CacheHandler();
     this.stepPerformerPromptCreator = new StepPerformerPromptCreator(
       config.frameworkDriver.apiCatalog,
     );
