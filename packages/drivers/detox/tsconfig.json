@@ -1,16 +1,23 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "moduleResolution": "node",
-    "target": "es2016",
+    "target": "es2022",
     "module": "commonjs",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "outDir": "./dist",
     "strict": true,
-    "skipLibCheck": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "./",
+    "types": ["jest", "node"],
+    "baseUrl": "./",
+    "resolveJsonModule": true
   },
-  "include": [
-    "e2e/**/*.ts",
-    "packages/**/*"
+  "include": ["./"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "examples",
+    "ExampleApp"
   ]
 }
