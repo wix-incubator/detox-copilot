@@ -1,5 +1,4 @@
 import { TestingFrameworkAPICatalog, TestingFrameworkDriver } from "@wix-pilot/core";
-import { expect } from "@jest/globals";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -55,10 +54,7 @@ export class WebdriverIOAppiumFrameworkDriver implements TestingFrameworkDriver 
       description:
         "WebdriverIO is a browser and mobile automation library; Appium is a cross-platform automation framework for native, hybrid, and mobile web apps.",
       context: {
-        // We expose `driver` here (assuming it's global). 
-        // You can reference it in your doc/catalog if needed:
         webdriverDriver: driver,
-        jestExpect: expect,
       },
       categories: [
         {

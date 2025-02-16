@@ -1,16 +1,17 @@
-// wdio.conf.ts
+import path from "path";
+
 export const config = {
     runner: 'local',
     specs: ['./examples/**/*.test.ts'],
     maxInstances: 1,
   
     capabilities: [{
-      platformName: 'iOS',
-      deviceName: 'iPhone 14',
-      automationName: 'XCUITest',
-      app: './apps/YourApp.app',
-    }],
-  
+        platformName: 'iOS',
+        'appium:deviceName': 'iPhone 15 Pro',
+        'appium:automationName': 'XCUITest',
+        'appium:app': path.resolve(__dirname, '../detox/ExampleApp/ios/build/Build/Products/Release-iphonesimulator/ExampleApp.app')
+      }],
+    
     logLevel: 'info',
     bail: 0,
     baseUrl: 'http://localhost',
@@ -27,11 +28,11 @@ export const config = {
     reporters: ['spec'],
     mochaOpts: {
       ui: 'bdd',
-      timeout: 60000,
+      timeout: 600000,
     },
   
     before: function () {
       global.driver = browser;
     },
-  };
+};
   

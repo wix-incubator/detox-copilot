@@ -1,12 +1,11 @@
 import pilot from "@wix-pilot/core";
 import { PromptHandler } from "../utils/promptHandler";
 import { WebdriverIOAppiumFrameworkDriver } from "../index";
-describe("Example Test Suite", () => {
-  jest.setTimeout(300000);
 
+describe("Example Test Suite", () => {
   let frameworkDriver: WebdriverIOAppiumFrameworkDriver;
 
-  beforeAll(async () => {
+  before(async () => {
     const promptHandler: PromptHandler = new PromptHandler();
     frameworkDriver = new WebdriverIOAppiumFrameworkDriver();
 
@@ -16,7 +15,6 @@ describe("Example Test Suite", () => {
     });
   });
 
-  
   beforeEach(async () => {
     pilot.start();
   });
@@ -26,8 +24,6 @@ describe("Example Test Suite", () => {
   });
 
   it("perform test with pilot", async () => {
-    await pilot.autopilot(
-      "Open https://github.com/wix-incubator/pilot and tell me what was the last commit about and who have created it",
-    );
+    await pilot.autopilot("earn 2 points in the game");
   });
 });
