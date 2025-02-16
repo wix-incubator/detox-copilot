@@ -17,7 +17,6 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "test": "echo No tests avialable for this package",
-    "test:example": "jest",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },
