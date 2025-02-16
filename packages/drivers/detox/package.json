@@ -17,7 +17,9 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "test": "echo No tests avialable for this package",
-    "test:example": "jest"
+    "test:example": "jest",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
   },
   "bugs": {
     "url": "https://github.com/wix-incubator/pilot/issues"

@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
     },
     controls: {
         padding: 16,
-        marginBottom: 20
+        marginBottom: 20,
     },
     switchContainer: {
         flexDirection: 'row',
@@ -57,7 +57,7 @@ export const styles = StyleSheet.create({
         backgroundColor: '#f8f8f8',
         justifyContent: 'center',
         alignItems: 'center',
-        marginVertical: "auto"
+        marginVertical: 'auto',
     },
     emojiTitle: {
         fontSize: 18,
@@ -217,7 +217,7 @@ export const styles = StyleSheet.create({
     },
     //star rating styles
     starRating: {
-        marginHorizontal: "auto",
+        marginHorizontal: 'auto',
     },
     //slider styles
     slider: {
