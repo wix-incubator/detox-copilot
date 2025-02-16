@@ -12,7 +12,7 @@ export class DetoxFrameworkDriver implements TestingFrameworkDriver {
         try {
             return await detox.device.generateViewHierarchyXml(true);
         } catch (_error) {
-            return "NO INNER VIEW HIERARCHY FOUND, APP IS PROBABLY NOT LAUNCHED YET";
+            return "NO ACTIVE APP FOUND, LAUNCH THE APP TO SEE THE VIEW HIERARCHY";
         }
     }
 
