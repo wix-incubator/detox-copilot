@@ -2,7 +2,8 @@
 import type { Browser } from "@wdio/types";
 
 declare global {
-  let driver: Browser;
+  // eslint-disable-next-line no-var
+  var driver: Browser;
   const browser: Browser;
 }
 
