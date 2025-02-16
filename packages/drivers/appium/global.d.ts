@@ -1,8 +1,8 @@
 // global.d.ts
-import type { Browser } from '@wdio/types';
+import type { Browser } from "@wdio/types";
 
 declare global {
-  var driver: Browser;
+  let driver: Browser;
   const browser: Browser;
 }
 

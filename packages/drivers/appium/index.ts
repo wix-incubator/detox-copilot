@@ -1,9 +1,13 @@
-import { TestingFrameworkAPICatalog, TestingFrameworkDriver } from "@wix-pilot/core";
+import {
+  TestingFrameworkAPICatalog,
+  TestingFrameworkDriver,
+} from "@wix-pilot/core";
 import * as fs from "fs";
 import * as path from "path";
 
-
-export class WebdriverIOAppiumFrameworkDriver implements TestingFrameworkDriver {
+export class WebdriverIOAppiumFrameworkDriver
+  implements TestingFrameworkDriver
+{
   /**
    * Attempts to capture the current view hierarchy (source) of the mobile app as XML.
    * If there's no active session or the app isn't running, returns an error message.
@@ -62,12 +66,14 @@ export class WebdriverIOAppiumFrameworkDriver implements TestingFrameworkDriver 
           items: [
             {
               signature: `driver.$('~accessibilityId')`,
-              description: "Locate an element by its accessibility ID (commonly used in Appium).",
+              description:
+                "Locate an element by its accessibility ID (commonly used in Appium).",
               example: `const loginButton = await driver.$('~loginButton'); // Accessibility ID`,
             },
             {
               signature: `driver.$('android=uiSelector')`,
-              description: "Locate an element using an Android UIAutomator selector.",
+              description:
+                "Locate an element using an Android UIAutomator selector.",
               example: `const el = await driver.$('android=new UiSelector().text("Login")');`,
             },
             {
@@ -98,7 +104,8 @@ export class WebdriverIOAppiumFrameworkDriver implements TestingFrameworkDriver 
             },
             {
               signature: `.setValue(value: string)`,
-              description: "Sets the value of an input/field (replaces existing text).",
+              description:
+                "Sets the value of an input/field (replaces existing text).",
               example: `await (await driver.$('~usernameInput')).setValue('myusername');`,
             },
             {
@@ -125,7 +132,8 @@ await (await driver.$('~dragHandle')).touchAction([
             },
             {
               signature: `.scrollIntoView() (web/hybrid context only)`,
-              description: "Scrolls the element into view (if in a web context).",
+              description:
+                "Scrolls the element into view (if in a web context).",
               example: `await (await driver.$('#someElement')).scrollIntoView();`,
             },
             {
@@ -157,7 +165,8 @@ await (await driver.$('~draggable')).dragAndDrop(
             },
             {
               signature: `toHaveText(text: string)`,
-              description: "Asserts that the element's text matches the given string.",
+              description:
+                "Asserts that the element's text matches the given string.",
               example: `await expect(await driver.$('~welcomeMessage')).toHaveText('Welcome, user!');`,
             },
             {
@@ -168,7 +177,8 @@ await (await driver.$('~draggable')).dragAndDrop(
             },
             {
               signature: `toBeEnabled() / toBeDisabled()`,
-              description: "Asserts that an element is enabled/disabled (if applicable).",
+              description:
+                "Asserts that an element is enabled/disabled (if applicable).",
               example: `await expect(await driver.$('~submitButton')).toBeEnabled();`,
             },
             {
@@ -209,17 +219,20 @@ await (await driver.$('~draggable')).dragAndDrop(
             },
             {
               signature: `driver.removeApp(bundleId: string)`,
-              description: "Uninstalls an app by its bundle identifier or package name.",
+              description:
+                "Uninstalls an app by its bundle identifier or package name.",
               example: `await driver.removeApp('com.example.myapp');`,
             },
             {
               signature: `driver.background(seconds: number)`,
-              description: "Sends the app to the background for a given number of seconds.",
+              description:
+                "Sends the app to the background for a given number of seconds.",
               example: `await driver.background(5); // 5 seconds`,
             },
             {
               signature: `driver.lock(seconds?: number)`,
-              description: "Locks the device screen for the specified number of seconds (Android only).",
+              description:
+                "Locks the device screen for the specified number of seconds (Android only).",
               example: `await driver.lock(10); // lock for 10 seconds`,
             },
             {
@@ -240,7 +253,8 @@ await driver.setGeoLocation({
             },
             {
               signature: `driver.getContext() / driver.switchContext(name: string)`,
-              description: "Gets or switches the current context (NATIVE_APP or WEBVIEW_xxx).",
+              description:
+                "Gets or switches the current context (NATIVE_APP or WEBVIEW_xxx).",
               example: `
 const contexts = await driver.getContexts();
 await driver.switchContext(contexts[1]); // Switch to webview
@@ -249,7 +263,8 @@ await driver.switchContext('NATIVE_APP'); // Switch back
             },
             {
               signature: `driver.rotate(params: { x: number; y: number; duration: number; radius: number; rotation: number; touchCount: number })`,
-              description: "Simulates a rotation gesture on the device (iOS only).",
+              description:
+                "Simulates a rotation gesture on the device (iOS only).",
               example: `
 await driver.rotate({
   x: 100,
@@ -320,12 +335,14 @@ await driver.switchContext(contexts.find(c => c.includes('WEBVIEW')));
             },
             {
               signature: `driver.$('selector').setValue('text')`,
-              description: "In a webview context, sets text in a web input field.",
+              description:
+                "In a webview context, sets text in a web input field.",
               example: `await (await driver.$('input#username')).setValue('myusername');`,
             },
             {
               signature: `.getText()`,
-              description: "Retrieves the visible text of a web element (hybrid/web context).",
+              description:
+                "Retrieves the visible text of a web element (hybrid/web context).",
               example: `
 const text = await (await driver.$('h1.main-title')).getText();
 expect(text).toBe('Welcome to My App');
