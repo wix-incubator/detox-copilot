@@ -16,6 +16,7 @@ const CATEGORY_COLORS: Record<ElementCategory, [string, string]> = {
   table: ["#ff6a02", "#ffffff"],
   header: ["#00c2ff", "#000000"],
   semantic: ["#bababa", "#000000"],
+  scrollable: ["#23333f", "#ffffff"],
 };
 
 const ATTRIBUTE_WHITELIST: Record<string, string[]> = {
