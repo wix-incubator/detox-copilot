@@ -9,9 +9,6 @@ module.exports = {
   reporters: ['detox/runners/jest/reporter'],
   testEnvironment: 'detox/runners/jest/testEnvironment',
   verbose: true,
-  // transform: {
-  //   '^.+\\.ts$': 'ts-jest',
-  // },
   transformIgnorePatterns: [
     'node_modules/(?!@react-native|react-native)',
   ],

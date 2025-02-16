@@ -18,18 +18,7 @@ describe("ExampleApp Detox Test Suite", () => {
             promptHandler,
         });
 
-        await device.launchApp({
-            newInstance: true,
-            launchArgs: {
-                // Any specific launch arguments you want to pass
-            }
-        });
-    });
-
-    afterAll(async () => {
-        // Terminate the app and reset the device after all tests
-        await device.terminateApp();
-        await device.uninstallApp();
+        await device.launchApp();
     });
 
     beforeEach(async () => {
@@ -49,7 +38,7 @@ describe("ExampleApp Detox Test Suite", () => {
         });
     });
 
-    describe.only("Colors Game", () => {
+    describe("Colors Game", () => {
         it("should verify the color matching game", async () => {
             await pilot.autopilot(`Play the color matching game by identifying words whose text color matches their meaning. Continue playing until you correctly match 3 colors.
             Notice that for every correct match, a success window will appear, and you will need to actively close it.`
