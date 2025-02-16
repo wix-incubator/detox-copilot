@@ -18,7 +18,8 @@
     "build": "tsc && tsc-alias",
     "test": "echo No tests avialable for this package",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint:fix": "eslint . --ext .ts --fix",
+    "type-check": "tsc --noEmit"
   },
   "bugs": {
     "url": "https://github.com/wix-incubator/pilot/issues"
