@@ -4,7 +4,6 @@ import {
 } from "@wix-pilot/core";
 import * as fs from "fs";
 import * as path from "path";
-import {} from "@wdio/types";
 export class WebdriverIOAppiumFrameworkDriver
   implements TestingFrameworkDriver
 {
@@ -63,6 +62,7 @@ export class WebdriverIOAppiumFrameworkDriver
         $$: $$,
         $: $,
         driver: driver,
+        expect: expect,
       },
       categories: [
         {
