@@ -83,8 +83,7 @@ export class WebdriverIOAppiumFrameworkDriver
             },
             {
               signature: `driver.$$('#elementSelector')`,
-              description:
-                "Locate all elements with a given selector",
+              description: "Locate all elements with a given selector",
               example: `const firstSite = await driver.$$('#Site')[index];`,
             },
             {
@@ -160,7 +159,6 @@ await (await driver.$('~draggable')).dragAndDrop(
         {
           title: "Assertions",
           items: [
-
             {
               signature: `toBeDisplayed()`,
               description: "Asserts that the element is displayed (visible).",
