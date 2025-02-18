@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "rootDir": "./",
-    "types": ["jest", "node", "mocha"],
+    "types": ["jest", "node", "mocha", "@wdio/globals/types"],
     "baseUrl": "./",
     "resolveJsonModule": true
   },

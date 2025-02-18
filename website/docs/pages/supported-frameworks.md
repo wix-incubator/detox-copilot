@@ -26,10 +26,8 @@ WebdriverIO integration with Appium. supports both iOS and Android testing
 
 ```js
 // 1. Install: npm install --save-dev @wix-pilot/webdriverio-appium
-// 2. Import:
+// 2. Import and use:
 import { WebdriverIOAppiumFrameworkDriver } from '@wix-pilot/webdriverio-appium';
-// 3. make sure you intalize the the framework driver with your global browser instance:
-frameworkDriver = new WebdriverIOAppiumFrameworkDriver(() => browser);
 
 it('should update profile', async () => {
   await pilot.perform(

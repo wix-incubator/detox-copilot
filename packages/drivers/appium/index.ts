@@ -4,12 +4,11 @@ import {
 } from "@wix-pilot/core";
 import * as fs from "fs";
 import * as path from "path";
-import type { Browser } from "webdriverio";
-
+import {} from "@wdio/types";
 export class WebdriverIOAppiumFrameworkDriver
   implements TestingFrameworkDriver
 {
-  constructor(private getDriver: () => Browser) {}
+  constructor() {}
   /**
    * Attempts to capture the current view hierarchy (source) of the mobile app as XML.
    * If there's no active session or the app isn't running, returns an error message.
@@ -18,7 +17,7 @@ export class WebdriverIOAppiumFrameworkDriver
     try {
       // In WebdriverIO + Appium, you can retrieve the current page source (UI hierarchy) via:
       // https://webdriver.io/docs/api/browser/getPageSource (driver is an alias for browser)
-      const pageSource = await this.getDriver().getPageSource();
+      const pageSource = await driver.getPageSource();
       return pageSource;
     } catch (_error) {
       return "NO ACTIVE APP FOUND, LAUNCH THE APP TO SEE THE VIEW HIERARCHY";
@@ -41,7 +40,7 @@ export class WebdriverIOAppiumFrameworkDriver
     try {
       // In WebdriverIO + Appium, driver.takeScreenshot() returns a base64-encoded PNG
       // https://webdriver.io/docs/api/browser/takeScreenshot
-      const base64Image = await this.getDriver().takeScreenshot();
+      const base64Image = await driver.takeScreenshot();
       const buffer = Buffer.from(base64Image, "base64");
       fs.writeFileSync(filePath, buffer);
       return filePath;
@@ -61,44 +60,46 @@ export class WebdriverIOAppiumFrameworkDriver
       description:
         "WebdriverIO is a browser and mobile automation library; Appium is a cross-platform automation framework for native, hybrid, and mobile web apps.",
       context: {
-        driver: this.getDriver(),
+        $$: $$,
+        $: $,
+        driver: driver       
       },
       categories: [
         {
           title: "Native Matchers",
           items: [
             {
-              signature: `driver.$('~accessibilityId')`,
+              signature: `$('~accessibilityId')`,
               description:
                 "Locate an element by its accessibility ID (commonly used in Appium).",
-              example: `const loginButton = await driver.$('~loginButton'); // Accessibility ID`,
+              example: `const loginButton = await $('~loginButton'); // Accessibility ID`,
             },
             {
-              signature: `driver.$('android=uiSelector')`,
+              signature: `$('android=uiSelector')`,
               description:
                 "Locate an element using an Android UIAutomator selector.",
-              example: `const el = await driver.$('android=new UiSelector().text("Login")');`,
+              example: `const el = await $('android=new UiSelector().text("Login")');`,
             },
             {
-              signature: `driver.$('ios=predicateString')`,
+              signature: `$('ios=predicateString')`,
               description: "Locate an element using an iOS NSPredicate string.",
-              example: `const el = await driver.$('ios=predicate string:type == "XCUIElementTypeButton" AND name == "Login"');`,
+              example: `const el = await $('ios=predicate string:type == "XCUIElementTypeButton" AND name == "Login"');`,
             },
             {
-              signature: `driver.$$('#elementSelector')`,
+              signature: `$$('#elementSelector')`,
               description: "Locate all elements with a given selector",
-              example: `const firstSite = await driver.$$('#Site')[index];`,
+              example: `const firstSite = await $$('#Site')[index];`,
             },
             {
-              signature: `driver.$('//*[@text="Login"]')`,
+              signature: `$('//*[@text="Login"]')`,
               description: "Locate an element using an XPath expression.",
-              example: `const el = await driver.$('//*[@text="Login"]');`,
+              example: `const el = await $('//*[@text="Login"]');`,
             },
             {
-              signature: `driver.$('#elementId'), driver.$('elementTag'), driver.$('.className')`,
+              signature: `$('#elementId'), $('elementTag'), $('.className')`,
               description:
                 "Web-like selectors (useful if your app is a hybrid or has a web context).",
-              example: `const el = await driver.$('.someNativeClass');`,
+              example: `const el = await $('.someNativeClass');`,
             },
           ],
         },
@@ -109,31 +110,31 @@ export class WebdriverIOAppiumFrameworkDriver
               signature: `.click()`,
               description: "Clicks (taps) an element.",
               example: `
-              await (await driver.$('~loginButton')).waitForEnabled();
-              await (await driver.$('~loginButton')).click();`,
+              await (await $('~loginButton')).waitForEnabled();
+              await (await $('~loginButton')).click();`,
             },
             {
               signature: `.setValue(value: string)`,
               description:
                 "Sets the value of an input/field (replaces existing text).",
-              example: `await (await driver.$('~usernameInput')).setValue('myusername');`,
+              example: `await (await $('~usernameInput')).setValue('myusername');`,
             },
             {
               signature: `.addValue(value: string)`,
               description: "Adds text to the existing text in the input/field.",
-              example: `await (await driver.$('~commentsField')).addValue(' - Additional note');`,
+              example: `await (await $('~commentsField')).addValue(' - Additional note');`,
             },
             {
               signature: `.clearValue()`,
               description: "Clears the current value of an input/field.",
-              example: `await (await driver.$('~usernameInput')).clearValue();`,
+              example: `await (await $('~usernameInput')).clearValue();`,
             },
             {
               signature: `.touchAction(actions)`,
               description:
                 "Performs a series of touch actions (tap, press, moveTo, release, etc.).",
               example: `
-await (await driver.$('~dragHandle')).touchAction([
+await (await $('~dragHandle')).touchAction([
   { action: 'press', x: 10, y: 10 },
   { action: 'moveTo', x: 10, y: 100 },
   'release'
@@ -144,15 +145,15 @@ await (await driver.$('~dragHandle')).touchAction([
               signature: `.scrollIntoView() (web/hybrid context only)`,
               description:
                 "Scrolls the element into view (if in a web context).",
-              example: `await (await driver.$('#someElement')).scrollIntoView();`,
+              example: `await (await $('#someElement')).scrollIntoView();`,
             },
             {
               signature: `.dragAndDrop(target, duration?)`,
               description:
                 "Drags the element to the target location (native or web context).",
               example: `
-await (await driver.$('~draggable')).dragAndDrop(
-  await driver.$('~dropzone'),
+await (await $('~draggable')).dragAndDrop(
+  await $('~dropzone'),
   1000
 );
               `,
@@ -165,36 +166,36 @@ await (await driver.$('~draggable')).dragAndDrop(
             {
               signature: `toBeDisplayed()`,
               description: "Asserts that the element is displayed (visible).",
-              example: `await expect(await driver.$('~loginButton')).toBeDisplayed();`,
+              example: `await expect(await $('~loginButton')).toBeDisplayed();`,
             },
             {
               signature: `toExist()`,
               description:
                 "Asserts that the element exists in the DOM/hierarchy.",
-              example: `await expect(await driver.$('~usernameInput')).toExist();`,
+              example: `await expect(await $('~usernameInput')).toExist();`,
             },
             {
               signature: `toHaveText(text: string)`,
               description:
                 "Asserts that the element's text matches the given string.",
-              example: `await expect(await driver.$('~welcomeMessage')).toHaveText('Welcome, user!');`,
+              example: `await expect(await $('~welcomeMessage')).toHaveText('Welcome, user!');`,
             },
             {
               signature: `toHaveValue(value: string)`,
               description:
                 "Asserts that the element's value matches the given string (for inputs, etc.).",
-              example: `await expect(await driver.$('~usernameInput')).toHaveValue('myusername');`,
+              example: `await expect(await $('~usernameInput')).toHaveValue('myusername');`,
             },
             {
               signature: `toBeEnabled() / toBeDisabled()`,
               description:
                 "Asserts that an element is enabled/disabled (if applicable).",
-              example: `await expect(await driver.$('~submitButton')).toBeEnabled();`,
+              example: `await expect(await $('~submitButton')).toBeEnabled();`,
             },
             {
               signature: `not`,
               description: "Negates the expectation.",
-              example: `await expect(await driver.$('~spinner')).not.toBeDisplayed();`,
+              example: `await expect(await $('~spinner')).not.toBeDisplayed();`,
             },
           ],
         },
@@ -338,23 +339,23 @@ await driver.switchContext(contexts.find(c => c.includes('WEBVIEW')));
               ],
             },
             {
-              signature: `driver.$('css or xpath').click()`,
+              signature: `$('css or xpath').click()`,
               description:
                 "In a webview context, click (tap) a web element using CSS or XPath.",
-              example: `await (await driver.$('button#login')).click();`,
+              example: `await (await $('button#login')).click();`,
             },
             {
-              signature: `driver.$('selector').setValue('text')`,
+              signature: `$('selector').setValue('text')`,
               description:
                 "In a webview context, sets text in a web input field.",
-              example: `await (await driver.$('input#username')).setValue('myusername');`,
+              example: `await (await $('input#username')).setValue('myusername');`,
             },
             {
               signature: `.getText()`,
               description:
                 "Retrieves the visible text of a web element (hybrid/web context).",
               example: `
-const text = await (await driver.$('h1.main-title')).getText();
+const text = await (await $('h1.main-title')).getText();
 expect(text).toBe('Welcome to My App');
               `,
             },
