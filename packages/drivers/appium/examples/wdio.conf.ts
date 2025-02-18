@@ -2,7 +2,7 @@ import path from "path";
 
 export const config = {
   runner: "local",
-  specs: ["./examples/**/*.test.ts"],
+  specs: ["./**/*.test.ts"],
   maxInstances: 1,
 
   capabilities: [
@@ -12,7 +12,7 @@ export const config = {
       "appium:automationName": "XCUITest",
       "appium:app": path.resolve(
         __dirname,
-        "../detox/ExampleApp/ios/build/Build/Products/Release-iphonesimulator/ExampleApp.app",
+        "../../detox/ExampleApp/ios/build/Build/Products/Release-iphonesimulator/ExampleApp.app",
       ),
     },
   ],
@@ -34,9 +34,5 @@ export const config = {
   mochaOpts: {
     ui: "bdd",
     timeout: 600000,
-  },
-
-  before: function () {
-    global.driver = browser;
   },
 };

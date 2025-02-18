@@ -7,7 +7,7 @@ describe("Example Test Suite", () => {
 
   before(async () => {
     const promptHandler: PromptHandler = new PromptHandler();
-    frameworkDriver = new WebdriverIOAppiumFrameworkDriver();
+    frameworkDriver = new WebdriverIOAppiumFrameworkDriver(() => browser);
 
     pilot.init({
       frameworkDriver,

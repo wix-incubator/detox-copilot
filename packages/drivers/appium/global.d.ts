@@ -1,10 +1,7 @@
-// global.d.ts
-import type { Browser } from "@wdio/types";
+import type { Browser } from "webdriverio";
 
 declare global {
-  // eslint-disable-next-line no-var
-  var driver: Browser;
-  const browser: Browser;
+  const browser: Browser<"async">;
 }
 
 export {};

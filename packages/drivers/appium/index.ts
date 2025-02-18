@@ -4,10 +4,12 @@ import {
 } from "@wix-pilot/core";
 import * as fs from "fs";
 import * as path from "path";
+import type { Browser } from "webdriverio";
 
 export class WebdriverIOAppiumFrameworkDriver
   implements TestingFrameworkDriver
 {
+  constructor(private getDriver: () => Browser) {}
   /**
    * Attempts to capture the current view hierarchy (source) of the mobile app as XML.
    * If there's no active session or the app isn't running, returns an error message.
@@ -16,7 +18,7 @@ export class WebdriverIOAppiumFrameworkDriver
     try {
       // In WebdriverIO + Appium, you can retrieve the current page source (UI hierarchy) via:
       // https://webdriver.io/docs/api/browser/getPageSource (driver is an alias for browser)
-      const pageSource = await driver.getPageSource();
+      const pageSource = await this.getDriver().getPageSource();
       return pageSource;
     } catch (_error) {
       return "NO ACTIVE APP FOUND, LAUNCH THE APP TO SEE THE VIEW HIERARCHY";
@@ -39,11 +41,12 @@ export class WebdriverIOAppiumFrameworkDriver
     try {
       // In WebdriverIO + Appium, driver.takeScreenshot() returns a base64-encoded PNG
       // https://webdriver.io/docs/api/browser/takeScreenshot
-      const base64Image = await driver.takeScreenshot();
+      const base64Image = await this.getDriver().takeScreenshot();
       const buffer = Buffer.from(base64Image, "base64");
       fs.writeFileSync(filePath, buffer);
       return filePath;
     } catch (_error) {
+      console.log(_error);
       return undefined;
     }
   }
@@ -58,7 +61,7 @@ export class WebdriverIOAppiumFrameworkDriver
       description:
         "WebdriverIO is a browser and mobile automation library; Appium is a cross-platform automation framework for native, hybrid, and mobile web apps.",
       context: {
-        webdriverDriver: driver,
+        driver: this.getDriver(),
       },
       categories: [
         {

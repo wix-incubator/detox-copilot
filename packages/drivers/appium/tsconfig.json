@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "rootDir": "./",
-    "types": ["jest", "node"],
+    "types": ["jest", "node", "mocha"],
     "baseUrl": "./",
     "resolveJsonModule": true
   },
@@ -17,6 +17,5 @@
   "exclude": [
     "node_modules",
     "dist",
-    "examples",
-  ]
+    ]
 }

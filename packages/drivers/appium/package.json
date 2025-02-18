@@ -17,7 +17,7 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "test": "echo No tests available for this package",
-    "test:example": "wdio run wdio.conf.ts",
+    "test:example": "wdio run examples/wdio.conf.ts",
     "build:app": "cd ../detox/ExampleApp &&  npm run build:ios",
     "bump-version:patch": "npm version patch && git commit -am 'chore: bump patch version' && git push",
     "release:patch": "npm run test && npm run bump-version:patch && npm run build && npm publish --access public",
