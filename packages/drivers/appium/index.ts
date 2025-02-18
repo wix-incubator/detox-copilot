@@ -62,7 +62,7 @@ export class WebdriverIOAppiumFrameworkDriver
       context: {
         $$: $$,
         $: $,
-        driver: driver       
+        driver: driver,
       },
       categories: [
         {

@@ -2,7 +2,6 @@ import pilot from "@wix-pilot/core";
 import { PromptHandler } from "../utils/promptHandler";
 import { WebdriverIOAppiumFrameworkDriver } from "../index";
 
-
 describe("Example Test Suite", () => {
   let frameworkDriver: WebdriverIOAppiumFrameworkDriver;
 
