@@ -82,6 +82,12 @@ export class WebdriverIOAppiumFrameworkDriver
               example: `const el = await driver.$('ios=predicate string:type == "XCUIElementTypeButton" AND name == "Login"');`,
             },
             {
+              signature: `driver.$$('#elementSelector')`,
+              description:
+                "Locate all elements with a given selector",
+              example: `const firstSite = await driver.$$('#Site')[index];`,
+            },
+            {
               signature: `driver.$('//*[@text="Login"]')`,
               description: "Locate an element using an XPath expression.",
               example: `const el = await driver.$('//*[@text="Login"]');`,
@@ -100,7 +106,9 @@ export class WebdriverIOAppiumFrameworkDriver
             {
               signature: `.click()`,
               description: "Clicks (taps) an element.",
-              example: `await (await driver.$('~loginButton')).click();`,
+              example: `
+              await (await driver.$('~loginButton')).waitForEnabled();
+              await (await driver.$('~loginButton')).click();`,
             },
             {
               signature: `.setValue(value: string)`,
@@ -152,6 +160,7 @@ await (await driver.$('~draggable')).dragAndDrop(
         {
           title: "Assertions",
           items: [
+
             {
               signature: `toBeDisplayed()`,
               description: "Asserts that the element is displayed (visible).",
