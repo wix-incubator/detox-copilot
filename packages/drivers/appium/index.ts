@@ -132,6 +132,9 @@ export class WebdriverIOAppiumFrameworkDriver
               example: `
               await (await $('~loginButton')).waitForEnabled();
               await (await $('~loginButton')).click();`,
+              guidelines: [
+                "Before clicking on an element make sure it is enabled",
+              ],
             },
             {
               signature: `.setValue(value: string)`,
@@ -160,12 +163,6 @@ await (await $('~dragHandle')).touchAction([
   'release'
 ]);
               `,
-            },
-            {
-              signature: `.scrollIntoView() (web/hybrid context only)`,
-              description:
-                "Scrolls the element into view (if in a web context).",
-              example: `await (await $('#someElement')).scrollIntoView();`,
             },
             {
               signature: `.dragAndDrop(target, duration?)`,
