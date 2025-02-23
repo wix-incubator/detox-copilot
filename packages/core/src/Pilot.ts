@@ -6,7 +6,7 @@ import {
 } from "@/types";
 import { PilotError } from "@/errors/PilotError";
 import { StepPerformer } from "@/performers/step-performer/StepPerformer";
-import { StepPerformerCacheHandler } from "@/performers/step-performer/StepPerformerCacheHandler";
+import { CacheHandler } from "@/common/cacheHandler/CacheHandler";
 import { AutoPerformer } from "@/performers/auto-performer/AutoPerformer";
 import { AutoPerformerPromptCreator } from "@/performers/auto-performer/AutoPerformerPromptCreator";
 import { AutoReport } from "@/types/auto";
@@ -31,19 +31,22 @@ export class Pilot {
   private previousSteps: PreviousStep[] = [];
   private stepPerformerPromptCreator: StepPerformerPromptCreator;
   private stepPerformer: StepPerformer;
-  private cacheHandler: StepPerformerCacheHandler;
+  private cacheHandler: CacheHandler;
   private running: boolean = false;
   private autoPerformer: AutoPerformer;
   private screenCapturer: ScreenCapturer;
+  private snapshotComparator: SnapshotComparator;
 
   private constructor(config: Config) {
+    this.snapshotComparator = new SnapshotComparator();
+
     this.snapshotManager = new SnapshotManager(
       config.frameworkDriver,
-      new SnapshotComparator(),
+      this.snapshotComparator,
       downscaleImage,
     );
 
-    this.cacheHandler = new StepPerformerCacheHandler();
+    this.cacheHandler = new CacheHandler();
     this.stepPerformerPromptCreator = new StepPerformerPromptCreator(
       config.frameworkDriver.apiCatalog,
     );
@@ -56,7 +59,7 @@ export class Pilot {
       new CodeEvaluator(),
       config.promptHandler,
       this.cacheHandler,
-      new SnapshotComparator(),
+      this.snapshotComparator,
       config.options?.cacheMode,
       config.options?.analysisMode,
     );
@@ -66,11 +69,15 @@ export class Pilot {
       config.promptHandler,
     );
 
+    this.snapshotComparator = new SnapshotComparator();
+
     this.autoPerformer = new AutoPerformer(
       new AutoPerformerPromptCreator(),
       this.stepPerformer,
       config.promptHandler,
       this.screenCapturer,
+      this.cacheHandler,
+      this.snapshotComparator,
     );
   }
 

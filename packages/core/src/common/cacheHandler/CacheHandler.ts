@@ -1,7 +1,9 @@
 import fs from "fs";
 import path from "path";
+import { AutoPreviousStep, PreviousStep } from "@/types";
+import logger from "@/common/logger";
 
-export class StepPerformerCacheHandler {
+export class CacheHandler {
   private cache: Map<string, any> = new Map();
   private temporaryCache: Map<string, any> = new Map();
   private readonly cacheFilePath: string;
@@ -41,6 +43,7 @@ export class StepPerformerCacheHandler {
   }
 
   public addToTemporaryCache(key: string, value: any): void {
+    logger.info(`Adding to temporary cache: ${key}`);
     this.temporaryCache.set(key, [
       ...(this.temporaryCache.get(key) ?? []),
       value,
@@ -57,5 +60,26 @@ export class StepPerformerCacheHandler {
 
   public clearTemporaryCache(): void {
     this.temporaryCache.clear();
+  }
+
+  public generateCacheKey(
+    currentGoal: string,
+    previous: PreviousStep[] | AutoPreviousStep[],
+    cacheMode: string,
+  ): string | undefined {
+    if (cacheMode === "disabled") {
+      return undefined;
+    }
+
+    const cacheKeyData: any = { currentGoal, previous };
+
+    return JSON.stringify(cacheKeyData);
+  }
+
+  public shouldOverrideCache() {
+    return (
+      process.env.PILOT_OVERRIDE_CACHE === "true" ||
+      process.env.PILOT_OVERRIDE_CACHE === "1"
+    );
   }
 }

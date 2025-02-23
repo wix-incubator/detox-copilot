@@ -201,7 +201,7 @@ interface Config {
 
 interface PilotOptions {
   /** Cache mode (default: 'full') */
-  cacheMode?: CacheMode;  // 'full' | 'lightweight' | 'disabled'
+  cacheMode?: CacheMode;  // 'full' | 'disabled'
   /** Analysis mode (default: 'fast') */
   analysisMode?: AnalysisMode;  // 'fast' | 'full'
 }
@@ -210,7 +210,6 @@ interface PilotOptions {
 #### Cache Modes
 
 - **full**: Cache is used with the screen state (default)
-- **lightweight**: Cache is used but only based on steps (without screen state)
 - **disabled**: No caching is used
 
 #### Analysis Modes

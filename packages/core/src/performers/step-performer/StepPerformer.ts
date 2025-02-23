@@ -2,7 +2,7 @@ import { StepPerformerPromptCreator } from "./StepPerformerPromptCreator";
 import { CodeEvaluator } from "@/common/CodeEvaluator";
 import { APISearchPromptCreator } from "@/common/prompts/APISearchPromptCreator";
 import { ViewAnalysisPromptCreator } from "@/common/prompts/ViewAnalysisPromptCreator";
-import { StepPerformerCacheHandler } from "@/performers/step-performer/StepPerformerCacheHandler";
+import { CacheHandler } from "@/common/cacheHandler/CacheHandler";
 import { SnapshotComparator } from "@/common/snapshot/comparator/SnapshotComparator";
 import {
   AnalysisMode,
@@ -13,6 +13,7 @@ import {
   ScreenCapturerResult,
   type CacheValues,
   type SingleCacheValue,
+  AutoPreviousStep,
 } from "@/types";
 import * as crypto from "crypto";
 import { extractCodeBlock } from "@/common/extract/extractCodeBlock";
@@ -30,7 +31,7 @@ export class StepPerformer {
     private viewAnalysisPromptCreator: ViewAnalysisPromptCreator,
     private codeEvaluator: CodeEvaluator,
     private promptHandler: PromptHandler,
-    private cacheHandler: StepPerformerCacheHandler,
+    private cacheHandler: CacheHandler,
     private snapshotComparator: SnapshotComparator,
     cacheMode: CacheMode = "full",
     analysisMode: AnalysisMode = "fast",
@@ -51,19 +52,6 @@ export class StepPerformer {
     this.context = { ...this.context, ...newContext };
   }
 
-  private generateCacheKey(
-    step: string,
-    previous: PreviousStep[],
-  ): string | undefined {
-    if (this.cacheMode === "disabled") {
-      return undefined;
-    }
-
-    const cacheKeyData: any = { step, previous };
-
-    return JSON.stringify(cacheKeyData);
-  }
-
   private async generateCacheValue(
     code: string,
     viewHierarchy: string,
@@ -71,10 +59,6 @@ export class StepPerformer {
   ): Promise<SingleCacheValue | undefined> {
     if (this.cacheMode === "disabled") {
       throw new Error("Cache is disabled");
-    }
-
-    if (this.cacheMode === "lightweight") {
-      return { code };
     }
 
     const snapshotHashes =
@@ -90,15 +74,11 @@ export class StepPerformer {
     };
   }
 
-  private async findCodeInCacheValue(
+  private async findCodeInCacheValues(
     cacheValue: CacheValues,
     viewHierarchy: string,
     snapshot?: string,
   ): Promise<string | undefined> {
-    if (this.cacheMode === "lightweight") {
-      return cacheValue[0].code;
-    }
-
     if (snapshot) {
       const snapshotHash =
         await this.snapshotComparator.generateHashes(snapshot);
@@ -129,13 +109,6 @@ export class StepPerformer {
     })?.code;
   }
 
-  private shouldOverrideCache() {
-    return (
-      process.env.PILOT_OVERRIDE_CACHE === "true" ||
-      process.env.PILOT_OVERRIDE_CACHE === "1"
-    );
-  }
-
   private async generateCode(
     step: string,
     previous: PreviousStep[],
@@ -143,14 +116,18 @@ export class StepPerformer {
     viewHierarchy: string,
     isSnapshotImageAttached: boolean,
   ): Promise<string> {
-    const cacheKey = this.generateCacheKey(step, previous);
+    const cacheKey = this.cacheHandler.generateCacheKey(
+      step,
+      previous,
+      this.cacheMode,
+    );
 
-    const cachedValue =
+    const cachedValues =
       cacheKey && this.cacheHandler.getStepFromCache(cacheKey);
 
-    if (!this.shouldOverrideCache() && cachedValue) {
-      const code = await this.findCodeInCacheValue(
-        cachedValue,
+    if (!this.cacheHandler.shouldOverrideCache() && cachedValues) {
+      const code = await this.findCodeInCacheValues(
+        cachedValues,
         viewHierarchy,
         snapshot,
       );
