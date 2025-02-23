@@ -4,11 +4,13 @@ import { ScreenCapturer } from "../../common/snapshot/ScreenCapturer";
 import { CacheHandler } from "../../common/cacheHandler/CacheHandler";
 import { SnapshotComparator } from "../../common/snapshot/comparator/SnapshotComparator";
 import {
-    AutoPreviousStep,
-    PromptHandler,
-    ScreenCapturerResult,
-    AutoStepReport,
-    AutoReport, HashingAlgorithm, SnapshotHashObject,
+  AutoPreviousStep,
+  PromptHandler,
+  ScreenCapturerResult,
+  AutoStepReport,
+  AutoReport,
+  HashingAlgorithm,
+  SnapshotHashObject,
 } from "@/types";
 import { StepPerformer } from "../step-performer/StepPerformer";
 
@@ -110,8 +112,8 @@ describe("AutoPerformer", () => {
     } as unknown as jest.Mocked<CacheHandler>;
 
     mockSnapshotComparator = {
-        generateHashes: jest.fn(),
-        compareSnapshot: jest.fn(),
+      generateHashes: jest.fn(),
+      compareSnapshot: jest.fn(),
     } as unknown as jest.Mocked<SnapshotComparator>;
 
     // Instantiate PilotPerformer with the mocks
@@ -156,30 +158,34 @@ describe("AutoPerformer", () => {
     const cacheKey = JSON.stringify({ goal: GOAL, previousSteps: [] });
 
     if (cacheExists) {
-       const screenCapturerResult: ScreenCapturerResult = {
-            snapshot: SNAPSHOT_DATA,
-            viewHierarchy: VIEW_HIERARCHY,
-            isSnapshotImageAttached: true,
-       };
+      const screenCapturerResult: ScreenCapturerResult = {
+        snapshot: SNAPSHOT_DATA,
+        viewHierarchy: VIEW_HIERARCHY,
+        isSnapshotImageAttached: true,
+      };
 
       mockCacheHandler.generateCacheKey.mockReturnValue(cacheKey);
-      mockSnapshotComparator.generateHashes.mockReturnValue(Promise.resolve({
-            BlockHash: "hash",
-      }));
+      mockSnapshotComparator.generateHashes.mockReturnValue(
+        Promise.resolve({
+          BlockHash: "hash",
+        }),
+      );
       mockSnapshotComparator.compareSnapshot.mockReturnValue(true);
 
       const cacheData: Map<string, any> = new Map();
-      cacheData.set(cacheKey, [{
-        screenCapturerResult: screenCapturerResult,
-        snapshotHash: {
+      cacheData.set(cacheKey, [
+        {
+          screenCapturerResult: screenCapturerResult,
+          snapshotHash: {
             BlockHash: "hash",
+          },
+          screenDescription: "Screen 1",
+          plan: undefined,
+          review: undefined,
+          goalAchieved: false,
+          summary: "success",
         },
-        screenDescription: "Screen 1",
-        plan: undefined,
-        review: undefined,
-        goalAchieved: false,
-        summary: "success",
-      }]);
+      ]);
 
       mockCacheHandler.getStepFromCache.mockImplementation((key: string) => {
         return cacheData.get(key);

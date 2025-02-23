@@ -79,7 +79,6 @@ export class StepPerformer {
     viewHierarchy: string,
     snapshot?: string,
   ): Promise<string | undefined> {
-
     if (snapshot) {
       const snapshotHash =
         await this.snapshotComparator.generateHashes(snapshot);

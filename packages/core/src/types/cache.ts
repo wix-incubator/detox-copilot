@@ -36,7 +36,7 @@ export type SingleCacheValue = {
 export type SingleAutoPilotCacheValue = {
   /** Screen capture output */
   screenCapture: ScreenCapturerResult;
-    /** UI snapshot hash */
+  /** UI snapshot hash */
   snapshotHash?: SnapshotHashObject;
   /** Screen description */
   screenDescription: string;

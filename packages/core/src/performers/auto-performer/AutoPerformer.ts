@@ -22,7 +22,7 @@ import { StepPerformer } from "@/performers/step-performer/StepPerformer";
 import { ScreenCapturer } from "@/common/snapshot/ScreenCapturer";
 import logger from "@/common/logger";
 import { CacheHandler } from "@/common/cacheHandler/CacheHandler";
-import {SnapshotComparator} from "@/common/snapshot/comparator/SnapshotComparator";
+import { SnapshotComparator } from "@/common/snapshot/comparator/SnapshotComparator";
 
 export class AutoPerformer {
   constructor(
@@ -108,7 +108,10 @@ export class AutoPerformer {
     if (cacheKey) {
       const cachedValues = await this.cacheHandler.getStepFromCache(cacheKey);
       if (cachedValues && !this.cacheHandler.shouldOverrideCache()) {
-        const cacheValue = await this.findInCachedValues(cachedValues, screenCapture);
+        const cacheValue = await this.findInCachedValues(
+          cachedValues,
+          screenCapture,
+        );
         if (cacheValue) {
           return {
             screenDescription: cacheValue.screenDescription,
@@ -188,7 +191,7 @@ export class AutoPerformer {
           }).summary
         : undefined;
 
-      if (this.cacheMode!== "disabled" && cacheKey) {
+      if (this.cacheMode !== "disabled" && cacheKey) {
         const cacheValue = await this.generateCacheValue(
           screenCapture,
           screenDescription,
@@ -301,7 +304,9 @@ export class AutoPerformer {
     if (this.cacheMode === "disabled") {
       throw new Error("Cache is disabled");
     }
-    const snapshotHash = await this.snapshotComparator.generateHashes(screenCapture.snapshot);
+    const snapshotHash = await this.snapshotComparator.generateHashes(
+      screenCapture.snapshot,
+    );
     return {
       screenCapture,
       snapshotHash,
@@ -313,23 +318,30 @@ export class AutoPerformer {
     };
   }
 
-  private async findInCachedValues(cachedValues: CacheAutoPilotValues, screenCapture: ScreenCapturerResult){
-      if (screenCapture.snapshot){
-          const snapshotHash =  await this.snapshotComparator.generateHashes(screenCapture.snapshot);
+  private async findInCachedValues(
+    cachedValues: CacheAutoPilotValues,
+    screenCapture: ScreenCapturerResult,
+  ) {
+    if (screenCapture.snapshot) {
+      const snapshotHash = await this.snapshotComparator.generateHashes(
+        screenCapture.snapshot,
+      );
 
-          const correctCachedValue = cachedValues.find((singleAutoPilotCachedValue) => {
-              return (
-                  singleAutoPilotCachedValue.snapshotHash &&
-                  this.snapshotComparator.compareSnapshot(
-                      snapshotHash,
-                      singleAutoPilotCachedValue.snapshotHash,
-                  )
-              );
-          });
+      const correctCachedValue = cachedValues.find(
+        (singleAutoPilotCachedValue) => {
+          return (
+            singleAutoPilotCachedValue.snapshotHash &&
+            this.snapshotComparator.compareSnapshot(
+              snapshotHash,
+              singleAutoPilotCachedValue.snapshotHash,
+            )
+          );
+        },
+      );
 
-          if (correctCachedValue) {
-              return correctCachedValue
-          }
+      if (correctCachedValue) {
+        return correctCachedValue;
       }
+    }
   }
 }

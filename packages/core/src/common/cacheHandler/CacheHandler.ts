@@ -76,11 +76,10 @@ export class CacheHandler {
     return JSON.stringify(cacheKeyData);
   }
 
-
   public shouldOverrideCache() {
-      return (
-          process.env.PILOT_OVERRIDE_CACHE === "true" ||
-          process.env.PILOT_OVERRIDE_CACHE === "1"
-      );
+    return (
+      process.env.PILOT_OVERRIDE_CACHE === "true" ||
+      process.env.PILOT_OVERRIDE_CACHE === "1"
+    );
   }
 }
