@@ -61,10 +61,6 @@ export class StepPerformer {
       throw new Error("Cache is disabled");
     }
 
-    if (this.cacheMode === "lightweight") {
-      return { code };
-    }
-
     const snapshotHashes =
       snapshot && (await this.snapshotComparator.generateHashes(snapshot));
 
@@ -83,9 +79,6 @@ export class StepPerformer {
     viewHierarchy: string,
     snapshot?: string,
   ): Promise<string | undefined> {
-    if (this.cacheMode === "lightweight") {
-      return cacheValue[0].code;
-    }
 
     if (snapshot) {
       const snapshotHash =

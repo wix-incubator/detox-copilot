@@ -74,7 +74,7 @@ export interface PilotFacade {
 }
 
 /** Cache mode settings */
-export type CacheMode = "full" | "lightweight" | "disabled";
+export type CacheMode = "full" | "disabled";
 
 /** Analysis mode settings */
 export type AnalysisMode = "fast" | "full";

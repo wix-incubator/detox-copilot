@@ -588,26 +588,6 @@ describe("Pilot Integration Tests", () => {
       expect(firstCacheValue).toHaveProperty("snapshotHash");
     });
 
-    it("should not include view hierarchy in cache value when using lightweight mode", async () => {
-      pilot.init({
-        frameworkDriver: mockFrameworkDriver,
-        promptHandler: mockPromptHandler,
-        options: {
-          cacheMode: "lightweight",
-        },
-      });
-      pilot.start();
-
-      await pilot.perform("Tap on the login button");
-      pilot.end();
-      const firstCacheValue = Object.values(
-        (mockedCacheFile as Record<string, CacheValues>) || {},
-      )[0][0];
-
-      expect(firstCacheValue).not.toHaveProperty("viewHierarchy");
-      expect(firstCacheValue).toHaveProperty("code");
-    });
-
     it("should not use cache when cache mode is disabled", async () => {
       pilot.init({
         frameworkDriver: mockFrameworkDriver,

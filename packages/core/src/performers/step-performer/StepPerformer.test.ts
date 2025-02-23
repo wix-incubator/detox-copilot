@@ -536,13 +536,6 @@ describe("CopilotStepPerformer", () => {
       expect(cache.value[0].viewHierarchy).toBe("hash");
     });
 
-    it("should not include view hierarchy hash in cache value when mode is lightweight", async () => {
-      const cache = await testCacheModes("lightweight");
-      const parsedKey = JSON.parse(cache.key);
-      expect(parsedKey).not.toHaveProperty("viewHierarchy");
-      expect(cache.value[0]).not.toHaveProperty("viewHierarchy");
-    });
-
     it("should not generate cache key when mode is disabled", async () => {
       const firstKey = await testCacheModes("disabled");
       const secondKey = await testCacheModes("disabled");
