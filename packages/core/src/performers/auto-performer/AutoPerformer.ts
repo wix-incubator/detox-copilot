@@ -107,7 +107,7 @@ export class AutoPerformer {
     );
     if (cacheKey) {
       const cachedValues = await this.cacheHandler.getStepFromCache(cacheKey);
-      if (cachedValues) {
+      if (cachedValues && !this.cacheHandler.shouldOverrideCache()) {
         const cacheValue = await this.findInCachedValues(cachedValues, screenCapture);
         if (cacheValue) {
           return {

@@ -117,13 +117,6 @@ export class StepPerformer {
     })?.code;
   }
 
-  private shouldOverrideCache() {
-    return (
-      process.env.PILOT_OVERRIDE_CACHE === "true" ||
-      process.env.PILOT_OVERRIDE_CACHE === "1"
-    );
-  }
-
   private async generateCode(
     step: string,
     previous: PreviousStep[],
@@ -140,7 +133,7 @@ export class StepPerformer {
     const cachedValues =
       cacheKey && this.cacheHandler.getStepFromCache(cacheKey);
 
-    if (!this.shouldOverrideCache() && cachedValues) {
+    if (!this.cacheHandler.shouldOverrideCache() && cachedValues) {
       const code = await this.findCodeInCacheValues(
         cachedValues,
         viewHierarchy,
