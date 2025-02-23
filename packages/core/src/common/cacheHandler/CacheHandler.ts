@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+import { AutoPreviousStep, PreviousStep } from "@/types";
+import logger from "@/common/logger";
 
 export class CacheHandler {
   private cache: Map<string, any> = new Map();
@@ -41,6 +43,7 @@ export class CacheHandler {
   }
 
   public addToTemporaryCache(key: string, value: any): void {
+    logger.info(`Adding to temporary cache: ${key}`);
     this.temporaryCache.set(key, [
       ...(this.temporaryCache.get(key) ?? []),
       value,
@@ -57,5 +60,19 @@ export class CacheHandler {
 
   public clearTemporaryCache(): void {
     this.temporaryCache.clear();
+  }
+
+  public generateCacheKey(
+    currentGoal: string,
+    previous: PreviousStep[] | AutoPreviousStep[],
+    cacheMode: string,
+  ): string | undefined {
+    if (cacheMode === "disabled") {
+      return undefined;
+    }
+
+    const cacheKeyData: any = { currentGoal, previous };
+
+    return JSON.stringify(cacheKeyData);
   }
 }
