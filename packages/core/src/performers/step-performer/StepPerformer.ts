@@ -13,6 +13,7 @@ import {
   ScreenCapturerResult,
   type CacheValues,
   type SingleCacheValue,
+  AutoPreviousStep,
 } from "@/types";
 import * as crypto from "crypto";
 import { extractCodeBlock } from "@/common/extract/extractCodeBlock";
@@ -51,19 +52,6 @@ export class StepPerformer {
     this.context = { ...this.context, ...newContext };
   }
 
-  private generateCacheKey(
-    step: string,
-    previous: PreviousStep[],
-  ): string | undefined {
-    if (this.cacheMode === "disabled") {
-      return undefined;
-    }
-
-    const cacheKeyData: any = { step, previous };
-
-    return JSON.stringify(cacheKeyData);
-  }
-
   private async generateCacheValue(
     code: string,
     viewHierarchy: string,
@@ -90,7 +78,7 @@ export class StepPerformer {
     };
   }
 
-  private async findCodeInCacheValue(
+  private async findCodeInCacheValues(
     cacheValue: CacheValues,
     viewHierarchy: string,
     snapshot?: string,
@@ -143,14 +131,18 @@ export class StepPerformer {
     viewHierarchy: string,
     isSnapshotImageAttached: boolean,
   ): Promise<string> {
-    const cacheKey = this.generateCacheKey(step, previous);
+    const cacheKey = this.cacheHandler.generateCacheKey(
+      step,
+      previous,
+      this.cacheMode,
+    );
 
-    const cachedValue =
+    const cachedValues =
       cacheKey && this.cacheHandler.getStepFromCache(cacheKey);
 
-    if (!this.shouldOverrideCache() && cachedValue) {
-      const code = await this.findCodeInCacheValue(
-        cachedValue,
+    if (!this.shouldOverrideCache() && cachedValues) {
+      const code = await this.findCodeInCacheValues(
+        cachedValues,
         viewHierarchy,
         snapshot,
       );
