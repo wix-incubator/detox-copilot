@@ -35,11 +35,14 @@ export class Pilot {
   private running: boolean = false;
   private autoPerformer: AutoPerformer;
   private screenCapturer: ScreenCapturer;
+  private snapshotComparator: SnapshotComparator;
 
   private constructor(config: Config) {
+    this.snapshotComparator = new SnapshotComparator();
+
     this.snapshotManager = new SnapshotManager(
       config.frameworkDriver,
-      new SnapshotComparator(),
+      this.snapshotComparator,
       downscaleImage,
     );
 
@@ -56,7 +59,7 @@ export class Pilot {
       new CodeEvaluator(),
       config.promptHandler,
       this.cacheHandler,
-      new SnapshotComparator(),
+      this.snapshotComparator,
       config.options?.cacheMode,
       config.options?.analysisMode,
     );
@@ -66,11 +69,15 @@ export class Pilot {
       config.promptHandler,
     );
 
+    this.snapshotComparator = new SnapshotComparator();
+
     this.autoPerformer = new AutoPerformer(
       new AutoPerformerPromptCreator(),
       this.stepPerformer,
       config.promptHandler,
       this.screenCapturer,
+      this.cacheHandler,
+      this.snapshotComparator,
     );
   }
 
